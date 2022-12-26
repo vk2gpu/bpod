@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "bpod")(type "KiCad")(uri "${KIPRJMOD}/bpod.pretty")(options "")(descr ""))
+)

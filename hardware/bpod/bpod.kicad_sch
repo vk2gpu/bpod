@@ -1,5 +1,53 @@
 (kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid b7f8a189-895c-4d46-9beb-c032c50bcf6b)
+
   (paper "A4")
-  (lib_symbols)
-  (symbol_instances)
+
+  (lib_symbols
+    (symbol "bpod:bpod-outline" (in_bom yes) (on_board yes)
+      (property "Reference" "U" (id 0) (at -5.08 2.54 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Value" "bpod-outline" (id 1) (at 0 0 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Footprint" "" (id 2) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "" (id 3) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "bpod-outline_0_1"
+        (rectangle (start -6.35 1.27) (end 6.35 -1.27)
+          (stroke (width 0) (type default) (color 0 0 0 0))
+          (fill (type background))
+        )
+      )
+    )
+  )
+
+
+  (symbol (lib_id "bpod:bpod-outline") (at 29.21 29.21 0) (unit 1)
+    (in_bom yes) (on_board yes)
+    (uuid 6f4dab9a-7c60-4d5a-a89d-79603e664cd1)
+    (property "Reference" "U1" (id 0) (at 24.13 26.67 0))
+    (property "Value" "bpod-outline" (id 1) (at 29.21 31.75 0))
+    (property "Footprint" "bpod:bpod-outline" (id 2) (at 29.21 29.21 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 29.21 29.21 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+
+  (symbol_instances
+    (path "/6f4dab9a-7c60-4d5a-a89d-79603e664cd1"
+      (reference "U1") (unit 1) (value "bpod-outline") (footprint "bpod:bpod-outline")
+    )
+  )
 )
