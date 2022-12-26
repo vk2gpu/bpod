@@ -2,3 +2,4 @@
 **/__pycache__/
 fp-info-cache
 **/*-backups/
+sdkconfig.old
