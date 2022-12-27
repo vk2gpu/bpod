@@ -164,9 +164,9 @@ def main():
     parser.add_argument('--monitor', default=False, action='store_true', help='Monitor serial output of device')
     parser.add_argument('--device', default='/dev/ttyUSB0', type=str, help='Path to USB serial device for flashing e.g. /dev/ttyUSB0')
     args = parser.parse_args()
-    args.out = os.path.join(ROOT, 'out')
+    args.out = os.path.join(ROOT, 'out', 'esp32')
     args.target = 'esp32'
-    args.firmware = os.path.join(ROOT, 'firmware')
+    args.firmware = os.path.join(ROOT, 'firmware', 'esp32')
     args.esp_idf = os.path.join(ROOT, 'esp-idf')
     args.esp_idf_environ = None  # lazy init when needed
     if args.build:

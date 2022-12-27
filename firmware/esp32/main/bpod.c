@@ -6,6 +6,9 @@
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 
+#include <st7735.h>
+
+
 void app_main(void)
 {
     printf("The beginnings of bPod!\n");
