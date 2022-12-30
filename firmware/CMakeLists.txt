@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
 project(bpod)
 
-add_subdirectory(st7735)
+add_subdirectory(adafruit)

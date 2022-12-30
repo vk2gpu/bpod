@@ -4,5 +4,10 @@ fp-info-cache
 **/*-backups/
 *.bak
 sdkconfig.old
-/esp-idf/
+dependencies.lock
+/firmware/esp-idf/
+/firmware/esp32/components/arduino-esp32/
+/firmware/adafruit/Adafruit_BusIO/
+/firmware/adafruit/Adafruit-GFX-Library/
+/firmware/adafruit/Adafruit-ST7735-Library/
 /out/
