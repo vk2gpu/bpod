@@ -2,4 +2,5 @@
   (lib (name "bpod")(type "KiCad")(uri "${KIPRJMOD}/bpod.pretty")(options "")(descr ""))
   (lib (name "st7735")(type "KiCad")(uri "${KIPRJMOD}/st7735.pretty")(options "")(descr ""))
   (lib (name "usb")(type "KiCad")(uri "${KIPRJMOD}/usb.pretty")(options "")(descr ""))
+  (lib (name "common")(type "KiCad")(uri "${KIPRJMOD}/common.pretty")(options "")(descr ""))
 )

@@ -2,4 +2,5 @@
   (lib (name "bpod")(type "KiCad")(uri "${KIPRJMOD}/bpod.kicad_sym")(options "")(descr ""))
   (lib (name "st7735")(type "KiCad")(uri "${KIPRJMOD}/st7735.kicad_sym")(options "")(descr ""))
   (lib (name "usb")(type "KiCad")(uri "${KIPRJMOD}/usb.kicad_sym")(options "")(descr ""))
+  (lib (name "regulator")(type "KiCad")(uri "${KIPRJMOD}/regulator.kicad_sym")(options "")(descr ""))
 )
