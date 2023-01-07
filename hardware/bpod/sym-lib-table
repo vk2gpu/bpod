@@ -4,4 +4,5 @@
   (lib (name "usb")(type "KiCad")(uri "${KIPRJMOD}/usb.kicad_sym")(options "")(descr ""))
   (lib (name "regulator")(type "KiCad")(uri "${KIPRJMOD}/regulator.kicad_sym")(options "")(descr ""))
   (lib (name "espressif")(type "KiCad")(uri "${KIPRJMOD}/espressif.kicad_sym")(options "")(descr ""))
+  (lib (name "flash")(type "KiCad")(uri "${KIPRJMOD}/flash.kicad_sym")(options "")(descr ""))
 )
