@@ -1,4 +1,4 @@
-(footprint "HRO_TYPE-C-31-M-12" (version 20211014) (generator pcbnew)
+(footprint "TYPE-C-31-M-12" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
   (tedit 63B8C44C)
   (attr through_hole)
@@ -6,7 +6,7 @@
     (effects (font (size 1 1) (thickness 0.15)))
     (tstamp 7ad10387-603a-4e19-8954-a091ed851098)
   )
-  (fp_text value "HRO_TYPE-C-31-M-12" (at 6.405 3.685) (layer "F.Fab")
+  (fp_text value "TYPE-C-31-M-12" (at 6.405 3.685) (layer "F.Fab")
     (effects (font (size 1 1) (thickness 0.15)))
     (tstamp 3c4f379b-a201-47ba-983d-3f0aed78dfc6)
   )
@@ -124,7 +124,7 @@
   (pad "S2" thru_hole oval (at 4.325 -4.17) (size 0.9 2) (drill oval 0.6 1.7) (layers *.Cu *.Mask) (tstamp 64242411-dcd4-4e93-93fa-6977176d7a7d))
   (pad "S3" thru_hole oval (at -4.325 0) (size 0.9 1.7) (drill oval 0.6 1.4) (layers *.Cu *.Mask) (tstamp 787470dd-07da-4a5a-a4f5-813e216fc74a))
   (pad "S4" thru_hole oval (at 4.325 0) (size 0.9 1.7) (drill oval 0.6 1.4) (layers *.Cu *.Mask) (tstamp 2aa95976-3a62-495e-8c25-56d4ca8155ac))
-  (model "${KIPRJMOD}/usb.pretty/TYPE-C-31-M-12.step"
+  (model "${KIPRJMOD}/../usb/cad/TYPE-C-31-M-12.step"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))

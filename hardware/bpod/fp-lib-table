@@ -1,9 +1,7 @@
 (fp_lib_table
   (lib (name "bpod")(type "KiCad")(uri "${KIPRJMOD}/bpod.pretty")(options "")(descr ""))
-  (lib (name "st7735")(type "KiCad")(uri "${KIPRJMOD}/st7735.pretty")(options "")(descr ""))
-  (lib (name "usb")(type "KiCad")(uri "${KIPRJMOD}/usb.pretty")(options "")(descr ""))
-  (lib (name "common")(type "KiCad")(uri "${KIPRJMOD}/common.pretty")(options "")(descr ""))
-  (lib (name "espressif")(type "KiCad")(uri "${KIPRJMOD}/espressif.pretty")(options "")(descr ""))
-  (lib (name "flash")(type "KiCad")(uri "${KIPRJMOD}/flash.pretty")(options "")(descr ""))
-  (lib (name "ram")(type "KiCad")(uri "${KIPRJMOD}/ram.pretty")(options "")(descr ""))
+  (lib (name "st7735")(type "KiCad")(uri "${KIPRJMOD}/../st7735/st7735.pretty")(options "")(descr ""))
+  (lib (name "usb")(type "KiCad")(uri "${KIPRJMOD}/../usb/usb.pretty")(options "")(descr ""))
+  (lib (name "common")(type "KiCad")(uri "${KIPRJMOD}/../common/common.pretty")(options "")(descr ""))
+  (lib (name "espressif")(type "KiCad")(uri "${KIPRJMOD}/../espressif/espressif.pretty")(options "")(descr ""))
 )

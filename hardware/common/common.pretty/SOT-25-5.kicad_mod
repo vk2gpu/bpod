@@ -20,7 +20,7 @@
   (pad "3" smd rect (at -1.2 0.95 270) (size 0.55 0.8) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 24c7cc6a-c771-421d-a6da-0eb92842e240))
   (pad "4" smd rect (at 1.2 0.95 270) (size 0.55 0.8) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 74367350-a720-46fd-9467-8056c0877e69))
   (pad "5" smd rect (at 1.2 -0.95 270) (size 0.55 0.8) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 4959339f-f165-4ed1-9506-10d7ad83c30a))
-  (model "${KIPRJMOD}/common.pretty/SOT-25-5.step"
+  (model "${KIPRJMOD}/../common/cad/SOT-25-5.step"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 -90))

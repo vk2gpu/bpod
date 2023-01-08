@@ -9,7 +9,7 @@
     (property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" (id 2) (at 0 -15.24 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.adestotech.com/wp-content/uploads/DS-AT25SF081_045.pdf" (id 3) (at 0 0 0)
+    (property "Datasheet" "" (id 3) (at 0 0 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "ki_keywords" "SPI DSPI QSPI 8Mbit 2.5V" (id 4) (at 0 0 0)

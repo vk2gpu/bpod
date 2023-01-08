@@ -1,4 +1,4 @@
-(footprint "ESP32-S2_QFN-56-1EP_7x7mm_P0.4mm_EP5.6x5.6mm" (version 20211014) (generator pcbnew)
+(footprint "QFN-56-1EP_7x7mm_P0.4mm_EP5.6x5.6mm" (version 20211014) (generator pcbnew)
   (layer "F.Cu")
   (tedit 5DC5F6A5)
   (descr "QFN, 56 Pin (http://www.cypress.com/file/416486/download#page=40), generated with kicad-footprint-generator ipc_noLead_generator.py")
@@ -106,7 +106,7 @@
   (pad "55" smd roundrect (at -2.2 -3.4375) (size 0.2 0.875) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (tstamp 0e4964e6-9cba-4f92-89e6-e4cbbd69b948))
   (pad "56" smd roundrect (at -2.6 -3.4375) (size 0.2 0.875) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (tstamp ab8fa6cb-13a9-4f3f-b0ca-4d49ee4c0849))
   (pad "57" smd rect (at 0 0) (size 5.6 5.6) (layers "F.Cu" "F.Mask") (tstamp e9c5dcde-1025-4724-ab6b-fa143326a9b2))
-  (model "${KIPRJMOD}/espressif.pretty/ESP32-S2_QFN-56-1EP_7x7mm_P0.4mm_EP5.6x5.6mm.wrl"
+  (model "${KIPRJMOD}/../common/cad/QFN-56-1EP_7x7mm_P0.4mm_EP5.6x5.6mm.wrl"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))
