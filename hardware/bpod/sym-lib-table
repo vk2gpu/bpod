@@ -6,4 +6,5 @@
   (lib (name "espressif")(type "KiCad")(uri "${KIPRJMOD}/../espressif/espressif.kicad_sym")(options "")(descr ""))
   (lib (name "flash")(type "KiCad")(uri "${KIPRJMOD}/../flash/flash.kicad_sym")(options "")(descr ""))
   (lib (name "ram")(type "KiCad")(uri "${KIPRJMOD}/../ram/ram.kicad_sym")(options "")(descr ""))
+  (lib (name "common")(type "KiCad")(uri "${KIPRJMOD}/../common/common.kicad_sym")(options "")(descr ""))
 )

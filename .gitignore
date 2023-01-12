@@ -3,6 +3,7 @@
 fp-info-cache
 **/*-backups/
 *.bak
+*-bak
 sdkconfig.old
 dependencies.lock
 /firmware/esp-idf/
