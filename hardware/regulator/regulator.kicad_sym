@@ -6,7 +6,7 @@
     (property "Value" "AP2112K-3.3" (id 1) (at 7.62 -5.08 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "" (id 2) (at -1.27 5.08 0)
+    (property "Footprint" "common:SOT-25-5" (id 2) (at 10.16 -7.62 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at -1.27 5.08 0)
