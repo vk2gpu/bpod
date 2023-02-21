@@ -624,7 +624,7 @@
     (property "Value" "DIODE" (id 1) (at 0 -2.54 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "common:D_0402_1005Metric" (id 2) (at 0 -5.08 0)
+    (property "Footprint" "common:D_SOD-123" (id 2) (at 0 -5.08 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 0 0 0)
