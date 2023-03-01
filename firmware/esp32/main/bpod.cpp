@@ -11,8 +11,11 @@
 #include <Adafruit_ST7735.h>
 #include <TouchWheel.h>
 
-#include "../../image_storage/bpod_logo.hpp"
-#include "../../image_storage/bsides_logo.hpp"
+#include "../../images/BpodLogo.hpp"
+#include "../../images/BSidesLogo.hpp"
+#include "../../images/BpodTitleBar.hpp"
+#include "../../images/BpodMenuBar.hpp"
+#include "../../images/BpodMenuArrow.hpp"
 
 #define CS_PIN  27 // IO27
 #define DC_PIN  25 // IO25
@@ -23,11 +26,9 @@
 #define TOUCH_240DEG  32 // TOUCH9 IO32
 #define TOUCH_OK      0 // TOUCH1 IO0
 
-
 SPIClass hspi(HSPI);
 Adafruit_ST7735 tft(&hspi, CS_PIN, DC_PIN, RST_PIN);
 TouchWheel wheel(TOUCH_000DEG, TOUCH_120DEG, TOUCH_240DEG, TOUCH_OK, true);
-
 
 extern "C" void app_main(void)
 {
@@ -39,6 +40,7 @@ extern "C" void app_main(void)
     pinMode(DC_PIN, OUTPUT);
     pinMode(RST_PIN, OUTPUT);
     tft.initR(INITR_BLACKTAB);
+    tft.fillScreen(ST77XX_BLACK);
     tft.setRotation(2);
     tft.fillScreen(ST77XX_BLACK);
 
@@ -97,34 +99,47 @@ extern "C" void app_main(void)
     }
     */
 
-  BpodLogo::draw(21, 30, tft);
-  tft.drawRoundRect(8, 110, 112, 12, 4, 0xffff);
-  for ( int16_t w = 0; w < 111; w++)
-  {
-    tft.fillRect(9, 111, w, 10, 0xffff);
-    delay(25);
-  }
-  delay(2000);
+    // bPod boot logo
+    tft.fillScreen(ST77XX_BLACK);
+    BpodLogo::draw(21, 30, tft);
+    tft.drawRoundRect(8, 110, 112, 12, 4, 0xffff);
+    for ( int16_t w = 0; w < 111; w++)
+    {
+        tft.fillRect(9, 111, w, 10, 0xffff);
+        delay(25);
+    }
 
-  BSidesLogo::draw(0, 0, tft);
-  uint16_t color = 0xf800;
-  for ( size_t i = 0; i < 200; i++)
-  {
-    tft.drawLine(50, 41, 60, 59, color);
-    tft.drawLine(51, 40, 60, 59, color);
-    tft.drawLine(52, 41, 60, 59, color);
-    tft.drawLine(58, 40, 66, 61, color);
-    tft.drawLine(59, 39, 66, 61, color);
-    tft.drawLine(60, 40, 66, 61, color);
-    color = ( color >> 1 ) | (( color & 0x1) << 15);
-    delay(25);
-  }
+    // BSides 2023 lazer magpie
+    BSidesLogo::draw(0, 0, tft);
+    uint16_t color = 0xf800;
+    for ( size_t i = 0; i < 200; i++)
+    {
+        tft.drawLine(50, 41, 60, 59, color);
+        tft.drawLine(51, 40, 60, 59, color);
+        tft.drawLine(52, 41, 60, 59, color);
+        tft.drawLine(58, 40, 66, 61, color);
+        tft.drawLine(59, 39, 66, 61, color);
+        tft.drawLine(60, 40, 66, 61, color);
+        color = ( color >> 1 ) | (( color & 0x1) << 15);
+        delay(25);
+    }
 
-  while ( 1 )
-  {
-    delay(500);
-  }
-
+    // Menu cycling
+    tft.fillScreen(0xffff);
+    BpodTitleBar::draw(0, 0, 128, tft);
+    size_t pos = 0;
+    while ( 1 )
+    {
+        BpodMenuBar::draw(0, 20 + (pos * 20), 128, tft);
+        BpodMenuArrow::draw(128 - 16, 20 + (pos * 20) + 4, tft);
+        delay(1000);
+        tft.fillRect(0, 20 + (pos * 20), 128, 20 + (pos * 20) + 20, 0xffff);
+        pos++;
+        if ( pos >= 7 )
+        {
+            pos = 0;
+        }
+    }
 
     /* Print chip information */
     esp_chip_info_t chip_info;
