@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import shutil
 import argparse
 import subprocess
@@ -170,21 +171,39 @@ def build(args):
     esp_idf_build(args)
 
 
-def flash(args):
+def prep_serial_device(args):
+    if not os.path.exists(args.device) and os.path.exists('/mnt/c/Windows/system32'):
+        p = subprocess.Popen(['cmd.exe', '/c', 'usbipd', 'wsl', 'list'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        busid = None
+        for line in stdout.decode().split('\n'):
+            if line.count('-') < 1 or line.count(':') < 1:
+                continue
+            if line.upper().find('COM') == -1:
+                continue
+            busid = line.strip().split(' ')[0]
+            break
+        if busid:
+            p = subprocess.Popen(['cmd.exe', '/c', 'usbipd', 'wsl', 'attach', '--busid', busid],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p.communicate()
+            assert p.returncode == 0
+            time.sleep(3)
     if (os.lstat(args.device).st_mode & 0o666) != 0o666:
         p = subprocess.Popen(['sudo', 'chmod', '666', args.device])
         stdout, stderr = p.communicate()
         assert 0 == p.returncode
+
+def flash(args):
+    prep_serial_device(args)
     if not args.esp_idf_environ:
         args.esp_idf_environ = esp_idf_environ(args)
     esp_idf_flash(args)
 
 
 def monitor(args):
-    if (os.lstat(args.device).st_mode & 0o666) != 0o666:
-        p = subprocess.Popen(['sudo', 'chmod', '666', args.device])
-        stdout, stderr = p.communicate()
-        assert 0 == p.returncode
+    prep_serial_device(args)
     s = serial.Serial(port=args.device, baudrate=115600)
     try:
         while True:
