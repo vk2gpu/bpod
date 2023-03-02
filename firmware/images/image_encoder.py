@@ -320,6 +320,12 @@ def main():
     parser.add_argument('--out-hpp', required=True, type=str, help='Output C++ header file')
     args = parser.parse_args()
 
+    if not os.path.exists(os.path.dirname(args.out_hpp)):
+        try:
+            os.makedirs(os.path.dirname(args.out_hpp))
+        except:
+            pass
+
     if not args.name:
         args.name = os.path.basename(args.out_hpp).split('.')[0].replace(' ', '_').replace('-', '_')
 

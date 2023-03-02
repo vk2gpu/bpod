@@ -60,10 +60,16 @@ def esp_idf_download_and_install(args):
             p = subprocess.Popen([os.path.join(args.esp_idf, 'install.sh')], cwd=args.esp_idf)
             p.communicate()
             assert 0 == p.returncode
+            p = subprocess.Popen(['python3', '-m', 'pip', 'install', 'pillow'],
+                cwd=args.firmware,
+                env=esp_idf_environ(args))
+            stdout, stderr = p.communicate()
+            assert 0 == p.returncode
         except:
             if os.path.exists(args.esp_idf):
                 shutil.rmtree(args.esp_idf)
     assert os.path.exists(args.esp_idf)
+
 
 def esp_idf_environ(args):
     '''
@@ -150,7 +156,6 @@ def download(args):
     git_clone('https://github.com/adafruit/Adafruit_BusIO.git', '1.14.1', os.path.join(args.adafruit, 'Adafruit_BusIO'))
     git_clone('https://github.com/adafruit/Adafruit-GFX-Library.git', '1.11.3', os.path.join(args.adafruit, 'Adafruit-GFX-Library'))
     git_clone('https://github.com/adafruit/Adafruit-ST7735-Library.git', '1.9.3', os.path.join(args.adafruit, 'Adafruit-ST7735-Library'))
-
 
 
 def generate(args):

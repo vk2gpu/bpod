@@ -11,13 +11,13 @@
 #include <Adafruit_ST7735.h>
 #include <TouchWheel.h>
 
-#include "../../images/BpodLogo.hpp"
-#include "../../images/BSidesLogo.hpp"
-#include "../../images/BpodTitleBar.hpp"
-#include "../../images/BpodMenuBar.hpp"
-#include "../../images/BpodMenuArrow.hpp"
-#include "../../images/BpodScrollEmpty.hpp"
-#include "../../images/BpodScrollFill.hpp"
+#include <Images/BpodLogo.hpp>
+#include <Images/BSidesLogo.hpp>
+#include <Images/BpodTitleBar.hpp>
+#include <Images/BpodMenuBar.hpp>
+#include <Images/BpodMenuArrow.hpp>
+#include <Images/BpodScrollEmpty.hpp>
+#include <Images/BpodScrollFill.hpp>
 
 #define CS_PIN  27 // IO27
 #define DC_PIN  25 // IO25
