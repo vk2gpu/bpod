@@ -40,3 +40,6 @@ add_library(Images STATIC
 target_include_directories(Images
     PUBLIC ${IMAGES_DIR}/../
 )
+target_link_libraries(Images
+    Adafruit-GFX-Library
+)

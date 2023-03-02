@@ -12,4 +12,5 @@ target_link_libraries(__idf_main
     Adafruit-ST7735-Library
     TouchWheel
     Images
+    Animations
 )
