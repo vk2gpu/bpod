@@ -16,6 +16,8 @@
 #include "../../images/BpodTitleBar.hpp"
 #include "../../images/BpodMenuBar.hpp"
 #include "../../images/BpodMenuArrow.hpp"
+#include "../../images/BpodScrollEmpty.hpp"
+#include "../../images/BpodScrollFill.hpp"
 
 #define CS_PIN  27 // IO27
 #define DC_PIN  25 // IO25
@@ -127,13 +129,15 @@ extern "C" void app_main(void)
     // Menu cycling
     tft.fillScreen(0xffff);
     BpodTitleBar::draw(0, 0, 128, tft);
+    BpodScrollEmpty::draw(128 - 8, 20, 160 - 20, tft);
+    BpodScrollFill::draw(128 - 8, 57, 95, tft);
     size_t pos = 0;
     while ( 1 )
     {
-        BpodMenuBar::draw(0, 20 + (pos * 20), 128, tft);
-        BpodMenuArrow::draw(128 - 16, 20 + (pos * 20) + 4, tft);
+        BpodMenuBar::draw(0, 20 + (pos * 20), 128 - 8, tft);
+        BpodMenuArrow::draw(128 - 16 - 4, 20 + (pos * 20) + 4, tft);
         delay(1000);
-        tft.fillRect(0, 20 + (pos * 20), 128, 20 + (pos * 20) + 20, 0xffff);
+        tft.fillRect(0, 20 + (pos * 20), 128 - 8, 20 + (pos * 20) + 20, 0xffff);
         pos++;
         if ( pos >= 7 )
         {
