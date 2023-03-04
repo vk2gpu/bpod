@@ -11,14 +11,10 @@
 #include <Adafruit_ST7735.h>
 #include <TouchWheel.h>
 
-#include <Images/BpodTitleBar.hpp>
-#include <Images/BpodMenuBar.hpp>
-#include <Images/BpodMenuArrow.hpp>
-#include <Images/BpodScrollEmpty.hpp>
-#include <Images/BpodScrollFill.hpp>
-
 #include <Animations/BpodLoadAnimation.hpp>
 #include <Animations/BSidesLogoAnimation.hpp>
+
+#include <Menu/BpodMenu.hpp>
 
 #define CS_PIN  27 // IO27
 #define DC_PIN  25 // IO25
@@ -108,20 +104,21 @@ extern "C" void app_main(void)
     // BSides 2023 lazer magpie
     BSidesLogoAnimation::run(tft);
 
-    // Menu cycling
-    tft.fillScreen(0xffff);
-    BpodTitleBar::draw(0, 0, 128, tft);
-    BpodScrollEmpty::draw(128 - 8, 20, 160 - 20, tft);
-    BpodScrollFill::draw(128 - 8, 57, 95, tft);
+    // Main menu
+    BpodMenu main_menu;
+    main_menu.set_title("bPod");
+    for ( size_t i = 0; i < 50; i++ )
+    {
+        main_menu.add("Menu " + std::to_string(i), [](){});
+    }
     size_t pos = 0;
     while ( 1 )
     {
-        BpodMenuBar::draw(0, 20 + (pos * 20), 128 - 8, tft);
-        BpodMenuArrow::draw(128 - 16 - 4, 20 + (pos * 20) + 4, tft);
-        delay(1000);
-        tft.fillRect(0, 20 + (pos * 20), 128 - 8, 20 + (pos * 20) + 20, 0xffff);
+        main_menu.move_to(pos);
+        main_menu.draw(tft);
+        delay(300);
         pos++;
-        if ( pos >= 7 )
+        if ( pos >= main_menu.size() )
         {
             pos = 0;
         }
