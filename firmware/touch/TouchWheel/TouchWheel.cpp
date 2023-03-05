@@ -167,17 +167,17 @@ void TouchWheel::read()
             if ( ( old_angle >= 300 && this->angle_ <= 120 ) || ( old_angle >= 240 && this->angle_ <= 60 ) )
             {
                 // clockwise, postive direction, over the 0 deg line
-                this->wheel_clicks_ += ( ( this->angle_ + 360 ) - old_angle ) / 60;
+                this->wheel_clicks_ -= ( ( this->angle_ + 360 ) - old_angle ) / 60;
             }
             else if ( ( old_angle <= 120 && this->angle_ >= 300 ) || ( old_angle <= 60 && this->angle_ >= 240 ) )
             {
                 // anti-clockwise, negative direction, over the 0 deg line
-                this->wheel_clicks_ += ( this->angle_ - ( old_angle + 360 ) ) / 60;
+                this->wheel_clicks_ -= ( this->angle_ - ( old_angle + 360 ) ) / 60;
             }
             else
             {
                 // easy
-                this->wheel_clicks_ += ( this->angle_ - old_angle ) / 60;
+                this->wheel_clicks_ -= ( this->angle_ - old_angle ) / 60;
             }
         }
     }
