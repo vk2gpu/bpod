@@ -281,7 +281,7 @@ def encoding_vpattern(args):
         tab()
         out('for ( int16_t dx = 0; dx < width; dx++) {')
         tab()
-        out('if ( offset >= {}) offset = 0;'.format(width * height * 2))
+        out('if ( offset >= {}) offset = offset % {};'.format(width * height * 2, width * height * 2))
         out('gfx.drawPixel(x + dx, y + dy, pixel(offset));')
         out('offset += sizeof(uint16_t);')
         shift_tab()
