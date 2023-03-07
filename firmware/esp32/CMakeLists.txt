@@ -9,9 +9,5 @@ add_subdirectory("../" firmware)
 
 target_link_libraries(__idf_main
     __idf_arduino-esp32
-    Adafruit-ST7735-Library
-    TouchWheel
-    Images
-    Animations
-    Menu
+    Bpod
 )
