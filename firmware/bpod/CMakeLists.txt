@@ -10,5 +10,6 @@ target_link_libraries(Bpod
     TouchWheel
     Images
     Animations
-    Menu
+    App
+    AppMainMenu
 )

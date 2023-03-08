@@ -62,6 +62,15 @@ class BpodMenu
                 }
             }
         }
+        void move_up() { move_clicks(-1); };
+        void move_down() { move_clicks(1); };
+        void click() {
+            if ( pos_ >= action_.size() )
+            {
+                return;
+            }
+            action_[pos_]();
+        }
         int16_t scroll_bar_x(Adafruit_GFX &gfx) const { return gfx.width() - scroll_bar_width(gfx); };
         int16_t scroll_bar_y(Adafruit_GFX &gfx) const { return BpodTitleBar::height; };
         int16_t scroll_bar_width(Adafruit_GFX &gfx) const { return BpodScrollEmpty::width; };

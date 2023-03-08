@@ -8,7 +8,8 @@
 #include <Animations/BpodLoadAnimation.hpp>
 #include <Animations/BSidesLogoAnimation.hpp>
 
-#include <Menu/BpodMenu.hpp>
+#include <App/App.hpp>
+#include <App/MainMenu.hpp>
 
 #define CS_PIN  27 // IO27
 #define DC_PIN  25 // IO25
@@ -22,7 +23,7 @@
 SPIClass hspi(HSPI);
 Adafruit_ST7735 tft(&hspi, CS_PIN, DC_PIN, RST_PIN);
 TouchWheel wheel(TOUCH_000DEG, TOUCH_120DEG, TOUCH_240DEG, TOUCH_OK, true);
-BpodMenu main_menu;
+MainMenu main_menu;
 
 void Bpod::begin()
 {
@@ -44,11 +45,7 @@ void Bpod::begin()
     BSidesLogoAnimation::run(tft);
 
     // Main menu
-    main_menu.set_title("bPod");
-    for ( size_t i = 0; i < 50; i++ )
-    {
-        main_menu.add("Menu " + std::to_string(i), [](){});
-    }
+    App::manager_begin(main_menu);
 }
 
 void Bpod::loop()
@@ -56,46 +53,54 @@ void Bpod::loop()
     int16_t clicks = 0;
     wheel.read();
     clicks = wheel.wheel_pop_clicks();
-    main_menu.move_clicks(clicks);
     while ( clicks > 0 )
     {
         printf("------>\n");
+        App::manager_key_event(APP_KEY_SCROLL_CLOCKWISE);
         clicks -= 1;
     }
     while ( clicks < 0 )
     {
         printf("<------\n");
+        App::manager_key_event(APP_KEY_SCROLL_ANTICLOCKWISE);
         clicks += 1;
     }
     clicks = wheel.ok_pop_clicks();
     while ( clicks > 0 )
     {
         printf("OK\n");
+        App::manager_key_event(APP_KEY_OK);
         clicks -= 1;
     }
     clicks = wheel.forward_pop_clicks();
     while ( clicks > 0 )
     {
         printf(">>|\n");
+        App::manager_key_event(APP_KEY_FORWARD);
         clicks -= 1;
     }
     clicks = wheel.menu_pop_clicks();
     while ( clicks > 0 )
     {
         printf("MENU\n");
+        App::manager_key_event(APP_KEY_MENU);
         clicks -= 1;
     }
     clicks = wheel.back_pop_clicks();
     while ( clicks > 0 )
     {
         printf("|<<\n");
+        App::manager_key_event(APP_KEY_BACK);
         clicks -= 1;
     }
     clicks = wheel.play_pop_clicks();
     while ( clicks > 0 )
     {
         printf("|>||\n");
+        App::manager_key_event(APP_KEY_PLAY);
         clicks -= 1;
     }
-    main_menu.draw(tft);
+    App::manager_loop();
+    App::manager_draw(tft);
+    delay(1);
 }
