@@ -1,4 +1,6 @@
 add_subdirectory(app)
+add_subdirectory(snake)
+add_subdirectory(tetris)
 add_subdirectory(menu)
 add_subdirectory(game_menu)
 add_subdirectory(main_menu)

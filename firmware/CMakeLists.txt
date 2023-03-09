@@ -3,6 +3,8 @@ project(bpod)
 
 add_subdirectory(adafruit)
 add_subdirectory(touch)
+add_subdirectory(snakec)
+add_subdirectory(tetrisc)
 add_subdirectory(images)
 add_subdirectory(animations)
 add_subdirectory(menu)

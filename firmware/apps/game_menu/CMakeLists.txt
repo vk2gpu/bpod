@@ -7,4 +7,6 @@ target_include_directories(AppGameMenu
 )
 target_link_libraries(AppGameMenu
     AppMenu
+    AppSnake
+    AppTetris
 )
