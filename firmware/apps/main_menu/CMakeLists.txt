@@ -7,5 +7,6 @@ target_include_directories(AppMainMenu
 )
 target_link_libraries(AppMainMenu
     AppMenu
+    AppTextView
     AppGameMenu
 )

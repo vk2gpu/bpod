@@ -94,7 +94,7 @@ class BpodMenu
             gfx.setTextColor(0x0000);
             gfx.setTextSize(2);
             gfx.getTextBounds(title_.c_str(), 0, 0, &x1, &y1, &w, &h);
-            BpodTitleBar::draw(0, 0, 128, gfx);
+            BpodTitleBar::draw(0, 0, gfx.width(), gfx);
             if ( title_.size() > 0 )
             {
                 x1 = (gfx.width() / 2) - (w / 2);
