@@ -1,8 +1,10 @@
 #include "MainMenu.hpp"
 
+#include <App/Schedule.hpp>
 #include <App/GameMenu.hpp>
 #include <App/TextView.hpp>
 
+Schedule scheudle;
 GameMenu game_menu;
 TextView about;
 
@@ -10,6 +12,11 @@ void MainMenu::begin(BpodMenu &menu) {
     menu.set_title("bPod");
     for ( size_t i = 0; i < 50; i++ )
     {
+        if ( i == 0 )
+        {
+            menu.add("Schedule", [](){ App::manager_begin(scheudle); });
+            continue;
+        }
         if ( i == 2 )
         {
             menu.add("Games", [](){ App::manager_begin(game_menu); });
