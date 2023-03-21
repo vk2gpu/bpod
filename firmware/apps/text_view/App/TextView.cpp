@@ -73,14 +73,14 @@ void TextView::key_event(uint8_t key)
     {
         case APP_KEY_SCROLL_CLOCKWISE:
             vwrc_get_row(this->viewerc_, &prev_row);
-            vwrc_scroll_down_page(this->viewerc_);
+            scroll_by_page_ ? vwrc_scroll_down_page(this->viewerc_) : vwrc_scroll_down(this->viewerc_);
             vwrc_get_row(this->viewerc_, &row);
             redraw_text_ = row != prev_row;
             break;
 
         case APP_KEY_SCROLL_ANTICLOCKWISE:
             vwrc_get_row(this->viewerc_, &prev_row);
-            vwrc_scroll_up_page(this->viewerc_);
+            scroll_by_page_ ? vwrc_scroll_up_page(this->viewerc_) : vwrc_scroll_up(this->viewerc_);
             vwrc_get_row(this->viewerc_, &row);
             redraw_text_ = row != prev_row;
             break;

@@ -9,7 +9,7 @@
 
 class TextView : public App  {
     public:
-        TextView() : draw_gfx(nullptr), redraw_(true), redraw_text_(true), scroll_bar_(false),
+        TextView() : draw_gfx(nullptr), scroll_by_page_(true), redraw_(true), redraw_text_(true), scroll_bar_(false),
             text_width_(0), text_height_(0) {};
         virtual ~TextView() {};
 
@@ -21,6 +21,8 @@ class TextView : public App  {
             redraw_ = true;
             text_ = text;
         };
+        void scroll_by_line() { scroll_by_page_ = false; }
+        void scroll_by_page() { scroll_by_page_ = true; }
 
         virtual void begin(void);
         virtual void key_event(uint8_t key);
@@ -39,6 +41,7 @@ class TextView : public App  {
         std::string title_;
         std::string text_;
         Adafruit_GFX *draw_gfx;
+        bool scroll_by_page_;
         bool redraw_;
         bool redraw_text_;
         bool scroll_bar_;
