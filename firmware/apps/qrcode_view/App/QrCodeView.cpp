@@ -1,6 +1,6 @@
 #include "QrCodeView.hpp"
 
-#include <Images/BpodTitleBar.hpp>
+#include <Images/BpodTitleBarBackground.hpp>
 
 #include <qrcodegen.h>
 
@@ -30,11 +30,11 @@ void QrCodeView::draw_title(Adafruit_GFX &gfx)
     gfx.setTextColor(0x0000);
     gfx.setTextSize(2);
     gfx.getTextBounds(title_.c_str(), 0, 0, &x1, &y1, &w, &h);
-    BpodTitleBar::draw(0, 0, gfx.width(), gfx);
+    BpodTitleBarBackground::draw(0, 0, gfx.width(), gfx);
     if ( title_.size() > 0 )
     {
         x1 = (gfx.width() / 2) - (w / 2);
-        y1 = (BpodTitleBar::height / 2) - (h / 2);
+        y1 = (BpodTitleBarBackground::height / 2) - (h / 2);
         gfx.setCursor(x1, y1);
         gfx.print(title_.c_str());
     }
@@ -49,7 +49,7 @@ void QrCodeView::draw_qrcode(Adafruit_GFX &gfx)
     //}
     int size = qrcodegen_getSize(qrcode_mem_);
     int x_offset = (gfx.width() / 2) - ((size * 2) / 2);
-    int y_offset = BpodTitleBar::height + ((gfx.height() - BpodTitleBar::height) / 2) - ((size * 2) / 2);
+    int y_offset = BpodTitleBarBackground::height + ((gfx.height() - BpodTitleBarBackground::height) / 2) - ((size * 2) / 2);
     for (int y = 0; y < size; y++) {
         for (int x = 0; x < size; x++) {
             gfx.fillRect(x_offset + (x * 2), y_offset + (y * 2), 2, 2, qrcodegen_getModule(qrcode_mem_, x, y) ? 0x0000 : 0xffff);

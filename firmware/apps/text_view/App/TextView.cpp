@@ -1,6 +1,6 @@
 #include "TextView.hpp"
 
-#include <Images/BpodTitleBar.hpp>
+#include <Images/BpodTitleBarBackground.hpp>
 #include <Images/BpodScrollEmpty.hpp>
 #include <Images/BpodScrollFill.hpp>
 
@@ -47,7 +47,7 @@ void TextView::draw_string(size_t x, size_t y, const char *text)
         return;
     }
     x += 1;
-    y += 1 + BpodTitleBar::height;
+    y += 1 + BpodTitleBarBackground::height;
     gfx.setCursor(x, y);
     gfx.print(text);
 }
@@ -100,11 +100,11 @@ void TextView::draw_title(Adafruit_GFX &gfx)
     gfx.setTextColor(0x0000);
     gfx.setTextSize(2);
     gfx.getTextBounds(title_.c_str(), 0, 0, &x1, &y1, &w, &h);
-    BpodTitleBar::draw(0, 0, gfx.width(), gfx);
+    BpodTitleBarBackground::draw(0, 0, gfx.width(), gfx);
     if ( title_.size() > 0 )
     {
         x1 = (gfx.width() / 2) - (w / 2);
-        y1 = (BpodTitleBar::height / 2) - (h / 2);
+        y1 = (BpodTitleBarBackground::height / 2) - (h / 2);
         gfx.setCursor(x1, y1);
         gfx.print(title_.c_str());
     }
@@ -128,8 +128,8 @@ void TextView::draw_scroll_bar(Adafruit_GFX &gfx)
     vwrc_get_row_count(this->viewerc_, &rows);
     vwrc_get_rows_per_view(this->viewerc_, &rows_per_view);
     scroll_bar_x = gfx.width() - BpodScrollEmpty::width;
-    scroll_bar_y = BpodTitleBar::height;
-    scroll_bar_height = gfx.height() - BpodTitleBar::height;
+    scroll_bar_y = BpodTitleBarBackground::height;
+    scroll_bar_height = gfx.height() - BpodTitleBarBackground::height;
     pre_height = (scroll_bar_height * row) / rows;
     if ( pre_height >= scroll_bar_height )
     {
@@ -175,7 +175,7 @@ void TextView::draw(Adafruit_GFX &gfx)
         redraw_text_ = true;
         vwrc_get_row(this->viewerc_, &row);
         text_width_ = gfx.width() - 2;
-        text_height_ = gfx.height() - 2 - BpodTitleBar::height;
+        text_height_ = gfx.height() - 2 - BpodTitleBarBackground::height;
         gfx.fillScreen(0xffff);
         draw_title(gfx);
         vwrc_set_text(this->viewerc_, this->text_.size(), viewerc_read, this);
@@ -203,7 +203,7 @@ void TextView::draw(Adafruit_GFX &gfx)
         {
             draw_scroll_bar(gfx);
         }
-        gfx.fillRect(0, BpodTitleBar::height, (int16_t)text_width_ + 2, (int16_t)text_height_ + 2, 0xffff);
+        gfx.fillRect(0, BpodTitleBarBackground::height, (int16_t)text_width_ + 2, (int16_t)text_height_ + 2, 0xffff);
         gfx.setTextColor(0x0000);
         gfx.setTextSize(1, 1);
         vwrc_draw_view(this->viewerc_);

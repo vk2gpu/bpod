@@ -13,9 +13,9 @@ list(APPEND RawImages
 list(APPEND HppImages
     ${IMAGES_DIR}/BpodLogo.hpp
     ${IMAGES_DIR}/BSidesLogo.hpp
-    ${IMAGES_DIR}/BpodTitleBar.hpp
-    ${IMAGES_DIR}/BpodMenuBar.hpp
-    ${IMAGES_DIR}/BpodMenuArrow.hpp
+    ${IMAGES_DIR}/BpodTitleBarBackground.hpp
+    ${IMAGES_DIR}/BpodMenuItemBackground.hpp
+    ${IMAGES_DIR}/BpodMenuItemArrow.hpp
     ${IMAGES_DIR}/BpodScrollEmpty.hpp
     ${IMAGES_DIR}/BpodScrollFill.hpp
 )
@@ -36,9 +36,13 @@ endforeach()
 add_library(Images STATIC
     ${HppImages}
     Images.cpp
+    Images/BpodTitleBar.hpp
+    Images/BpodScrollBar.hpp
+    Images/BpodMenuItem.hpp
 )
 target_include_directories(Images
     PUBLIC ${IMAGES_DIR}/../
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(Images
     Adafruit-GFX-Library
