@@ -176,7 +176,6 @@ void TextView::draw(Adafruit_GFX &gfx)
         vwrc_get_row(this->viewerc_, &row);
         text_width_ = gfx.width() - 2;
         text_height_ = gfx.height() - 2 - BpodTitleBarBackground::height;
-        gfx.fillScreen(0xffff);
         draw_title(gfx);
         vwrc_set_text(this->viewerc_, this->text_.size(), viewerc_read, this);
         vwrc_set_view(this->viewerc_, text_width_, text_height_);
