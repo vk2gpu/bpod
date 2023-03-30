@@ -3,49 +3,26 @@
 #include <App/Schedule.hpp>
 #include <App/GameMenu.hpp>
 #include <App/TextView.hpp>
+#include <App/QrCodeView.hpp>
 
 Schedule scheudle;
 GameMenu game_menu;
 TextView about;
+QrCodeView website;
 
 void MainMenu::begin(BpodMenu &menu) {
     menu.set_title("bPod");
-    for ( size_t i = 0; i < 50; i++ )
-    {
-        if ( i == 0 )
-        {
-            menu.add("Schedule", [](){ App::manager_begin(scheudle); });
-            continue;
-        }
-        if ( i == 2 )
-        {
-            menu.add("Games", [](){ App::manager_begin(game_menu); });
-            continue;
-        }
-        if ( i == 3 )
-        {
-            menu.add("Reboot", [](){ esp_restart(); });
-            continue;
-        }
-        if ( i == 4 )
-        {
-            menu.add("About", [](){ 
-                about.set_title("About");
-                std::string text = "Made by Peter\n@rankstar591";
-                text += "\n\n";
-                for ( size_t j = 0; j < 100; j++)
-                {
-                    text += " text" + std::to_string(j);
-                    if ( (j % 10) == 0 )
-                    {
-                        text += "\n\n";
-                    }
-                }
-                about.set_text(text);
-                App::manager_begin(about);
-            });
-            continue;
-        }
-        menu.add("Menu " + std::to_string(i), [](){});
-    }
+    menu.add("Schedule", [](){ App::manager_begin(scheudle); });
+    menu.add("Games", [](){ App::manager_begin(game_menu); });
+    menu.add("Reboot", [](){ esp_restart(); });
+    menu.add("Website", [](){
+        website.set_title("BSides");
+        website.set_text("https://www.bsidesau.com.au/");
+        App::manager_begin(website);
+    });
+    menu.add("About", [](){
+        about.set_title("About");
+        about.set_text("Made by Peter\n@rankstar591");
+        App::manager_begin(about);
+    });
 }
