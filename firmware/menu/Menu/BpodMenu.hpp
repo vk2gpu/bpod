@@ -44,7 +44,6 @@ class BpodMenu
                 view_ = 0;
                 return;
             }
-            prev_pos_ = pos_;
             pos_ = pos >= name_.size() ? name_.size() - 1 : pos;
         };
         void move_clicks(int16_t clicks) {
