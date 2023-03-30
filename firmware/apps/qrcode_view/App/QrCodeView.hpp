@@ -30,9 +30,6 @@ class QrCodeView : public App  {
         virtual void end(void);
 
     private:
-        void draw_title(Adafruit_GFX &gfx);
-        void draw_qrcode(Adafruit_GFX &gfx);
-
         bool redraw_;
         std::string title_;
         std::string text_;

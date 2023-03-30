@@ -1,6 +1,6 @@
 #include "QrCodeView.hpp"
 
-#include <Images/BpodTitleBarBackground.hpp>
+#include <Images/BpodTitleBar.hpp>
 
 #include <qrcodegen.h>
 
@@ -21,49 +21,22 @@ void QrCodeView::key_event(uint8_t key)
     }
 }
 
-void QrCodeView::draw_title(Adafruit_GFX &gfx)
-{
-    int16_t x1 = 0;
-    int16_t y1 = 0;
-    uint16_t w = 0;
-    uint16_t h = 0;
-    gfx.setTextColor(0x0000);
-    gfx.setTextSize(2);
-    gfx.getTextBounds(title_.c_str(), 0, 0, &x1, &y1, &w, &h);
-    BpodTitleBarBackground::draw(0, 0, gfx.width(), gfx);
-    if ( title_.size() > 0 )
-    {
-        x1 = (gfx.width() / 2) - (w / 2);
-        y1 = (BpodTitleBarBackground::height / 2) - (h / 2);
-        gfx.setCursor(x1, y1);
-        gfx.print(title_.c_str());
-    }
-}
-
-void QrCodeView::draw_qrcode(Adafruit_GFX &gfx)
-{
-    bool ok = qrcodegen_encodeText(text_.c_str(), qrcode_temp_mem_, qrcode_mem_, qrcodegen_Ecc_LOW,
-        qrcodegen_MAX_VERSION, qrcodegen_MAX_VERSION, qrcodegen_Mask_0, true);
-    //if (!ok) {
-    //    return;
-    //}
-    int size = qrcodegen_getSize(qrcode_mem_);
-    int x_offset = (gfx.width() / 2) - ((size * 2) / 2);
-    int y_offset = BpodTitleBarBackground::height + ((gfx.height() - BpodTitleBarBackground::height) / 2) - ((size * 2) / 2);
-    for (int y = 0; y < size; y++) {
-        for (int x = 0; x < size; x++) {
-            gfx.fillRect(x_offset + (x * 2), y_offset + (y * 2), 2, 2, qrcodegen_getModule(qrcode_mem_, x, y) ? 0x0000 : 0xffff);
-        }
-    }
-}
-
 void QrCodeView::draw(Adafruit_GFX &gfx)
 {
     if ( redraw_ )
     {
-        gfx.fillScreen(0xffff);
-        draw_title(gfx);
-        draw_qrcode(gfx);
+        BpodTitleBar::draw(gfx, title_);
+        gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
+        qrcodegen_encodeText(text_.c_str(), qrcode_temp_mem_, qrcode_mem_, qrcodegen_Ecc_LOW,
+            qrcodegen_MAX_VERSION, qrcodegen_MAX_VERSION, qrcodegen_Mask_0, true);
+        int size = qrcodegen_getSize(qrcode_mem_);
+        int x_offset = (gfx.width() / 2) - ((size * 2) / 2);
+        int y_offset = BpodTitleBar::view_y(gfx) + ((gfx.height() - BpodTitleBar::view_y(gfx)) / 2) - ((size * 2) / 2);
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                gfx.fillRect(x_offset + (x * 2), y_offset + (y * 2), 2, 2, qrcodegen_getModule(qrcode_mem_, x, y) ? 0x0000 : 0xffff);
+            }
+        }
         redraw_ = false;
     }
 }
