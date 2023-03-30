@@ -1,8 +1,7 @@
 #include "TextView.hpp"
 
-#include <Images/BpodTitleBarBackground.hpp>
-#include <Images/BpodScrollEmpty.hpp>
-#include <Images/BpodScrollFill.hpp>
+#include <Images/BpodTitleBar.hpp>
+#include <Images/BpodScrollBar.hpp>
 
 ssize_t VWRC_API viewerc_read(void *ctx, size_t offset, char *text, size_t text_size)
 {
@@ -91,78 +90,6 @@ void TextView::key_event(uint8_t key)
     }
 }
 
-void TextView::draw_title(Adafruit_GFX &gfx)
-{
-    int16_t x1 = 0;
-    int16_t y1 = 0;
-    uint16_t w = 0;
-    uint16_t h = 0;
-    gfx.setTextColor(0x0000);
-    gfx.setTextSize(2);
-    gfx.getTextBounds(title_.c_str(), 0, 0, &x1, &y1, &w, &h);
-    BpodTitleBarBackground::draw(0, 0, gfx.width(), gfx);
-    if ( title_.size() > 0 )
-    {
-        x1 = (gfx.width() / 2) - (w / 2);
-        y1 = (BpodTitleBarBackground::height / 2) - (h / 2);
-        gfx.setCursor(x1, y1);
-        gfx.print(title_.c_str());
-    }
-}
-
-void TextView::draw_scroll_bar(Adafruit_GFX &gfx)
-{
-    size_t row = 0;
-    size_t rows = 0;
-    size_t rows_per_view = 0;
-    int16_t scroll_bar_x = 0;
-    int16_t scroll_bar_y = 0;
-    int16_t scroll_bar_height = 0;
-    int16_t pre_height = 0;
-    int16_t fill_height = 0;
-    int16_t post_height = 0;
-    int16_t pre_y = 0;
-    int16_t fill_y = 0;
-    int16_t post_y = 0;
-    vwrc_get_row(this->viewerc_, &row);
-    vwrc_get_row_count(this->viewerc_, &rows);
-    vwrc_get_rows_per_view(this->viewerc_, &rows_per_view);
-    scroll_bar_x = gfx.width() - BpodScrollEmpty::width;
-    scroll_bar_y = BpodTitleBarBackground::height;
-    scroll_bar_height = gfx.height() - BpodTitleBarBackground::height;
-    pre_height = (scroll_bar_height * row) / rows;
-    if ( pre_height >= scroll_bar_height )
-    {
-        pre_height = scroll_bar_height - 4;
-    }
-    fill_height = (scroll_bar_height * rows_per_view) / rows;
-    if ( (pre_height + fill_height) > scroll_bar_height )
-    {
-        fill_height = scroll_bar_height - pre_height;
-    }
-    post_height = scroll_bar_height - fill_height - pre_height;
-    if ( post_height < 4 )
-    {
-        post_height = 0;
-        fill_height = scroll_bar_height - pre_height;
-    }
-    pre_y = scroll_bar_y;
-    fill_y = pre_y + pre_height;
-    post_y = fill_y + fill_height;
-    if ( pre_height > 0 )
-    {
-        BpodScrollEmpty::draw(scroll_bar_x, pre_y, pre_height, gfx);
-    }
-    if ( fill_height > 0 )
-    {
-        BpodScrollFill::draw(scroll_bar_x, fill_y, fill_height, gfx);
-    }
-    if ( post_height > 0 )
-    {
-        BpodScrollEmpty::draw(scroll_bar_x, post_y, post_height, gfx);
-    }
-}
-
 void TextView::draw(Adafruit_GFX &gfx)
 {
     draw_gfx = &gfx;
@@ -175,8 +102,9 @@ void TextView::draw(Adafruit_GFX &gfx)
         redraw_text_ = true;
         vwrc_get_row(this->viewerc_, &row);
         text_width_ = gfx.width() - 2;
-        text_height_ = gfx.height() - 2 - BpodTitleBarBackground::height;
-        draw_title(gfx);
+        text_height_ = BpodTitleBar::view_height(gfx) - 2;
+        BpodTitleBar::draw(gfx, title_);
+
         vwrc_set_text(this->viewerc_, this->text_.size(), viewerc_read, this);
         vwrc_set_view(this->viewerc_, text_width_, text_height_);
         vwrc_get_row_count(this->viewerc_, &rows);
@@ -185,7 +113,7 @@ void TextView::draw(Adafruit_GFX &gfx)
         {
             // need a scroll bar
             scroll_bar_ = true;
-            text_width_ = text_width_ - BpodScrollEmpty::width;
+            text_width_ = text_width_ - BpodScrollBar::width();
             vwrc_set_view(this->viewerc_, text_width_, text_height_);
         }
         else
@@ -200,9 +128,12 @@ void TextView::draw(Adafruit_GFX &gfx)
         redraw_text_ = false;
         if ( scroll_bar_ )
         {
-            draw_scroll_bar(gfx);
+            vwrc_get_row(this->viewerc_, &row);
+            vwrc_get_row_count(this->viewerc_, &rows);
+            vwrc_get_rows_per_view(this->viewerc_, &rows_per_view);
+            BpodScrollBar::draw(gfx, BpodTitleBar::view_y(gfx), row, rows_per_view, rows);
         }
-        gfx.fillRect(0, BpodTitleBarBackground::height, (int16_t)text_width_ + 2, (int16_t)text_height_ + 2, 0xffff);
+        gfx.fillRect(0, BpodTitleBar::view_y(gfx), (int16_t)text_width_ + 2, (int16_t)text_height_ + 2, 0xffff);
         gfx.setTextColor(0x0000);
         gfx.setTextSize(1, 1);
         vwrc_draw_view(this->viewerc_);

@@ -35,9 +35,6 @@ class TextView : public App  {
         void draw_string(size_t x, size_t y, const char *text);
 
     private:
-        void draw_title(Adafruit_GFX &gfx);
-        void draw_scroll_bar(Adafruit_GFX &gfx);
-
         std::string title_;
         std::string text_;
         Adafruit_GFX *draw_gfx;
