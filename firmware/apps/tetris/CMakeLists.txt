@@ -7,5 +7,6 @@ target_include_directories(AppTetris
 )
 target_link_libraries(AppTetris
     App
+    Images
     tetrisc
 )
