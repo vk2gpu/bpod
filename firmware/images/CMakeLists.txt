@@ -38,8 +38,10 @@ endforeach()
 add_library(Images STATIC
     ${HppImages}
     Images.cpp
+    Images/BpodTitleBar.cpp
     Images/BpodTitleBar.hpp
     Images/BpodScrollBar.hpp
+    Images/BpodMenuItem.cpp
     Images/BpodMenuItem.hpp
 )
 target_include_directories(Images
