@@ -4,16 +4,19 @@
 #include <App/GameMenu.hpp>
 #include <App/TextView.hpp>
 #include <App/QrCodeView.hpp>
+#include <App/ToolMenu.hpp>
 
 Schedule scheudle;
 GameMenu game_menu;
 TextView about;
 QrCodeView website;
+ToolMenu tools;
 
 void MainMenu::begin(BpodMenu &menu) {
     menu.set_title("bPod");
     menu.add("Schedule", [](){ App::manager_begin(scheudle); });
     menu.add("Games", [](){ App::manager_begin(game_menu); });
+    menu.add("Tools", [](){ App::manager_begin(tools); });
     menu.add("Reboot", [](){ esp_restart(); });
     menu.add("Website", [](){
         website.set_title("BSides");

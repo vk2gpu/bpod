@@ -11,4 +11,5 @@ target_link_libraries(AppMainMenu
     AppQrCodeView
     AppSchedule
     AppGameMenu
+    AppToolMenu
 )
