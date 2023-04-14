@@ -1,253 +1,227 @@
 #include "I2CSniff.hpp"
 
-#define PIN_SDA 22
-#define PIN_SCL 19
-
-#define I2C_IDLE 0
-//#define I2C_START 1
-#define I2C_TRX 2
-//#define I2C_RESP 3
-//#define I2C_STOP 4
-
-static volatile byte i2cStatus = I2C_IDLE;//Status of the I2C BUS
-static uint32_t lastStartMillis = 0;//stoe the last time
-static volatile byte dataBuffer[9600];//Array for storing data of the I2C communication
-static volatile uint16_t bufferPoiW=0;//points to the first empty position in the dataBufer to write
-static volatile uint16_t bufferPoiR=0;//points to the position where to start read from
-static volatile byte bitCount = 0;//counter of bit appeared on the BUS
-static volatile uint16_t byteCount =0;//counter of bytes were writen in one communication.
-static volatile byte i2cBitD =0;//Container of the actual SDA bit
-static volatile byte i2cBitD2 =0;//Container of the actual SDA bit
-static volatile byte i2cBitC =0;//Container of the actual SDA bit
-static volatile byte i2cBitC2 =0;//Container of the actual SDA bit
-static volatile byte i2cClk =0;//Container of the actual SCL bit
-static volatile byte i2cClk2 =0;//Container of the actual SCL bit
-static volatile byte i2cAck =0;//Container of the last ACK value
-static volatile byte i2cCase =0;//Container of the last ACK value
-static volatile uint16_t falseStart = 0;//Counter of false start events
-//static volatile byte respCount =0;//Auxiliary variable to help detect next byte instead of STOP
-//these variables just for statistic reasons
-static volatile uint16_t sclUpCnt = 0;//Auxiliary variable to count rising SCL
-static volatile uint16_t sdaUpCnt = 0;//Auxiliary variable to count rising SDA
-static volatile uint16_t sdaDownCnt = 0;//Auxiliary variable to count falling SDA
+#define I2C_PIN_SDA 22
+#define I2C_PIN_SCL 19
 
 static void SA_iRestore(const  uint32_t *__s)
 {
     XTOS_RESTORE_INTLEVEL(*__s);
 }
 
-// Note value can be 0-15, 0 = Enable all interrupts, 15 = no interrupts
 #define SA_ATOMIC_RESTORESTATE uint32_t _sa_saved              \
-    __attribute__((__cleanup__(SA_iRestore))) = XTOS_DISABLE_LOWPRI_INTERRUPTS
+    __attribute__((__cleanup__(SA_iRestore))) = XTOS_DISABLE_ALL_INTERRUPTS
 
-
-/*************** MACRO **********************/
-#define ATOMIC()                                            \
+#define NO_INTERRUPTS()                                            \
 for ( SA_ATOMIC_RESTORESTATE, _sa_done =  1;                   \
     _sa_done; _sa_done = 0 )
 
-static int IRAM_ATTR write_byte(byte v) {
-  uint16_t rp = bufferPoiR;  // must be atomic
-  if ( ( bufferPoiW + 1 ) == sizeof(dataBuffer) )
-  {
-    if ( 0 == rp ) {
-      return 0; // no space    
-    }
-  }
-  else
-  {
-    if ( ( bufferPoiW + 1 ) == rp ) {
-      return 0; // no space    
-    }
-  }
-  dataBuffer[bufferPoiW] = v;
-  if ( (bufferPoiW + 1) == sizeof(dataBuffer) )
-  {
-    bufferPoiW = 0;  // must be atomic
-  }
-  else
-  {
-    bufferPoiW++;  // must be atomic
-  }
-  return 1;
+#define hex_3bit_in_interrupt(v)  ('0' + (v))
+#define hex_4bit_in_interrupt(v)  (((v) > 9) ? ('a' + (v) - 0xa) : ('0' + (v)))
+
+static volatile uint8_t g_queue_data[9600];
+static volatile uint16_t g_queue_wp = 0;
+static volatile uint16_t g_queue_rp = 0;
+
+static volatile uint8_t g_i2c_scl = 0;
+static volatile uint8_t g_i2c_sda = 0;
+
+#define I2C_SCL_LOW     (0 == g_i2c_scl)
+#define I2C_SCL_HIGH    (1 == g_i2c_scl)
+#define I2C_SCL_FALLING I2C_SCL_LOW
+#define I2C_SCL_RISING  I2C_SCL_HIGH
+#define I2C_SDA_LOW     (0 == g_i2c_sda)
+#define I2C_SDA_HIGH    (1 == g_i2c_sda)
+#define I2C_SDA_FALLING I2C_SDA_LOW
+#define I2C_SDA_RISING  I2C_SDA_HIGH
+
+static volatile uint8_t g_i2c_state = 0;
+
+#define I2C_STATE_IDLE    (0)
+#define I2C_STATE_ACTIVE  (1)
+
+#define I2C_IDLE      (I2C_STATE_IDLE == g_i2c_state)
+#define I2C_ACTIVE    (I2C_STATE_ACTIVE == g_i2c_state)
+
+static volatile uint8_t g_i2c_bit_reg = 0x00;
+static volatile uint8_t g_i2c_bit_pos = 0;
+static volatile uint8_t g_i2c_bit_count = 0;
+static volatile uint16_t g_i2c_byte_count = 0;
+
+static void i2c_reset()
+{
+    g_queue_wp=0;
+    g_queue_rp=0;
+    g_i2c_scl = 0;
+    g_i2c_sda = 0;
+    g_i2c_state = I2C_STATE_IDLE;
+    g_i2c_bit_pos = 0;
+    g_i2c_bit_reg = 0x00;
+    g_i2c_bit_count = 0;
+    g_i2c_byte_count = 0;
 }
 
-static int read_byte(byte *v) {
-  uint16_t wp = 0;
-  ATOMIC()
-  {
-    wp = bufferPoiW; // must be atomic
-  }
-  if ( wp == bufferPoiR ) {
-    return 0; // no data    
-  }
-  *v = dataBuffer[bufferPoiR];
-  if ( (bufferPoiR + 1) == sizeof(dataBuffer) )
-  {
-    ATOMIC()
-    {
-      bufferPoiR = 0;  // must be atomic
-    }
-  }
-  else
-  {
-    ATOMIC()
-    {
-      bufferPoiR++;  // must be atomic
-    }
-  }
-  return 1;
+
+#define queue_write_byte_in_interrupt(v) \
+{ \
+    if ( ( g_queue_wp + 1 ) == sizeof(g_queue_data) ) \
+    { \
+        if ( 0 != g_queue_rp ) \
+        { \
+            g_queue_data[g_queue_wp] = v; \
+            if ( (g_queue_wp + 1) == sizeof(g_queue_data) ) \
+            { \
+                g_queue_wp = 0; \
+            } \
+            else \
+            { \
+                g_queue_wp++; \
+            } \
+        } \
+    } \
+    else \
+    { \
+        if ( ( g_queue_wp + 1 ) != g_queue_rp ) \
+        { \
+            g_queue_data[g_queue_wp] = v; \
+            if ( (g_queue_wp + 1) == sizeof(g_queue_data) ) \
+            { \
+                g_queue_wp = 0; \
+            } \
+            else \
+            { \
+                g_queue_wp++; \
+            } \
+        } \
+    } \
 }
 
-void IRAM_ATTR i2cTriggerOnRaisingSCL() 
+static int queue_read_byte(byte *v)
 {
-  ATOMIC()
-  {
-	sclUpCnt++;
-	
-	//is it a false trigger?
-	if(i2cStatus==I2C_IDLE)
-	{
-		falseStart++;
-		//return;//this is not clear why do we have so many false START
-	}
+    if ( g_queue_wp == g_queue_rp )
+    {
+        return 0; // no data    
+    }
+    *v = g_queue_data[g_queue_rp];
+    if ( (g_queue_rp + 1) == sizeof(g_queue_data) )
+    {
+        g_queue_rp = 0;  // must be atomic
+    }
+    else
+    {
+        g_queue_rp++;  // must be atomic
+    }
+    return 1;
+}
 
-
-	//get the value from SDA
-	i2cBitC =  digitalRead(PIN_SDA);
-
-	//decide wherewe are and what to do with incoming data
-	i2cCase = 0;//normal case
-
-	if(bitCount==8)//ACK case
-		i2cCase = 1;
-
-	if(bitCount==7 && byteCount==0 )// R/W if the first address byte
-		i2cCase = 2;
-
-	bitCount++;
-
-	switch (i2cCase)
-	{
-		case 0: //normal case
-			write_byte('0' + i2cBitC);//dataBuffer[bufferPoiW++] = '0' + i2cBitC;//48
-		break;//end of case 0 general
-		case 1://ACK
-			if(i2cBitC)//1 NACK SDA HIGH
-				{
-					write_byte('-');//dataBuffer[bufferPoiW++] = '-';//45
-				}
-				else//0 ACK SDA LOW
-				{
-					write_byte('+');//dataBuffer[bufferPoiW++] = '+';//43
-				}	
-			byteCount++;
-			bitCount=0;
-		break;//end of case 1 ACK
-		case 2:
-			if(i2cBitC)
-			{
-				write_byte('R');//dataBuffer[bufferPoiW++] = 'R';//82
-			}
-			else
-			{
-				write_byte('W');//dataBuffer[bufferPoiW++] = 'W';//87
-			}
-		break;//end of case 2 R/W
-
-	}//end of switch
-  }//end of ATOMIC
-
-}//END of i2cTriggerOnRaisingSCL()
-
-void IRAM_ATTR i2cTriggerOnChangeSDA()
+static void IRAM_ATTR i2c_scl_change_interrupt()
 {
-  ATOMIC()
-  {
-	//make sure that the SDA is in stable state
-	do
-	{
-		i2cBitD =  digitalRead(PIN_SDA);
-		i2cBitD2 =  digitalRead(PIN_SDA);
-	} while (i2cBitD!=i2cBitD2);
-	do
-	{
-		i2cClk =  digitalRead(PIN_SCL);
-		i2cClk2 =  digitalRead(PIN_SCL);
-	} while (i2cClk!=i2cClk2);
-	do
-	{
-		i2cBitD =  digitalRead(PIN_SDA);
-		i2cBitD2 =  digitalRead(PIN_SDA);
-	} while (i2cBitD!=i2cBitD2);
-	do
-	{
-		i2cClk =  digitalRead(PIN_SCL);
-		i2cClk2 =  digitalRead(PIN_SCL);
-	} while (i2cClk!=i2cClk2);
+    NO_INTERRUPTS()
+    {
+        g_i2c_scl =  digitalRead(I2C_PIN_SCL);
 
-	//i2cBitD =  digitalRead(PIN_SDA);
+        if ( I2C_ACTIVE && I2C_SCL_RISING )
+        {
+            if ( g_i2c_bit_count == 8 )
+            {
+                // + ACK
+                // - NACK
+                queue_write_byte_in_interrupt( g_i2c_sda ? '-' : '+');
+                g_i2c_byte_count++;
+                g_i2c_bit_pos = 7;
+                g_i2c_bit_reg = 0x00;
+                g_i2c_bit_count = 0;
+            }
+            else 
+            {
+                //queue_write_byte_in_interrupt('0' + g_i2c_sda);
+                if ( g_i2c_sda )
+                {
+                    g_i2c_bit_reg |= 1 << g_i2c_bit_pos;
+                }
+                g_i2c_bit_pos--;
+                if ( g_i2c_byte_count == 0 )
+                {
+                    // I2C SLAVE ADDRESS BIT
+                    if ( g_i2c_bit_count == 2 )
+                    {
+                        // first 3 bits of the I2C slave address
+                        queue_write_byte_in_interrupt(hex_3bit_in_interrupt(g_i2c_bit_reg >> 4));
+                        g_i2c_bit_reg = 0x00; // reset, don't need these bits
+                    }
+                    if ( g_i2c_bit_count == 6 )
+                    {
+                        // next 4 bits of the I2C slave address
+                        queue_write_byte_in_interrupt(hex_4bit_in_interrupt(g_i2c_bit_reg));
+                        g_i2c_bit_reg = 0x00; // reset, don't need these bits
+                    }
+                    if ( g_i2c_bit_count == 7 )
+                    {
+                        queue_write_byte_in_interrupt( g_i2c_sda ? 'R' : 'W');
+                    }
+                }
+                else
+                {
+                    // DATA BIT
+                    if ( g_i2c_bit_count == 3 )
+                    {
+                        queue_write_byte_in_interrupt(hex_4bit_in_interrupt(g_i2c_bit_reg >> 4));
+                        g_i2c_bit_reg = 0x00; // reset, don't need these bits
+                    }
+                    if ( g_i2c_bit_count == 7 )
+                    {
+                        queue_write_byte_in_interrupt(hex_4bit_in_interrupt(g_i2c_bit_reg));
+                        g_i2c_bit_reg = 0x00; // reset, don't need these bits
+                    }
+                }
+                g_i2c_bit_count++;
+            }
+        }
+    }
+}
 
-	if(i2cBitD)//RISING if SDA is HIGH (1)
-	{
-		
-	    //digitalRead(PIN_SCL);
-		if(i2cStatus=!I2C_IDLE && i2cClk==1)//If SCL still HIGH then it is a STOP sign
-		{			
-			//i2cStatus = I2C_STOP;
-			i2cStatus = I2C_IDLE;
-			bitCount = 0;
-			byteCount = 0;
-			bufferPoiW--;
-			write_byte('s');//dataBuffer[bufferPoiW++] = 's';//115
-			write_byte('\n');//dataBuffer[bufferPoiW++] = '\n'; //10
-		}
-		sdaUpCnt++;
-	}
-	else //FALLING if SDA is LOW
-	{
-	    //digitalRead(PIN_SCL);
-		if(i2cStatus==I2C_IDLE && i2cClk)//If SCL still HIGH than this is a START
-		{
-			i2cStatus = I2C_TRX;
-			//lastStartMillis = millis();//takes too long in an interrupt handler and caused timeout panic and CPU restart
-			bitCount = 0;
-			byteCount =0;
-			write_byte('S');//dataBuffer[bufferPoiW++] = 'S';//83 STOP
-			//i2cStatus = START;		
-		}
-		sdaDownCnt++;
-	}
-  }//end of ATOMIC
-}//END of i2cTriggerOnChangeSDA()
-
-void resetI2cVariable()
+static void IRAM_ATTR i2c_sda_change_interrupt()
 {
-	i2cStatus = I2C_IDLE;
-	bufferPoiW=0;
-	bufferPoiR=0;
-	bitCount =0;
-	falseStart = 0;
-}//END of resetI2cVariable()
+    NO_INTERRUPTS()
+    {
+        g_i2c_sda =  digitalRead(I2C_PIN_SDA);
 
+        if ( I2C_IDLE )
+        {
+            // look for start bit
+            if ( I2C_SDA_FALLING && I2C_SCL_HIGH )
+            {
+                // START BIT
+                g_i2c_state = I2C_STATE_ACTIVE;
+                g_i2c_bit_pos = 6;
+                g_i2c_bit_count = 0;
+                g_i2c_byte_count = 0;
+                g_i2c_bit_reg = 0x00;
+                queue_write_byte_in_interrupt('S');
+            }
+        }
+        else if ( I2C_ACTIVE )
+        {
+            // look for stop bit
+            if ( I2C_SDA_RISING && I2C_SCL_HIGH )
+            {
+                // STOP BIT
+                g_i2c_state = I2C_STATE_IDLE;
+                queue_write_byte_in_interrupt('s');
+            }
+        }
+    }
+}
 
 void I2CSniff::begin()
 {
     TextView::set_title("Reading");
     TextView::begin();
 
-	//Define pins for SCL, SDA
-	pinMode(PIN_SCL, INPUT_PULLUP);   
-    pinMode(PIN_SDA, INPUT_PULLUP);
-	//pinMode(PIN_SCL, INPUT);   
-    //pinMode(PIN_SDA, INPUT);
-
-    //reset variables
-    resetI2cVariable();
-
-    //Atach interrupt handlers to the interrupts on GPIOs
-    attachInterrupt(PIN_SCL, i2cTriggerOnRaisingSCL, RISING); //trigger for reading data from SDA
-	attachInterrupt(PIN_SDA, i2cTriggerOnChangeSDA, CHANGE); //for I2C START and STOP
+    pinMode(I2C_PIN_SCL, INPUT_PULLUP);   
+    pinMode(I2C_PIN_SDA, INPUT_PULLUP);
+    i2c_reset();
+    attachInterrupt(I2C_PIN_SCL, i2c_scl_change_interrupt, CHANGE);
+    attachInterrupt(I2C_PIN_SDA, i2c_sda_change_interrupt, CHANGE);
 
     pause_ = false;
     last_parse_ = millis();
@@ -278,15 +252,25 @@ void I2CSniff::loop()
     if ( (millis() - last_parse_) > 500 )
     {
         last_parse_ = millis();
-        while ( read_byte(&v) )
+        while ( queue_read_byte(&v) )
         {
             size = 0;
             buf[size] = v;
             size++;
-            while ( (size < sizeof(buf)) && read_byte(&v) )
+            if ( v == 's' )
+            {
+                buf[size] = '\n';
+                size++;
+            }
+            while ( (size < (sizeof(buf) - 1) ) && queue_read_byte(&v) )
             {
                 buf[size] = v;
                 size++;
+                if ( v == 's' )
+                {
+                    buf[size] = '\n';
+                    size++;
+                }
             }
             if ( size > 0 )
             {
@@ -301,8 +285,8 @@ void I2CSniff::loop()
 
 void I2CSniff::end()
 {
-    detachInterrupt(PIN_SCL);
-    detachInterrupt(PIN_SDA);
+    detachInterrupt(I2C_PIN_SCL);
+    detachInterrupt(I2C_PIN_SDA);
     TextView::clear();
     TextView::end();
 }
