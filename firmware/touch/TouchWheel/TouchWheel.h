@@ -31,7 +31,7 @@ class TouchWheel
     public:
         TouchWheel(int8_t deg000_pin, int8_t deg120_pin, int8_t deg240_pin, int8_t ok_pin, bool low_is_touch) :
             deg000_(deg000_pin, low_is_touch), deg120_(deg120_pin, low_is_touch), deg240_(deg240_pin, low_is_touch),
-            ok_(ok_pin, low_is_touch), angle_(-1), ok_down_(false), down_time_(0),
+            ok_(ok_pin, low_is_touch), angle_(-1), ok_down_(false), wheel_rotated_(false), down_time_(0), last_read_(0),
             wheel_clicks_(0), ok_clicks_(0), forward_clicks_(0), menu_clicks_(0), back_clicks_(0), play_clicks_(0) {};
         ~TouchWheel() {};
         void begin() { this->deg000_.begin(); this->deg120_.begin(); this->deg240_.begin(); this->ok_.begin(); };
@@ -57,7 +57,9 @@ class TouchWheel
         TouchWheelPin ok_;
         int16_t angle_;
         bool ok_down_;
+        bool wheel_rotated_;
         unsigned long down_time_;
+        unsigned long last_read_;
         int16_t wheel_clicks_;
         int16_t ok_clicks_;
         int16_t forward_clicks_;
