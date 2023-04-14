@@ -55,52 +55,45 @@ void Bpod::loop()
     clicks = wheel.wheel_pop_clicks();
     while ( clicks > 0 )
     {
-        printf("------>\n");
         App::manager_key_event(APP_KEY_SCROLL_CLOCKWISE);
         clicks -= 1;
     }
     while ( clicks < 0 )
     {
-        printf("<------\n");
         App::manager_key_event(APP_KEY_SCROLL_ANTICLOCKWISE);
         clicks += 1;
     }
     clicks = wheel.ok_pop_clicks();
     while ( clicks > 0 )
     {
-        printf("OK\n");
         App::manager_key_event(APP_KEY_OK);
         clicks -= 1;
     }
     clicks = wheel.forward_pop_clicks();
     while ( clicks > 0 )
     {
-        printf(">>|\n");
         App::manager_key_event(APP_KEY_FORWARD);
         clicks -= 1;
     }
     clicks = wheel.menu_pop_clicks();
     while ( clicks > 0 )
     {
-        printf("MENU\n");
         App::manager_key_event(APP_KEY_MENU);
         clicks -= 1;
     }
     clicks = wheel.back_pop_clicks();
     while ( clicks > 0 )
     {
-        printf("|<<\n");
         App::manager_key_event(APP_KEY_BACK);
         clicks -= 1;
     }
     clicks = wheel.play_pop_clicks();
     while ( clicks > 0 )
     {
-        printf("|>||\n");
         App::manager_key_event(APP_KEY_PLAY);
         clicks -= 1;
     }
     App::manager_loop();
     App::manager_draw(tft);
-    delay(1);
+    yield();
 }
