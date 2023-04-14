@@ -9,8 +9,8 @@
 
 class TextView : public App  {
     public:
-        TextView() : draw_gfx(nullptr), scroll_by_page_(true), redraw_(true), redraw_text_(true), scroll_bar_(false),
-            text_width_(0), text_height_(0) {};
+        TextView() : draw_gfx(nullptr), scroll_by_page_(true), redraw_(true), redraw_text_(true),
+            scroll_bar_(false), move_to_end_(false), pico_font_(false), text_width_(0), text_height_(0) {};
         virtual ~TextView() {};
 
         void set_title(const std::string &title) {
@@ -19,7 +19,37 @@ class TextView : public App  {
         };
         void set_text(const std::string &text) {
             redraw_ = true;
+            move_to_end_ = false;
             text_ = text;
+        };
+        void append_text(const std::string &text, size_t max) {
+            if ( text.size() == 0 )
+            {
+                // easy win
+                return;
+            }
+            if ( text.size() > max )
+            {
+                text_ = text.substr(text.size() - max, max);
+            }
+            else
+            {
+                if ( (text_.size() + text.size()) > max )
+                {
+                    text_ = text_.substr(text_.size() - (max - text.size()), max - text.size()) + text;
+                }
+                else
+                {
+                    text_ += text;
+                }
+            }
+            redraw_ = true;
+            move_to_end_ = true;
+        };
+        void clear() {
+            redraw_ = true;
+            move_to_end_ = false;
+            text_.erase();
         };
         void scroll_by_line() { scroll_by_page_ = false; }
         void scroll_by_page() { scroll_by_page_ = true; }
@@ -42,6 +72,8 @@ class TextView : public App  {
         bool redraw_;
         bool redraw_text_;
         bool scroll_bar_;
+        bool move_to_end_;
+        bool pico_font_;
         size_t text_width_;
         size_t text_height_;
         uint8_t viewerc_[VWRC_CALC_DATA_SIZE(100)];

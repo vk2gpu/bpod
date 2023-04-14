@@ -8,4 +8,5 @@ target_include_directories(AppToolMenu
 target_link_libraries(AppToolMenu
     AppMenu
     AppI2CDetect
+    AppSerialMonitor
 )

@@ -3,6 +3,8 @@
 #include <Images/BpodTitleBar.hpp>
 #include <Images/BpodScrollBar.hpp>
 
+#include <Fonts/Picopixel.h>
+
 ssize_t VWRC_API viewerc_read(void *ctx, size_t offset, char *text, size_t text_size)
 {
     return reinterpret_cast<TextView*>(ctx)->read(offset, text, text_size);
@@ -34,8 +36,33 @@ ssize_t TextView::read(size_t offset, char *text, size_t text_size)
 
 void TextView::calc_string_view(const char *text, size_t *width, size_t *height)
 {
-    *height = 8;
-    *width = strlen(text) * 6;
+    Adafruit_GFX &gfx = *draw_gfx;
+    if ( !draw_gfx )
+    {
+        return;
+    }
+    if ( !pico_font_ )
+    {
+        *height = 8;
+        *width = strlen(text) * 6;
+        return;
+    }
+    if ( pico_font_ )
+    {
+        gfx.setFont(&Picopixel);
+    }
+    gfx.setTextSize(1);
+    int16_t x1 = 0;
+    int16_t y1 = 0;
+    uint16_t w = 0;
+    uint16_t h = 0;
+    gfx.getTextBounds(text, 0, 0, &x1, &y1, &w, &h);
+    *width = (size_t)w;
+    *height = (size_t)h;
+    if ( pico_font_ )
+    {
+        gfx.setFont(nullptr);
+    }
 }
 
 void TextView::draw_string(size_t x, size_t y, const char *text)
@@ -47,8 +74,18 @@ void TextView::draw_string(size_t x, size_t y, const char *text)
     }
     x += 1;
     y += 1 + BpodTitleBarBackground::height;
+    if ( pico_font_ )
+    {
+        gfx.setFont(&Picopixel);
+        y += 4;
+    }
+    gfx.setTextSize(1);
     gfx.setCursor(x, y);
     gfx.print(text);
+    if ( pico_font_ )
+    {
+        gfx.setFont(nullptr);
+    }
 }
 
 void TextView::begin(void)
@@ -62,6 +99,7 @@ void TextView::begin(void)
     scroll_bar_ = false;
     text_width_ = 0;
     text_height_ = 0;
+    pico_font_ = false;
 }
 
 void TextView::key_event(uint8_t key)
@@ -82,6 +120,22 @@ void TextView::key_event(uint8_t key)
             scroll_by_page_ ? vwrc_scroll_up_page(this->viewerc_) : vwrc_scroll_up(this->viewerc_);
             vwrc_get_row(this->viewerc_, &row);
             redraw_text_ = row != prev_row;
+            break;
+
+        case APP_KEY_BACK:
+            if ( !pico_font_ )
+            {
+                redraw_ = true;
+                pico_font_ = true;
+            }
+            break;
+
+        case APP_KEY_FORWARD:
+            if ( pico_font_ )
+            {
+                redraw_ = true;
+                pico_font_ = false;
+            }
             break;
 
         case APP_KEY_MENU:
@@ -121,7 +175,14 @@ void TextView::draw(Adafruit_GFX &gfx)
             // no scroll bar (text fits)
             scroll_bar_ = false;
         }
-        vwrc_scroll_to_row(this->viewerc_, row);
+        if ( move_to_end_ )
+        {
+            vwrc_scroll_to_row(this->viewerc_, 0x7fffffff);
+        }
+        else
+        {
+            vwrc_scroll_to_row(this->viewerc_, row);
+        }
     }
     if ( redraw_text_ )
     {

@@ -17,6 +17,9 @@ class Menu : public App  {
         virtual void draw(Adafruit_GFX &gfx);
         virtual void end(void);
 
+        size_t pos() const { return menu.pos(); };
+        void set_pos(size_t pos) { menu.move_to(pos); };
+
     private:
         BpodMenu menu;
         bool redraw_;

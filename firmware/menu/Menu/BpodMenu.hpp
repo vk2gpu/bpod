@@ -33,6 +33,7 @@ class BpodMenu
             action_.push_back(action);
         };
         size_t size() const { return name_.size(); }
+        size_t pos() const { return pos_; };
         void move_to(size_t pos) {
             if ( name_.size() == 0 )
             {
