@@ -192,7 +192,11 @@ def prep_serial_device(args):
         if busid:
             p = subprocess.Popen(['cmd.exe', '/c', 'usbipd', 'wsl', 'attach', '--busid', busid],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            p.communicate()
+            stdout, stderr = p.communicate()
+            if p.returncode != 0:
+                print(' '.join(['usbipd', 'wsl', 'attach', '--busid', busid]))
+                sys.stdout.write(stdout.decode())
+                sys.stderr.write(stderr.decode())
             assert p.returncode == 0
             time.sleep(3)
     if (os.lstat(args.device).st_mode & 0o666) != 0o666:
