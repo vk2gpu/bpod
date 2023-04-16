@@ -1,46 +1,50 @@
-#include "MCP23017.hpp"
+#include "MCP23S17.hpp"
 
-#include <Wire.h>
+#include <SPI.h>
 
 
-void MCP23017::gpio_update()
+void MCP23S17::gpio_update()
 {
     // IODIRA register - port A to outputs
-    Wire.beginTransmission(0x20);
-    Wire.write(0x00); 
-    Wire.write(0x00);
-    Wire.endTransmission();
+    digitalWrite(5, LOW);    
+    SPI.transfer(0x40);
+    SPI.transfer(0x00);
+    SPI.transfer(0x00);
+    digitalWrite(5, HIGH);
 
     // IODIRB register - port B to outputs
-    Wire.beginTransmission(0x20);
-    Wire.write(0x01);
-    Wire.write(0x00);
-    Wire.endTransmission();
+    digitalWrite(5, LOW);    
+    SPI.transfer(0x40);
+    SPI.transfer(0x01);
+    SPI.transfer(0x00);
+    digitalWrite(5, HIGH);
 
     // PORTA value
-    Wire.beginTransmission(0x20);
-    Wire.write(0x12);
-    Wire.write(gpio_a_);
-    Wire.endTransmission();
+    digitalWrite(5, LOW);
+    SPI.transfer(0x40);
+    SPI.transfer(0x12);
+    SPI.transfer(gpio_a_); 
+    digitalWrite(5, HIGH);
 
     // PORTB value
-    Wire.beginTransmission(0x20);
-    Wire.write(0x13);
-    Wire.write(gpio_b_);
-    Wire.endTransmission();
+    digitalWrite(5, LOW);
+    SPI.transfer(0x40);
+    SPI.transfer(0x13);
+    SPI.transfer(gpio_b_); 
+    digitalWrite(5, HIGH);
 }
 
-int MCP23017::gpio_a_pin(uint8_t pin)
+int MCP23S17::gpio_a_pin(uint8_t pin)
 {
     return (gpio_a_ >> pin) & 0x1;
 }
 
-int MCP23017::gpio_b_pin(uint8_t pin)
+int MCP23S17::gpio_b_pin(uint8_t pin)
 {
     return (gpio_b_ >> pin) & 0x1;
 }
 
-void MCP23017::set_gpio_a_pin(uint8_t pin, int value)
+void MCP23S17::set_gpio_a_pin(uint8_t pin, int value)
 {
     if ( value )
     {
@@ -53,7 +57,7 @@ void MCP23017::set_gpio_a_pin(uint8_t pin, int value)
     gpio_update();
 }
 
-void MCP23017::set_gpio_b_pin(uint8_t pin, int value)
+void MCP23S17::set_gpio_b_pin(uint8_t pin, int value)
 {
     if ( value )
     {
@@ -66,38 +70,38 @@ void MCP23017::set_gpio_b_pin(uint8_t pin, int value)
     gpio_update();
 }
 
-void MCP23017::begin() {
-    Wire.begin(22, 19);
+void MCP23S17::begin() {
+    pinMode(5, OUTPUT); 
+    digitalWrite(5,HIGH);
+    SPI.begin();
     gpio_a_ = 0x00;
     gpio_b_ = 0x00;
 
     // Use exisiting output values of PORTA
-    Wire.beginTransmission(0x20);
-    Wire.write(0x12);
-    Wire.endTransmission();
-    Wire.requestFrom(0x20, 1);
-    gpio_a_ = Wire.read();
-    Wire.endTransmission();
+    digitalWrite(5, LOW);    
+    SPI.transfer(0x41);
+    SPI.transfer(0x12);
+    gpio_a_ = SPI.transfer(0x12);    
+    digitalWrite(5, HIGH); 
 
     // Use exisiting output values of PORTB
-    Wire.beginTransmission(0x20);
-    Wire.write(0x13);
-    Wire.endTransmission();
-    Wire.requestFrom(0x20, 1);
-    gpio_b_ = Wire.read();
-    Wire.endTransmission();
+    digitalWrite(5, LOW);    
+    SPI.transfer(0x41);
+    SPI.transfer(0x13);
+    gpio_b_ = SPI.transfer(0x13);    
+    digitalWrite(5, HIGH); 
 
     gpio_update();
     Menu::begin();
 }
 
-void MCP23017::end() {
+void MCP23S17::end() {
     Menu::end();
-    Wire.end();
+    SPI.end();
 }
 
-void MCP23017::begin(BpodMenu &menu) {
-    menu.set_title("MCP23017");
+void MCP23S17::begin(BpodMenu &menu) {
+    menu.set_title("MCP23S17");
     for ( size_t i = 0; i < 8; i++ )
     {
         menu.add("IOA" + std::to_string(i) + " " + std::string(gpio_a_pin(i) ? "ON" : "OFF"), [&menu, i, this](){ 
