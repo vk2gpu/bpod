@@ -10,4 +10,5 @@ target_link_libraries(AppToolMenu
     AppI2CDetect
     AppI2CSniff
     AppSerialMonitor
+    AppMCP23017
 )

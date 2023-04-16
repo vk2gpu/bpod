@@ -32,6 +32,14 @@ class BpodMenu
             name_.push_back(name);
             action_.push_back(action);
         };
+        void set(size_t pos, const std::string &name) {
+            if ( pos >= name_.size() )
+            {
+                return;
+            }
+            name_[pos] = name;
+            redraw_ = true;
+        }
         size_t size() const { return name_.size(); }
         size_t pos() const { return pos_; };
         void move_to(size_t pos) {
