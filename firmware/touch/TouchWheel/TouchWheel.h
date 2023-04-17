@@ -12,17 +12,17 @@ class TouchWheelPin
         void begin() { this->read(); };
 
         void read();
-        int8_t value() { return this->value_; };
-        int8_t low() { return this->low_; };
-        int8_t high() { return this->high_; };
+        int32_t value() { return this->value_; };
+        int32_t low() { return this->low_; };
+        int32_t high() { return this->high_; };
         int8_t percent() { return this->percent_; };
 
     private:
         int8_t pin_;
         bool low_is_touch_;
-        int8_t low_;
-        int8_t high_;
-        int8_t value_;
+        int32_t low_;
+        int32_t high_;
+        int32_t value_;
         int8_t percent_;
 };
 

@@ -23,14 +23,14 @@ void TouchWheelPin::read()
         {
             this->high_ = this->value_;
         }
-        int16_t range = this->high_ - this->low_;
+        int32_t range = this->high_ - this->low_;
         if ( range < 30 )
         {
             this->percent_ = 0;
         }
         else
         {
-            int16_t value = this->value_ - this->low_;
+            int32_t value = this->value_ - this->low_;
             this->percent_ = (int8_t)((value * 100) / range);
             if ( this->low_is_touch_ )
             {

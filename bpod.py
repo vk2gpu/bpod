@@ -78,6 +78,7 @@ def esp_idf_environ(args):
     environ = dict()
     environ.update(os.environ)
     environ['IDF_PATH'] = args.esp_idf
+    environ['IDF_TARGET'] = args.target
     p = subprocess.Popen(['. {}'.format(os.path.join(args.esp_idf, 'export.sh'))],
         shell=True, cwd=args.esp_idf,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -230,11 +231,16 @@ def main():
     parser.add_argument('--build', default=False, action='store_true', help='Build firmware')
     parser.add_argument('--flash', default=False, action='store_true', help='Flash firmware')
     parser.add_argument('--monitor', default=False, action='store_true', help='Monitor serial output of device')
-    parser.add_argument('--device', default='/dev/ttyUSB0', type=str, help='Path to USB serial device for flashing e.g. /dev/ttyUSB0')
+    parser.add_argument('--target', default='esp32s2', choices=['esp32', 'esp32s2'], help='Target CPU')
+    parser.add_argument('--device', default='/dev/ttyACM0', type=str, help='Path to USB serial device for flashing e.g. /dev/ttyUSB0')
     args = parser.parse_args()
-    args.out = os.path.join(ROOT, 'out', 'esp32')
-    args.target = 'esp32'
-    args.firmware = os.path.join(ROOT, 'firmware', 'esp32')
+    if not args.device:
+        if args.device == 'esp32s2':
+            args.device = '/dev/ttyACM0'
+        else:
+            args.device = '/dev/ttyUSB0'
+    args.out = os.path.join(ROOT, 'out', args.target)
+    args.firmware = os.path.join(ROOT, 'firmware', args.target)
     args.esp_idf = os.path.join(ROOT, 'firmware', 'esp-idf')
     args.adafruit = os.path.join(ROOT, 'firmware', 'adafruit')
     args.esp_idf_environ = None  # lazy init when needed

@@ -11,22 +11,25 @@
 #include <App/App.hpp>
 #include <App/MainMenu.hpp>
 
-#define CS_PIN  27 // IO27
-#define DC_PIN  25 // IO25
-#define RST_PIN 26 // IO26
+#define CS_PIN  34 // IO34
+#define DC_PIN  33 // IO33
+#define RST_PIN 38 // IO38
+#define BKL_PIN 45 // IO45
 
-#define TOUCH_000DEG  4 // TOUCH0 IO4
-#define TOUCH_120DEG  33 // TOUCH8 IO33
-#define TOUCH_240DEG  32 // TOUCH9 IO32
-#define TOUCH_OK      0 // TOUCH1 IO0
+#define TOUCH_000DEG  1 // TOUCH1 IO1
+#define TOUCH_120DEG  2 // TOUCH2 IO2
+#define TOUCH_240DEG  3 // TOUCH3 IO3
+#define TOUCH_OK      4 // TOUCH4 IO4
 
-SPIClass hspi(HSPI);
-Adafruit_ST7735 tft(&hspi, CS_PIN, DC_PIN, RST_PIN);
-TouchWheel wheel(TOUCH_000DEG, TOUCH_120DEG, TOUCH_240DEG, TOUCH_OK, true);
+SPIClass fspi(FSPI);
+Adafruit_ST7735 tft(&fspi, CS_PIN, DC_PIN, RST_PIN);
+TouchWheel wheel(TOUCH_000DEG, TOUCH_120DEG, TOUCH_240DEG, TOUCH_OK, false);
 MainMenu main_menu;
 
 void Bpod::begin()
 {
+    pinMode(BKL_PIN, OUTPUT);
+    digitalWrite(BKL_PIN, LOW);
     pinMode(CS_PIN, OUTPUT);
     pinMode(DC_PIN, OUTPUT);
     pinMode(RST_PIN, OUTPUT);
@@ -34,6 +37,19 @@ void Bpod::begin()
     tft.fillScreen(ST77XX_BLACK);
     tft.setRotation(2);
     tft.fillScreen(ST77XX_BLACK);
+    digitalWrite(BKL_PIN, HIGH);
+
+    // LEDs
+    pinMode(10, OUTPUT);
+    digitalWrite(10, HIGH);
+    pinMode(16, OUTPUT);
+    digitalWrite(16, HIGH);
+    pinMode(21, OUTPUT);
+    digitalWrite(21, HIGH);
+
+    // LED4, connected to GPIO46, cannout be used as an output hence, LED4 is not working
+    // pinMode(46, OUTPUT);
+    // digitalWrite(46, HIGH);
 
     // touch wheel
     wheel.begin();
