@@ -9,7 +9,7 @@ void I2CDetect::begin(void)
     redraw_ = true;
     memset(detected_, 0, sizeof(detected_));
     memset(prev_detected_, 0, sizeof(prev_detected_));
-    Wire.begin(22, 19);
+    Wire.begin();
     scan_addr_ = 0;
 }
 

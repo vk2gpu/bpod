@@ -67,7 +67,7 @@ void MCP23017::set_gpio_b_pin(uint8_t pin, int value)
 }
 
 void MCP23017::begin() {
-    Wire.begin(22, 19);
+    Wire.begin();
     gpio_a_ = 0x00;
     gpio_b_ = 0x00;
 

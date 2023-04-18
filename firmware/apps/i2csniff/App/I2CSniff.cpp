@@ -1,7 +1,7 @@
 #include "I2CSniff.hpp"
 
-#define I2C_PIN_SDA 22
-#define I2C_PIN_SCL 19
+#define I2C_PIN_SDA 8
+#define I2C_PIN_SCL 9
 
 static void SA_iRestore(const  uint32_t *__s)
 {
