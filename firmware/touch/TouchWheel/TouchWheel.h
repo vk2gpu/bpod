@@ -6,23 +6,24 @@
 class TouchWheelPin
 {
     public:
-        TouchWheelPin(int8_t pin, bool low_is_touch) : pin_(pin), low_is_touch_(low_is_touch),
+        TouchWheelPin(int8_t pin, bool low_is_touch) : pin_(pin), first_read_(true), low_is_touch_(low_is_touch),
             low_(-1), high_(-1), value_(-1), percent_(0) { };
         ~TouchWheelPin() {};
-        void begin() { this->read(); };
+        void begin() {};
 
         void read();
-        int32_t value() { return this->value_; };
-        int32_t low() { return this->low_; };
-        int32_t high() { return this->high_; };
-        int8_t percent() { return this->percent_; };
+        uint32_t value() { if ( this->value_ == -1 ) { this->read(); } return this->value_; };
+        uint32_t low() { if ( this->value_ == -1 ) { this->read(); } return this->low_; };
+        uint32_t high() { if ( this->value_ == -1 ) { this->read(); } return this->high_; };
+        int8_t percent() { if ( this->value_ == -1 ) { this->read(); } return this->percent_; };
 
     private:
         int8_t pin_;
+        bool first_read_;
         bool low_is_touch_;
-        int32_t low_;
-        int32_t high_;
-        int32_t value_;
+        uint32_t low_;
+        uint32_t high_;
+        uint32_t value_;
         int8_t percent_;
 };
 

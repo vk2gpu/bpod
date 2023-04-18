@@ -2,9 +2,18 @@
 
 #define PIN_MOST_TOUCHED    (0)
 
+#define PERCENT_TOUCH_UPPER_BOUND   (30)
+#define PERCENT_TOUCH_LOWER_BOUND   (20)
+
 void TouchWheelPin::read()
 {
     this->value_ = touchRead(this->pin_);
+    // cannot figure out why this is an issue on the ESP32-S2, but this "fixes" it
+    if ( first_read_ )
+    {
+        first_read_ = false;
+        return;
+    }
     if ( this->value_ >= 0 )
     {
         if ( this->low_ == -1 )
@@ -23,14 +32,14 @@ void TouchWheelPin::read()
         {
             this->high_ = this->value_;
         }
-        int32_t range = this->high_ - this->low_;
-        if ( range < 30 )
+        uint32_t range = this->high_ - this->low_;
+        if ( range < 1000 )
         {
             this->percent_ = 0;
         }
         else
         {
-            int32_t value = this->value_ - this->low_;
+            uint32_t value = this->value_ - this->low_;
             this->percent_ = (int8_t)((value * 100) / range);
             if ( this->low_is_touch_ )
             {
@@ -81,7 +90,7 @@ void TouchWheel::read()
         if ( this->ok_.percent() > pins[PIN_MOST_TOUCHED]->percent() )
         {
             // check if OK is pressed
-            if ( this->ok_.percent() > 50 )
+            if ( this->ok_.percent() > PERCENT_TOUCH_UPPER_BOUND )
             {
                 this->ok_down_ = true;
                 this->down_time_ = millis();
@@ -90,7 +99,7 @@ void TouchWheel::read()
         else
         {
             // check if WHEEL is pressed
-            if ( pins[PIN_MOST_TOUCHED]->percent() > 50 )
+            if ( pins[PIN_MOST_TOUCHED]->percent() > PERCENT_TOUCH_UPPER_BOUND )
             {
                 // finger down on wheel *somewhere*
                 wheel_set_angle = true;
@@ -102,7 +111,7 @@ void TouchWheel::read()
     }
     else if ( this->ok_down() )
     {
-        if ( this->ok_.percent() < 50 )
+        if ( this->ok_.percent() < PERCENT_TOUCH_LOWER_BOUND )
         {
             this->ok_down_ = false;
             this->ok_clicks_++;
@@ -110,7 +119,7 @@ void TouchWheel::read()
     }
     else // this->wheel_down()
     {
-        if ( pins[PIN_MOST_TOUCHED]->percent() > 50 )
+        if ( pins[PIN_MOST_TOUCHED]->percent() >= PERCENT_TOUCH_LOWER_BOUND )
         {
             // finger down on wheel *somewhere*
             wheel_set_angle = true;
