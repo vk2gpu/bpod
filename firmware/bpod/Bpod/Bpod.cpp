@@ -21,8 +21,7 @@
 #define TOUCH_240DEG  3 // TOUCH3 IO3
 #define TOUCH_OK      4 // TOUCH4 IO4
 
-SPIClass fspi(FSPI);
-Adafruit_ST7735 tft(&fspi, CS_PIN, DC_PIN, RST_PIN);
+Adafruit_ST7735 tft(&SPI, CS_PIN, DC_PIN, RST_PIN);
 TouchWheel wheel(TOUCH_000DEG, TOUCH_120DEG, TOUCH_240DEG, TOUCH_OK, false);
 MainMenu main_menu;
 

@@ -1,37 +1,39 @@
 #include "MCP23S17.hpp"
 
+
 #include <SPI.h>
 
+#define SPI_PIN_CS     (7)
 
 void MCP23S17::gpio_update()
 {
     // IODIRA register - port A to outputs
-    digitalWrite(5, LOW);    
+    digitalWrite(SPI_PIN_CS, LOW);    
     SPI.transfer(0x40);
     SPI.transfer(0x00);
     SPI.transfer(0x00);
-    digitalWrite(5, HIGH);
+    digitalWrite(SPI_PIN_CS, HIGH);
 
     // IODIRB register - port B to outputs
-    digitalWrite(5, LOW);    
+    digitalWrite(SPI_PIN_CS, LOW);    
     SPI.transfer(0x40);
     SPI.transfer(0x01);
     SPI.transfer(0x00);
-    digitalWrite(5, HIGH);
+    digitalWrite(SPI_PIN_CS, HIGH);
 
     // PORTA value
-    digitalWrite(5, LOW);
+    digitalWrite(SPI_PIN_CS, LOW);
     SPI.transfer(0x40);
     SPI.transfer(0x12);
     SPI.transfer(gpio_a_); 
-    digitalWrite(5, HIGH);
+    digitalWrite(SPI_PIN_CS, HIGH);
 
     // PORTB value
-    digitalWrite(5, LOW);
+    digitalWrite(SPI_PIN_CS, LOW);
     SPI.transfer(0x40);
     SPI.transfer(0x13);
     SPI.transfer(gpio_b_); 
-    digitalWrite(5, HIGH);
+    digitalWrite(SPI_PIN_CS, HIGH);
 }
 
 int MCP23S17::gpio_a_pin(uint8_t pin)
@@ -71,25 +73,25 @@ void MCP23S17::set_gpio_b_pin(uint8_t pin, int value)
 }
 
 void MCP23S17::begin() {
-    pinMode(5, OUTPUT); 
-    digitalWrite(5,HIGH);
-    SPI.begin();
+    pinMode(SPI_PIN_CS, OUTPUT); 
+    digitalWrite(SPI_PIN_CS,HIGH);
+    // TODO SPI.begin();
     gpio_a_ = 0x00;
     gpio_b_ = 0x00;
 
     // Use exisiting output values of PORTA
-    digitalWrite(5, LOW);    
+    digitalWrite(SPI_PIN_CS, LOW);    
     SPI.transfer(0x41);
     SPI.transfer(0x12);
     gpio_a_ = SPI.transfer(0x12);    
-    digitalWrite(5, HIGH); 
+    digitalWrite(SPI_PIN_CS, HIGH); 
 
     // Use exisiting output values of PORTB
-    digitalWrite(5, LOW);    
+    digitalWrite(SPI_PIN_CS, LOW);    
     SPI.transfer(0x41);
     SPI.transfer(0x13);
     gpio_b_ = SPI.transfer(0x13);    
-    digitalWrite(5, HIGH); 
+    digitalWrite(SPI_PIN_CS, HIGH); 
 
     gpio_update();
     Menu::begin();
@@ -97,7 +99,7 @@ void MCP23S17::begin() {
 
 void MCP23S17::end() {
     Menu::end();
-    SPI.end();
+    // TODO SPI.end();
 }
 
 void MCP23S17::begin(BpodMenu &menu) {
