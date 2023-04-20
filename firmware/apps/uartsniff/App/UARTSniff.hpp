@@ -6,6 +6,7 @@
 #include <App/App.hpp>
 #include <App/Menu.hpp>
 #include <App/TextView.hpp>
+#include <App/DiagramView.hpp>
 
 class UARTSniffBaudRate : public Menu  {
     public:
@@ -60,4 +61,5 @@ class UARTSniff : public Menu  {
         UARTSniffConfig config_;
         UARTSniffOutput output_;
         TextView notes_;
+        DiagramView diagram_;
 };

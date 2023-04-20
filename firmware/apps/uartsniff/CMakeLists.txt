@@ -9,4 +9,5 @@ target_link_libraries(AppUARTSniff
     App
     AppMenu
     AppTextView
+    AppDiagramView
 )

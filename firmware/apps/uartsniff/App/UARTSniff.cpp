@@ -1,5 +1,17 @@
 #include "UARTSniff.hpp"
 
+const static char *NOTES = "" \
+    "To sniff UART messages, use the wiring diagram to " \
+    "join the bPod to the other device. Once wired, select " \
+    "baud rate (how fast the other device is transmitting) and "\
+    "config (data bits, parity bit and stop bit).\n" \
+    "Example 8N1:\n" \
+    " - 8 data bits\n" \
+    " - No parity bit\n" \
+    " - 1 stop bit\n" \
+    "You can then select Sniff to start seeing messages. You can " \
+    "press play to stop and resume the capture.";
+
 static uint32_t baud_rate_list[] = {
     300,
     2400,
@@ -159,11 +171,18 @@ void UARTSniff::begin(BpodMenu &menu)
         App::manager_begin(output_);
     });
     menu.add("Diagram", [this](){
-        // TODO
+        diagram_.set_title("Diagram");
+        diagram_.add_gnd_label();
+        diagram_.add_pin_label(17, "TX1", 0x0000, 0x07e0);  // GREEN / BLACK
+        diagram_.add_pin_label(18, "RX1", 0xffff, 0x001f);  // BLUE / BLACK
+        diagram_.add_wire(17, "RX1", 0xffff, 0x001f);
+        diagram_.add_wire(18, "TX1", 0x0000, 0x07e0);
+        diagram_.add_wire_gnd();
+        App::manager_begin(diagram_);
     });
     menu.add("Notes", [this](){
         notes_.set_title("Notes");
-        notes_.set_text(std::string("TODO"));
+        notes_.set_text(std::string(NOTES));
         App::manager_begin(notes_);
     });
 }
@@ -176,4 +195,5 @@ void UARTSniff::visible()
 
     // don't need to keep the notes
     notes_.clear();
+    diagram_.clear();
 }
