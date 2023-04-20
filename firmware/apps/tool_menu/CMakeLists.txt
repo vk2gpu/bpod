@@ -9,7 +9,7 @@ target_link_libraries(AppToolMenu
     AppMenu
     AppI2CDetect
     AppI2CSniff
-    AppSerialMonitor
+    AppUARTSniff
     AppMCP23017
     AppMCP23S17
 )

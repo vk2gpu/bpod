@@ -1,4 +1,4 @@
-#include "SerialMonitor.hpp"
+#include "UARTSniff.hpp"
 
 static uint32_t baud_rate_list[] = {
     300,
@@ -18,30 +18,30 @@ struct config_entry {
 };
 
 static struct config_entry config_list[] = {
-    { SERIAL_5N1, "Serial 5N1" },
-    { SERIAL_6N1, "Serial 6N1" },
-    { SERIAL_7N1, "Serial 7N1" },
-    { SERIAL_8N1, "Serial 8N1" },
-    { SERIAL_5N2, "Serial 5N2" },
-    { SERIAL_6N2, "Serial 6N2" },
-    { SERIAL_7N2, "Serial 7N2" },
-    { SERIAL_8N2, "Serial 8N2" },
-    { SERIAL_5E1, "Serial 5E1" },
-    { SERIAL_6E1, "Serial 6E1" },
-    { SERIAL_7E1, "Serial 7E1" },
-    { SERIAL_8E1, "Serial 8E1" },
-    { SERIAL_5E2, "Serial 5E2" },
-    { SERIAL_6E2, "Serial 6E2" },
-    { SERIAL_7E2, "Serial 7E2" },
-    { SERIAL_8E2, "Serial 8E2" },
-    { SERIAL_5O1, "Serial 5O1" },
-    { SERIAL_6O1, "Serial 6O1" },
-    { SERIAL_7O1, "Serial 7O1" },
-    { SERIAL_8O1, "Serial 8O1" },
-    { SERIAL_5O2, "Serial 5O2" },
-    { SERIAL_6O2, "Serial 6O2" },
-    { SERIAL_7O2, "Serial 7O2" },
-    { SERIAL_8O2, "Serial 8O2" },
+    { SERIAL_5N1, "5N1" },
+    { SERIAL_6N1, "6N1" },
+    { SERIAL_7N1, "7N1" },
+    { SERIAL_8N1, "8N1" },
+    { SERIAL_5N2, "5N2" },
+    { SERIAL_6N2, "6N2" },
+    { SERIAL_7N2, "7N2" },
+    { SERIAL_8N2, "8N2" },
+    { SERIAL_5E1, "5E1" },
+    { SERIAL_6E1, "6E1" },
+    { SERIAL_7E1, "7E1" },
+    { SERIAL_8E1, "8E1" },
+    { SERIAL_5E2, "5E2" },
+    { SERIAL_6E2, "6E2" },
+    { SERIAL_7E2, "7E2" },
+    { SERIAL_8E2, "8E2" },
+    { SERIAL_5O1, "5O1" },
+    { SERIAL_6O1, "6O1" },
+    { SERIAL_7O1, "7O1" },
+    { SERIAL_8O1, "8O1" },
+    { SERIAL_5O2, "5O2" },
+    { SERIAL_6O2, "6O2" },
+    { SERIAL_7O2, "7O2" },
+    { SERIAL_8O2, "8O2" },
 };
 
 static const char *config_to_string(uint32_t config)
@@ -53,10 +53,10 @@ static const char *config_to_string(uint32_t config)
             return config_list[i].name;
         }
     }
-    return "Serial XXX";
+    return "XXX";
 }
 
-void SerialMonitorBaudRate::begin(BpodMenu &menu)
+void UARTSniffBaudRate::begin(BpodMenu &menu)
 {
     menu.set_title("Baud");
     for ( size_t i = 0; i < sizeof(baud_rate_list) / sizeof(baud_rate_list[0]); i++ )
@@ -70,7 +70,7 @@ void SerialMonitorBaudRate::begin(BpodMenu &menu)
     }
 }
 
-uint32_t SerialMonitorBaudRate::baud()
+uint32_t UARTSniffBaudRate::baud()
 {
     if ( 0 == baud_ )
     {
@@ -80,7 +80,7 @@ uint32_t SerialMonitorBaudRate::baud()
     return baud_;
 }
 
-void SerialMonitorConfig::begin(BpodMenu &menu)
+void UARTSniffConfig::begin(BpodMenu &menu)
 {
     menu.set_title("Config");
     for ( size_t i = 0; i < sizeof(config_list) / sizeof(config_list[0]); i++ )
@@ -94,7 +94,7 @@ void SerialMonitorConfig::begin(BpodMenu &menu)
     }
 }
 
-uint32_t SerialMonitorConfig::config()
+uint32_t UARTSniffConfig::config()
 {
     if ( 0 == config_ )
     {
@@ -103,13 +103,13 @@ uint32_t SerialMonitorConfig::config()
     return config_;
 }
 
-void SerialMonitorOutput::begin()
+void UARTSniffOutput::begin()
 {
     pause_ = false;
     TextView::begin();
 }
 
-void SerialMonitorOutput::key_event(uint8_t key)
+void UARTSniffOutput::key_event(uint8_t key)
 {
     if ( APP_KEY_PLAY == key )
     {
@@ -125,14 +125,12 @@ void SerialMonitorOutput::key_event(uint8_t key)
     TextView::key_event(key);
 }
 
-void SerialMonitorOutput::loop()
+void UARTSniffOutput::loop()
 {
-    //int size = Serial1.available();
     char buf[65];
     while ( Serial1.available() > 0 )
     {
         size_t recd = Serial1.read(buf, sizeof(buf) - 1);
-        //size -= recd;
         buf[recd] = '\0';
         if ( !pause_ )
         {
@@ -141,32 +139,41 @@ void SerialMonitorOutput::loop()
     }
 }
 
-void SerialMonitorOutput::end()
+void UARTSniffOutput::end()
 {
     Serial1.end();
     TextView::clear();
     TextView::end();
 }
 
-void SerialMonitor::begin(BpodMenu &menu)
+void UARTSniff::begin(BpodMenu &menu)
 {
-    menu.set_title("Serial");
+    menu.set_title("uartsniff");
     menu.add(std::to_string(baud()), [this](){ App::manager_begin(baud_); });
     menu.add(config_to_string(config()), [this](){ App::manager_begin(config_); });
-    menu.add("Begin", [this](){
+    menu.add("Sniff", [this](){
         Serial1.end();
         Serial1.setRxBufferSize(0x1000);
-        Serial1.begin(baud(), config(), 19, 22);
+        Serial1.begin(baud(), config());
         output_.set_title("Reading");
         App::manager_begin(output_);
     });
+    menu.add("Diagram", [this](){
+        // TODO
+    });
+    menu.add("Notes", [this](){
+        notes_.set_title("Notes");
+        notes_.set_text(std::string("TODO"));
+        App::manager_begin(notes_);
+    });
 }
 
-void SerialMonitor::visible()
+void UARTSniff::visible()
 {
     // update text on the menu, but keep the scroll position
-    size_t backup = Menu::pos();
-    Menu::end();
-    Menu::begin();
-    Menu::set_pos(backup);
+    Menu::set(0, std::to_string(baud()));
+    Menu::set(1, config_to_string(config()));
+
+    // don't need to keep the notes
+    notes_.clear();
 }

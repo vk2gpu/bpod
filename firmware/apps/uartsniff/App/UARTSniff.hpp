@@ -7,10 +7,10 @@
 #include <App/Menu.hpp>
 #include <App/TextView.hpp>
 
-class SerialMonitorBaudRate : public Menu  {
+class UARTSniffBaudRate : public Menu  {
     public:
-        SerialMonitorBaudRate() : baud_(0) {};
-        virtual ~SerialMonitorBaudRate() {};
+        UARTSniffBaudRate() : baud_(0) {};
+        virtual ~UARTSniffBaudRate() {};
         virtual void begin(BpodMenu &menu);
 
         uint32_t baud();
@@ -19,10 +19,10 @@ class SerialMonitorBaudRate : public Menu  {
         uint32_t baud_;
 };
 
-class SerialMonitorConfig : public Menu  {
+class UARTSniffConfig : public Menu  {
     public:
-        SerialMonitorConfig() : config_(0) {};
-        virtual ~SerialMonitorConfig() {};
+        UARTSniffConfig() : config_(0) {};
+        virtual ~UARTSniffConfig() {};
         virtual void begin(BpodMenu &menu);
 
         uint32_t config();
@@ -31,10 +31,10 @@ class SerialMonitorConfig : public Menu  {
         uint32_t config_;
 };
 
-class SerialMonitorOutput : public TextView  {
+class UARTSniffOutput : public TextView  {
     public:
-        SerialMonitorOutput() : pause_(false) {};
-        virtual ~SerialMonitorOutput() {};
+        UARTSniffOutput() : pause_(false) {};
+        virtual ~UARTSniffOutput() {};
 
         virtual void begin();
         virtual void loop();
@@ -45,10 +45,10 @@ class SerialMonitorOutput : public TextView  {
         bool pause_;
 };
 
-class SerialMonitor : public Menu  {
+class UARTSniff : public Menu  {
     public:
-        SerialMonitor() {};
-        virtual ~SerialMonitor() {};
+        UARTSniff() {};
+        virtual ~UARTSniff() {};
         virtual void begin(BpodMenu &menu);
         virtual void visible();
 
@@ -56,7 +56,8 @@ class SerialMonitor : public Menu  {
         uint32_t config() { return config_.config(); };
 
     private:
-        SerialMonitorBaudRate baud_;
-        SerialMonitorConfig config_;
-        SerialMonitorOutput output_;
+        UARTSniffBaudRate baud_;
+        UARTSniffConfig config_;
+        UARTSniffOutput output_;
+        TextView notes_;
 };
