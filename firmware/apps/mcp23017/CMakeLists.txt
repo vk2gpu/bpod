@@ -7,4 +7,8 @@ target_include_directories(AppMCP23017
 )
 target_link_libraries(AppMCP23017
     AppMenu
+    AppDiagramView
+    AppTextView
+    AppQrCodeView
+    AppI2CDetect
 )

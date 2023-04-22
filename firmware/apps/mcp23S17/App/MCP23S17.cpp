@@ -11,7 +11,7 @@ const static char *NOTES = "" \
     "to connect the needed power and SPI lines. MISO stands for MASTER IN SLAVE OUT and needs " \
     "to be connected to the SLAVE OUT (SO). MOSI stands for MASTER OUT SLAVE IN and needs " \
     "to be connected to the SLAVE IN (IN). A clock signal controlled by the master (bPod) signals " \
-    "when data is transfered. Clock is commonly labeled SCK or SCL. To select the slave device, a " \
+    "when data is transfered. Clock is commonly labeled SCK or CLK. To select the slave device, a " \
     "Chip Select (CS) wire is used. CS is often ACTIVE LOW - meaning that the slave is selected " \
     "when the CS line is low or no voltage (instead of high/3V). In schematics, this is shown with " \
     "a line drawn across the top of CS label.";
@@ -86,7 +86,7 @@ void MCP23S17Gpio::set_gpio_b_pin(uint8_t pin, int value)
 void MCP23S17Gpio::begin() {
     pinMode(SPI_PIN_CS, OUTPUT); 
     digitalWrite(SPI_PIN_CS,HIGH);
-    // TODO SPI.begin();
+    // SPI.begin();
     gpio_a_ = 0x00;
     gpio_b_ = 0x00;
 
@@ -110,7 +110,7 @@ void MCP23S17Gpio::begin() {
 
 void MCP23S17Gpio::end() {
     Menu::end();
-    // TODO SPI.end();
+    // SPI.end();
 }
 
 void MCP23S17Gpio::begin(BpodMenu &menu) {
