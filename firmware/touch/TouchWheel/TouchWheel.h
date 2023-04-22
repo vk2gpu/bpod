@@ -27,11 +27,31 @@ class TouchWheelPin
         int8_t percent_;
 };
 
+class TouchWheelBetween
+{
+    public:
+        TouchWheelBetween(TouchWheelPin &a, TouchWheelPin &b) : a_(a), b_(b) { };
+        ~TouchWheelBetween() {};
+        void begin() {};
+
+        void read() { a_.read(); b_.read(); };
+        int8_t percent();
+
+    private:
+        TouchWheelPin &a_;
+        TouchWheelPin &b_;
+};
+
 class TouchWheel
 {
     public:
         TouchWheel(int8_t deg000_pin, int8_t deg120_pin, int8_t deg240_pin, int8_t ok_pin, bool low_is_touch) :
-            deg000_(deg000_pin, low_is_touch), deg120_(deg120_pin, low_is_touch), deg240_(deg240_pin, low_is_touch),
+            deg000_(deg000_pin, low_is_touch),
+            deg060_(deg000_, deg120_),
+            deg120_(deg120_pin, low_is_touch),
+            deg180_(deg120_, deg240_),
+            deg240_(deg240_pin, low_is_touch),
+            deg300_(deg240_, deg000_),
             ok_(ok_pin, low_is_touch), angle_(-1), ok_down_(false), wheel_rotated_(false), down_time_(0), last_read_(0),
             wheel_clicks_(0), ok_clicks_(0), forward_clicks_(0), menu_clicks_(0), back_clicks_(0), play_clicks_(0) {};
         ~TouchWheel() {};
@@ -53,8 +73,11 @@ class TouchWheel
 
     private:
         TouchWheelPin deg000_;
+        TouchWheelBetween deg060_;
         TouchWheelPin deg120_;
+        TouchWheelBetween deg180_;
         TouchWheelPin deg240_;
+        TouchWheelBetween deg300_;
         TouchWheelPin ok_;
         int16_t angle_;
         bool ok_down_;

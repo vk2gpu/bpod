@@ -49,15 +49,46 @@ void TouchWheelPin::read()
     }
 }
 
+int8_t TouchWheelBetween::percent()
+{
+    int16_t min_percent = a_.percent();
+    int16_t max_percent = b_.percent();
+    int16_t tmp;
+    if ( min_percent > max_percent )
+    {
+        tmp = min_percent;
+        min_percent = max_percent;
+        max_percent = tmp;
+    }
+    int16_t diff_percent = max_percent - min_percent;
+    if ( diff_percent > 50 )
+    {
+        return 0;
+    }
+    int16_t similar_percent = 100 - diff_percent;
+    int16_t percent = ((min_percent * similar_percent) + (max_percent * similar_percent)) / 100;
+    if ( percent > 100 )
+    {
+        percent = 100;
+    }
+    return (int8_t)percent;
+}
+
 void TouchWheel::read()
 {
     size_t pin = 0;
-    size_t pin_count = 3;
-    TouchWheelPin *pins[3] = { &this->deg000_, &this->deg120_, &this->deg240_ };
-    TouchWheelPin *tmp_pin = nullptr;
-    int16_t angles[3] = { 0, 120, 240 };
-    int16_t tmp_angle = 0;
-    bool swapped = true;
+    size_t pin_count = 6;
+    int8_t pin_percent[6] = { 0 };
+    int8_t pin_percent_most_touched = 0;
+    int16_t angles[6] = {
+        0,
+        60,
+        120,
+        180,
+        240,
+        300
+    };
+    int16_t angle_most_touched = 0;
     bool wheel_set_angle = false;
 
     this->deg000_.read();
@@ -65,29 +96,29 @@ void TouchWheel::read()
     this->deg240_.read();
     this->ok_.read();
 
-    // order the pins from most touched to least touched
-    while ( swapped )
+    pin_percent[0] = this->deg000_.percent();
+    pin_percent[1] = this->deg060_.percent();
+    pin_percent[2] = this->deg120_.percent();
+    pin_percent[3] = this->deg180_.percent();
+    pin_percent[4] = this->deg240_.percent();
+    pin_percent[5] = this->deg300_.percent();
+
+    // find the most touched pin
+    pin_percent_most_touched = pin_percent[0];
+    angle_most_touched = angles[0];
+    for ( pin = 1; pin < pin_count; pin++ )
     {
-        swapped = false;
-        for ( pin = 0; pin < (pin_count - 1); pin++ )
+        if ( pin_percent_most_touched < pin_percent[pin] )
         {
-            if ( pins[pin]->percent() < pins[pin + 1]->percent() )
-            {
-                tmp_pin = pins[pin];
-                tmp_angle = angles[pin];
-                pins[pin] = pins[pin + 1];
-                angles[pin] = angles[pin + 1];
-                pins[pin + 1] = tmp_pin;
-                angles[pin + 1] = tmp_angle;
-                swapped = true;
-            }
+            pin_percent_most_touched = pin_percent[pin];
+            angle_most_touched = angles[pin];
         }
     }
 
     // (tiny) state machine for work out if its a wheel touch, ok touch or no touch
     if ( this->wheel_up() && this->ok_up() )
     {
-        if ( this->ok_.percent() > pins[PIN_MOST_TOUCHED]->percent() )
+        if ( this->ok_.percent() > pin_percent_most_touched )
         {
             // check if OK is pressed
             if ( this->ok_.percent() > PERCENT_TOUCH_UPPER_BOUND )
@@ -99,7 +130,7 @@ void TouchWheel::read()
         else
         {
             // check if WHEEL is pressed
-            if ( pins[PIN_MOST_TOUCHED]->percent() > PERCENT_TOUCH_UPPER_BOUND )
+            if ( pin_percent_most_touched > PERCENT_TOUCH_UPPER_BOUND )
             {
                 // finger down on wheel *somewhere*
                 wheel_set_angle = true;
@@ -119,7 +150,7 @@ void TouchWheel::read()
     }
     else // this->wheel_down()
     {
-        if ( pins[PIN_MOST_TOUCHED]->percent() >= PERCENT_TOUCH_LOWER_BOUND )
+        if ( pin_percent_most_touched >= PERCENT_TOUCH_LOWER_BOUND )
         {
             // finger down on wheel *somewhere*
             wheel_set_angle = true;
@@ -158,29 +189,7 @@ void TouchWheel::read()
         {
             this->last_read_ = millis();
             int16_t old_angle = this->angle_;
-            if ( ( pins[0]->percent() - pins[1]->percent() ) < 30 )
-            {
-                if ( ( angles[0] == 0 ) && ( angles[1] == 240 ) )
-                {
-                    angles[0] = 360;
-                }
-                if ( ( angles[1] == 0 ) && ( angles[0] == 240 ) )
-                {
-                    angles[1] = 360;
-                }
-                if ( angles[0] < angles[1] )
-                {
-                    this->angle_ = angles[0] + 60;
-                }
-                else
-                {
-                    this->angle_ = angles[0] - 60;
-                }
-            }
-            else
-            {
-                this->angle_ = angles[0];
-            }
+            this->angle_ = angle_most_touched;
             if ( old_angle == -1 )
             {
                 old_angle = this->angle_;
