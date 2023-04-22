@@ -175,8 +175,8 @@ void UARTSniff::begin(BpodMenu &menu)
         diagram_.add_gnd_label();
         diagram_.add_pin_label(17, "TX1", 0x0000, 0x07e0);  // GREEN / BLACK
         diagram_.add_pin_label(18, "RX1", 0xffff, 0x001f);  // BLUE / BLACK
-        diagram_.add_wire(17, "RX1", 0xffff, 0x001f);
-        diagram_.add_wire(18, "TX1", 0x0000, 0x07e0);
+        diagram_.add_wire(17, "RX", 0xffff, 0x001f);
+        diagram_.add_wire(18, "TX", 0x0000, 0x07e0);
         diagram_.add_wire_gnd();
         App::manager_begin(diagram_);
     });
@@ -193,7 +193,7 @@ void UARTSniff::visible()
     Menu::set(0, std::to_string(baud()));
     Menu::set(1, config_to_string(config()));
 
-    // don't need to keep the notes
+    // don't need to keep the notes and diagram
     notes_.clear();
     diagram_.clear();
 }
