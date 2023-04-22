@@ -196,4 +196,6 @@ void UARTSniff::visible()
     // don't need to keep the notes and diagram
     notes_.clear();
     diagram_.clear();
+
+    Menu::visible();
 }

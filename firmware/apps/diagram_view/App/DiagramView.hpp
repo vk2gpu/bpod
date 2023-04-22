@@ -7,10 +7,12 @@
 
 struct PinLabel {
     uint8_t pin;
+    bool active_low;
     std::string label;
     uint16_t fg;
     uint16_t bg;
     bool show;
+    bool other_active_low;
     std::string other_label;
     uint16_t other_fg;
     uint16_t other_bg;
@@ -25,6 +27,10 @@ class DiagramView : public App  {
         void set_title(const std::string &title) {
             redraw_ = true;
             title_ = title;
+        };
+        void set_other_name(const std::string &other_name) {
+            other_name_ = other_name;
+            redraw_ = true;
         };
         void add_gnd_label() { label_[0].show = true; redraw_ = true; };
         void add_3v3_label() { label_[11].show = true; redraw_ = true; };
@@ -41,10 +47,11 @@ class DiagramView : public App  {
         virtual void end(void);
 
     private:
-        void draw_pin_label(Adafruit_GFX &gfx, size_t index, const std::string &label, uint16_t fg, uint16_t bg);
+        void draw_pin_label(Adafruit_GFX &gfx, size_t index, const PinLabel &pin);
         void draw_wire(Adafruit_GFX &gfx, size_t index, const PinLabel &wire);
 
         std::string title_;
+        std::string other_name_;
         bool redraw_;
         PinLabel label_[12];
 };

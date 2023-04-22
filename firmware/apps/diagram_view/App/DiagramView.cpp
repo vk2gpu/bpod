@@ -19,13 +19,16 @@ void DiagramView::begin()
 
 void DiagramView::clear()
 {
+    this->other_name_ = "other";
     for ( size_t i = 0; i < PIN_COUNT; i++ )
     {
         label_[i].pin = 0;
+        label_[i].active_low = false;
         label_[i].label = "";
         label_[i].fg = 0xffff;
         label_[i].bg = 0x0000;
         label_[i].show = false;
+        label_[i].other_active_low = false;
         label_[i].other_label = label_[i].label;
         label_[i].other_fg = label_[i].fg;
         label_[i].other_bg = label_[i].bg;
@@ -63,7 +66,15 @@ void DiagramView::add_pin_label(uint8_t pin, const std::string &label, uint16_t 
     {
         if ( label_[i].pin == pin )
         {
-            label_[i].label = label;
+            if ( label[0] == '~' )
+            {
+                label_[i].label = label.c_str() + 1;
+                label_[i].active_low = true;
+            }
+            else
+            {
+                label_[i].label = label;
+            }
             label_[i].fg = fg;
             label_[i].bg = bg;
             label_[i].show = true;
@@ -79,7 +90,15 @@ void DiagramView::add_wire(uint8_t pin, const std::string &other_label, uint16_t
     {
         if ( label_[i].pin == pin )
         {
-            label_[i].other_label = other_label;
+            if ( other_label[0] == '~' )
+            {
+                label_[i].other_label = other_label.c_str() + 1;
+                label_[i].other_active_low = true;
+            }
+            else
+            {
+                label_[i].other_label = other_label;
+            }
             label_[i].other_fg = other_fg;
             label_[i].other_bg = other_bg;
             label_[i].show_wiring = true;
@@ -99,7 +118,7 @@ void DiagramView::key_event(uint8_t key)
     }
 }
 
-void DiagramView::draw_pin_label(Adafruit_GFX &gfx, size_t index, const std::string &label, uint16_t fg, uint16_t bg)
+void DiagramView::draw_pin_label(Adafruit_GFX &gfx, size_t index, const PinLabel &pin)
 {
     int16_t x1 = gfx.width();
     int16_t y1 = PIN_Y(index);
@@ -107,14 +126,19 @@ void DiagramView::draw_pin_label(Adafruit_GFX &gfx, size_t index, const std::str
     int16_t y0 = y1 - (PIN_LABEL_PIXEL_HEIGHT / 2);
     int16_t x2 = x1 - PIN_LABEL_PIXEL_WIDTH;
     int16_t y2 = y1 + (PIN_LABEL_PIXEL_HEIGHT / 2);
-    gfx.fillTriangle(x0, y0, x1, y1, x2, y2, bg);
-    int16_t width = 6 * label.size();
+    gfx.fillTriangle(x0, y0, x1, y1, x2, y2, pin.bg);
+    int16_t width = 6 * pin.label.size();
     x0 = x0 - width - 1;
-    gfx.fillRect(x0, y0, x2 - x0 + 1, y2 - y0 + 1, bg);
-    gfx.setTextColor(fg, bg);
+    gfx.fillRect(x0, y0, x2 - x0 + 1, y2 - y0 + 1, pin.bg);
+    gfx.setTextColor(pin.fg, pin.bg);
     gfx.setTextSize(1);
     gfx.setCursor(x0 + 2, y0 + 2);
-    gfx.print(label.c_str());
+    if ( pin.active_low )
+    {
+        gfx.drawLine(x0 + 1, y0 - 1, x0 + width + 1, y0 - 1, pin.bg);
+        gfx.drawLine(x0 + 1, y0, x0 + width + 1, y0, pin.fg);
+    }
+    gfx.print(pin.label.c_str());
 }
 
 void DiagramView::draw_wire(Adafruit_GFX &gfx, size_t index, const PinLabel &wire)
@@ -131,6 +155,11 @@ void DiagramView::draw_wire(Adafruit_GFX &gfx, size_t index, const PinLabel &wir
     gfx.setTextColor(wire.fg, wire.bg);
     gfx.setTextSize(1);
     gfx.setCursor(x0 + 2, y0 + 2);
+    if ( wire.active_low )
+    {
+        gfx.drawLine(x0 + 1, y0 - 1, x0 + width + 1, y0 - 1, wire.bg);
+        gfx.drawLine(x0 + 1, y0, x0 + width + 1, y0, wire.fg);
+    }
     gfx.print(wire.label.c_str());
     int16_t wire_x0 = x1;
     int16_t wire_y = y1;
@@ -143,6 +172,11 @@ void DiagramView::draw_wire(Adafruit_GFX &gfx, size_t index, const PinLabel &wir
     gfx.setTextColor(wire.other_fg, wire.other_bg);
     gfx.setTextSize(1);
     gfx.setCursor(x0 + 2, y0 + 2);
+    if ( wire.other_active_low )
+    {
+        gfx.drawLine(x0 + 1, y0 - 1, x0 + width + 1, y0 - 1, wire.other_bg);
+        gfx.drawLine(x0 + 1, y0, x0 + width + 1, y0, wire.other_fg);
+    }
     gfx.print(wire.other_label.c_str());
     int16_t wire_x2 = x1;
     int16_t wire_x1 = wire_x0 + ((wire_x2 - wire_x0) / 2);
@@ -161,7 +195,7 @@ void DiagramView::draw(Adafruit_GFX &gfx)
         {
             if ( label_[i].show )
             {
-                draw_pin_label(gfx, i, label_[i].label, label_[i].fg, label_[i].bg);
+                draw_pin_label(gfx, i, label_[i]);
             }
         }
         size_t w = 0;
@@ -181,8 +215,13 @@ void DiagramView::draw(Adafruit_GFX &gfx)
             gfx.print("bPod");
             gfx.setTextColor(0x0000, 0xffff);
             gfx.setTextSize(1);
-            gfx.setCursor(60, 22);
-            gfx.print("other");
+            int16_t x = 60;
+            if ( other_name_.size() > 7 )
+            {
+                x -= 4 * (other_name_.size() - 7);
+            }
+            gfx.setCursor(x, 22);
+            gfx.print(other_name_.c_str());
         }
     }
 }
