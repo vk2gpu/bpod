@@ -6,4 +6,5 @@ target_include_directories(TouchWheel
 )
 target_link_libraries(TouchWheel
     __idf_arduino-esp32
+    ctf
 )

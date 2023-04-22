@@ -7,5 +7,7 @@ target_include_directories(AppI2CSniff
 )
 target_link_libraries(AppI2CSniff
     App
+    AppMenu
+    AppDiagramView
     AppTextView
 )

@@ -7,4 +7,5 @@ class ToolMenu : public Menu  {
         ToolMenu() {};
         virtual ~ToolMenu() {};
         virtual void begin(BpodMenu &menu);
+        virtual void end();
 };

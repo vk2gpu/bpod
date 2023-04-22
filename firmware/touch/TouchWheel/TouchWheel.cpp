@@ -74,6 +74,9 @@ int8_t TouchWheelBetween::percent()
     return (int8_t)percent;
 }
 
+#include <ctf.h>
+CTF_DEFINE_MACRO
+
 void TouchWheel::read()
 {
     size_t pin = 0;
@@ -102,6 +105,8 @@ void TouchWheel::read()
     pin_percent[3] = this->deg180_.percent();
     pin_percent[4] = this->deg240_.percent();
     pin_percent[5] = this->deg300_.percent();
+
+    CTF_INIT_MACRO
 
     // find the most touched pin
     pin_percent_most_touched = pin_percent[0];

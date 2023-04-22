@@ -12,4 +12,5 @@ target_link_libraries(AppToolMenu
     AppUARTSniff
     AppMCP23017
     AppMCP23S17
+    ctf
 )
