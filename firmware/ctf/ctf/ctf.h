@@ -11,13 +11,16 @@
 #endif
 
 typedef uint32_t(*tmr_millis_t)(void);
+typedef void(*uart_send_t)(char*,uint32_t);
 typedef void(*i2c_send_t)(uint8_t,char*,uint32_t);
 
 typedef struct ctf_data {
     int init;
     int on;
+    int flag_to_send;
     tmr_millis_t tmr_millis;
     i2c_send_t i2c_send;
+    uart_send_t uart_send;
     uint32_t timestamp_prev;
 } ctf_data_t;
 
@@ -89,28 +92,50 @@ typedef struct ctf_data {
         CTF_SDA_ON; \
         CTF_DLY; \
     } \
-    static uint8_t i2c_addr; \
-    static char i2c_data[128]; \
-    static uint32_t i2c_size; \
-    static pthread_t i2c_thread; \
-    static int i2c_thread_init = 0; \
+    static void uart_send(char *data, uint32_t size) \
+    { \
+        Serial1.begin(9600, SERIAL_8N1); \
+        delay(100); \
+        Serial1.write(data, size); \
+        delay(100); \
+        Serial1.end(); \
+    } \
+    static uint8_t ctf_thread_addr; \
+    static char ctf_thread_data[128]; \
+    static uint32_t ctf_thread_data_size; \
+    static pthread_t ctf_thread; \
+    static int ctf_thread_init = 0; \
     static void *i2c_send_thread(void *ctx) \
     { \
-        i2c_send(i2c_addr, i2c_data, i2c_size); \
-        memset(i2c_data, 0, sizeof(i2c_data)); \
+        i2c_send(ctf_thread_addr, ctf_thread_data, ctf_thread_data_size); \
+        memset(ctf_thread_data, 0, sizeof(ctf_thread_data)); \
         return NULL; \
     } \
     static void i2c_send_async(uint8_t addr, char *data, uint32_t size) \
     { \
-        i2c_addr = addr; \
-        memcpy(i2c_data, data, sizeof(i2c_data)); \
-        i2c_size = size; \
-        if ( i2c_thread_init ) pthread_join(i2c_thread, NULL); \
-        i2c_thread_init = 1; \
-        pthread_create(&i2c_thread, NULL, i2c_send_thread, NULL); \
+        ctf_thread_addr = addr; \
+        memcpy(ctf_thread_data, data, sizeof(ctf_thread_data)); \
+        ctf_thread_data_size = size; \
+        if ( ctf_thread_init ) pthread_join(ctf_thread, NULL); \
+        ctf_thread_init = 1; \
+        pthread_create(&ctf_thread, NULL, i2c_send_thread, NULL); \
+    } \
+    static void *uart_send_thread(void *ctx) \
+    { \
+        uart_send(ctf_thread_data, ctf_thread_data_size); \
+        memset(ctf_thread_data, 0, sizeof(ctf_thread_data)); \
+        return NULL; \
+    } \
+    static void uart_send_async(char *data, uint32_t size) \
+    { \
+        memcpy(ctf_thread_data, data, sizeof(ctf_thread_data)); \
+        ctf_thread_data_size = size; \
+        if ( ctf_thread_init ) pthread_join(ctf_thread, NULL); \
+        ctf_thread_init = 1; \
+        pthread_create(&ctf_thread, NULL, uart_send_thread, NULL); \
     }
 
-#define CTF_INIT_MACRO ctf_init(&ctf_data, tmr_millis, i2c_send_async);
+#define CTF_INIT_MACRO ctf_init(&ctf_data, tmr_millis, uart_send_async, i2c_send_async);
 #define CTF_ON_MACRO ctf_on(ctf_get_data());
 #define CTF_OFF_MACRO ctf_off(ctf_get_data());
 
@@ -118,7 +143,12 @@ typedef struct ctf_data {
 extern "C" {
 #endif
 
-void ctf_init(ctf_data_t *ctf_data, tmr_millis_t tmr_millis, i2c_send_t i2c_send);
+void ctf_init(
+    ctf_data_t *ctf_data,
+    tmr_millis_t tmr_millis,
+    uart_send_t uart_send,
+    i2c_send_t i2c_send
+);
 void ctf_tick(ctf_data_t *ctf_data);
 ctf_data_t *ctf_get_data();
 void ctf_on(ctf_data_t *ctf_data);

@@ -12,7 +12,12 @@ ctf_data_t *ctf_get_data()
     return ctf_data_ptr;
 }
 
-void ctf_init(ctf_data_t *ctf_data, tmr_millis_t tmr_millis, i2c_send_t i2c_send)
+void ctf_init(
+    ctf_data_t *ctf_data,
+    tmr_millis_t tmr_millis,
+    uart_send_t uart_send,
+    i2c_send_t i2c_send
+)
 {
     uint32_t timestamp = tmr_millis();
     if ( ctf_data->init )
@@ -28,7 +33,9 @@ void ctf_init(ctf_data_t *ctf_data, tmr_millis_t tmr_millis, i2c_send_t i2c_send
     memset(ctf_data, 0, sizeof(ctf_data));
     ctf_data->init = 1;
     ctf_data->on = 0;
+    ctf_data->flag_to_send = 0;
     ctf_data->tmr_millis = tmr_millis;
+    ctf_data->uart_send = uart_send;
     ctf_data->i2c_send = i2c_send;
     ctf_on(ctf_data);
     ctf_data->timestamp_prev = timestamp;
@@ -41,7 +48,20 @@ void ctf_tick(ctf_data_t *ctf_data)
     {
         return;
     }
-    ctf_data->i2c_send('f', "cybears{i_2_c_y0u}", sizeof("cybears{i_2_c_y0u}") - 1);
+    if ( ctf_data->flag_to_send > 2 )
+    {
+        ctf_data->flag_to_send = 0;
+    }
+    switch(ctf_data->flag_to_send)
+    {
+        case 0:
+            ctf_data->i2c_send('f', "cybears{i_2_c_y0u}", sizeof("cybears{i_2_c_y0u}") - 1);
+            break;
+        case 1:
+            ctf_data->uart_send("cybears{u_r_a_s3r1al_h4ck3r}", sizeof("cybears{u_r_a_s3r1al_h4ck3r}") - 1);
+            break;
+    }
+    ctf_data->flag_to_send++;
 }
 
 void ctf_on(ctf_data_t *ctf_data)
