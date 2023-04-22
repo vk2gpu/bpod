@@ -10,6 +10,7 @@ target_link_libraries(AppToolMenu
     AppI2CDetect
     AppI2CSniff
     AppUARTSniff
+    AppLeds
     AppMCP23017
     AppMCP23S17
     ctf
