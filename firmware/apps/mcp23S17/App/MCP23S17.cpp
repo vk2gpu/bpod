@@ -87,6 +87,7 @@ void MCP23S17Gpio::begin() {
     pinMode(SPI_PIN_CS, OUTPUT); 
     digitalWrite(SPI_PIN_CS,HIGH);
     // SPI.begin();
+    SPI.setFrequency(10000);  // so our sniffing tool will work
     gpio_a_ = 0x00;
     gpio_b_ = 0x00;
 
@@ -95,7 +96,7 @@ void MCP23S17Gpio::begin() {
     SPI.transfer(0x41);
     SPI.transfer(0x12);
     gpio_a_ = SPI.transfer(0x12);    
-    digitalWrite(SPI_PIN_CS, HIGH); 
+    digitalWrite(SPI_PIN_CS, HIGH);
 
     // Use exisiting output values of PORTB
     digitalWrite(SPI_PIN_CS, LOW);    
@@ -110,6 +111,7 @@ void MCP23S17Gpio::begin() {
 
 void MCP23S17Gpio::end() {
     Menu::end();
+    SPI.setFrequency(1000000);  // restore
     // SPI.end();
 }
 

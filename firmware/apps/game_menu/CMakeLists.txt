@@ -9,4 +9,5 @@ target_link_libraries(AppGameMenu
     AppMenu
     AppSnake
     AppTetris
+    ctf
 )

@@ -7,4 +7,5 @@ class GameMenu : public Menu  {
         GameMenu() {};
         virtual ~GameMenu() {};
         virtual void begin(BpodMenu &menu);
+        virtual void end();
 };

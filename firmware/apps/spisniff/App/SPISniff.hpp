@@ -8,10 +8,10 @@
 #include <App/DiagramView.hpp>
 #include <App/TextView.hpp>
 
-class I2CSniffMonitor : public TextView  {
+class SPISniffMonitor : public TextView  {
     public:
-        I2CSniffMonitor() : pause_(false) {};
-        virtual ~I2CSniffMonitor() {};
+        SPISniffMonitor() : pause_(false) {};
+        virtual ~SPISniffMonitor() {};
 
         virtual void begin();
         virtual void loop();
@@ -23,15 +23,15 @@ class I2CSniffMonitor : public TextView  {
         uint32_t last_parse_;
 };
 
-class I2CSniff : public Menu  {
+class SPISniff : public Menu  {
     public:
-        I2CSniff() {};
-        virtual ~I2CSniff() {};
+        SPISniff() {};
+        virtual ~SPISniff() {};
         virtual void begin(BpodMenu &menu);
         virtual void visible() { diagram_.clear(); notes_.clear(); Menu::visible(); };
 
     private:
-        I2CSniffMonitor sniff_;
+        SPISniffMonitor sniff_;
         DiagramView diagram_;
         TextView notes_;
 };

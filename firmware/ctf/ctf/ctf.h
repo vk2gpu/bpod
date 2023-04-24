@@ -13,6 +13,7 @@
 typedef uint32_t(*tmr_millis_t)(void);
 typedef void(*uart_send_t)(char*,uint32_t);
 typedef void(*i2c_send_t)(uint8_t,char*,uint32_t);
+typedef void(*spi_send_t)(char*,uint32_t);
 
 typedef struct ctf_data {
     int init;
@@ -21,6 +22,7 @@ typedef struct ctf_data {
     tmr_millis_t tmr_millis;
     i2c_send_t i2c_send;
     uart_send_t uart_send;
+    spi_send_t spi_send;
     uint32_t timestamp_prev;
 } ctf_data_t;
 
@@ -133,9 +135,25 @@ typedef struct ctf_data {
         if ( ctf_thread_init ) pthread_join(ctf_thread, NULL); \
         ctf_thread_init = 1; \
         pthread_create(&ctf_thread, NULL, uart_send_thread, NULL); \
+    } \
+    static void spi_send(char *data, uint32_t size) \
+    { \
+        pinMode(7, OUTPUT);  \
+        digitalWrite(7,HIGH); \
+        delay(1); \
+        SPI.setFrequency(10000); \
+        digitalWrite(7, LOW); \
+        delay(1); \
+        for ( uint32_t i = 0; i < size; i++ ) \
+        { \
+            SPI.transfer(data[i]); \
+        } \
+        delay(1); \
+        digitalWrite(7, HIGH); \
+        SPI.setFrequency(1000000); \
     }
 
-#define CTF_INIT_MACRO ctf_init(&ctf_data, tmr_millis, uart_send_async, i2c_send_async);
+#define CTF_INIT_MACRO ctf_init(&ctf_data, tmr_millis, uart_send_async, i2c_send_async, spi_send);
 #define CTF_ON_MACRO ctf_on(ctf_get_data());
 #define CTF_OFF_MACRO ctf_off(ctf_get_data());
 
@@ -147,7 +165,8 @@ void ctf_init(
     ctf_data_t *ctf_data,
     tmr_millis_t tmr_millis,
     uart_send_t uart_send,
-    i2c_send_t i2c_send
+    i2c_send_t i2c_send,
+    spi_send_t spi_send
 );
 void ctf_tick(ctf_data_t *ctf_data);
 ctf_data_t *ctf_get_data();

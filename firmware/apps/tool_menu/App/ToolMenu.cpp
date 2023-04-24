@@ -2,6 +2,7 @@
 
 #include <App/I2CDetect.hpp>
 #include <App/I2CSniff.hpp>
+#include <App/SPISniff.hpp>
 #include <App/UARTSniff.hpp>
 #include <App/GPIO.hpp>
 #include <App/Leds.hpp>
@@ -11,6 +12,7 @@
 
 I2CDetect i2cdetect;
 I2CSniff i2csniff;
+SPISniff spisniff;
 UARTSniff uartsniff;
 GPIOs gpio;
 Leds leds;
@@ -22,6 +24,7 @@ void ToolMenu::begin(BpodMenu &menu)
     menu.set_title("Tools");
     menu.add("i2cdetect", [](){ App::manager_begin(i2cdetect); });
     menu.add("i2csniff", [](){ App::manager_begin(i2csniff); });
+    menu.add("spisniff", [](){ App::manager_begin(spisniff); });
     menu.add("uartsniff", [](){ App::manager_begin(uartsniff); });
     menu.add("gpio", [](){ App::manager_begin(gpio); });
     menu.add("leds", [](){ App::manager_begin(leds); });

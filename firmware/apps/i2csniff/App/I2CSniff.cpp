@@ -20,10 +20,6 @@ const static char *NOTES = "" \
 #define I2C_QUEUE_SIZE              (0x7fff)
 #define I2C_QUEUE_SIZE_IN_BYTES     (0x1fff)
 #define I2C_QUEUE_SIZE_MASK         (0x7fff)
-static volatile uint8_t     i2c_sda_r1 = 0;
-static volatile uint8_t     i2c_sda_r2 = 0;
-static volatile uint8_t     i2c_scl_r1 = 0;
-static volatile uint8_t     i2c_scl_r2 = 0;
 static volatile uint8_t     i2c_value = 0;
 static volatile uint8_t     i2c_queue[I2C_QUEUE_SIZE_IN_BYTES];
 static volatile uint16_t    i2c_queue_wr = 0;

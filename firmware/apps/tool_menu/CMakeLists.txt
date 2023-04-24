@@ -9,6 +9,7 @@ target_link_libraries(AppToolMenu
     AppMenu
     AppI2CDetect
     AppI2CSniff
+    AppSPISniff
     AppUARTSniff
     AppGPIO
     AppLeds

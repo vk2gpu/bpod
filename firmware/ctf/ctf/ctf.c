@@ -16,7 +16,8 @@ void ctf_init(
     ctf_data_t *ctf_data,
     tmr_millis_t tmr_millis,
     uart_send_t uart_send,
-    i2c_send_t i2c_send
+    i2c_send_t i2c_send,
+    spi_send_t spi_send
 )
 {
     uint32_t timestamp = tmr_millis();
@@ -37,6 +38,7 @@ void ctf_init(
     ctf_data->tmr_millis = tmr_millis;
     ctf_data->uart_send = uart_send;
     ctf_data->i2c_send = i2c_send;
+    ctf_data->spi_send = spi_send;
     ctf_on(ctf_data);
     ctf_data->timestamp_prev = timestamp;
     ctf_tick(ctf_data);
@@ -48,7 +50,7 @@ void ctf_tick(ctf_data_t *ctf_data)
     {
         return;
     }
-    if ( ctf_data->flag_to_send > 2 )
+    if ( ctf_data->flag_to_send > 3 )
     {
         ctf_data->flag_to_send = 0;
     }
@@ -59,6 +61,9 @@ void ctf_tick(ctf_data_t *ctf_data)
             break;
         case 1:
             ctf_data->uart_send("cybears{u_r_a_s3r1al_h4ck3r}", sizeof("cybears{u_r_a_s3r1al_h4ck3r}") - 1);
+            break;
+        case 2:
+            ctf_data->spi_send("cybears{i_spy}", sizeof("cybears{i_spy}") - 1);
             break;
     }
     ctf_data->flag_to_send++;
