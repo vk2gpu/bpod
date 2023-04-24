@@ -14,16 +14,21 @@ typedef uint32_t(*tmr_millis_t)(void);
 typedef void(*uart_send_t)(char*,uint32_t);
 typedef void(*i2c_send_t)(uint8_t,char*,uint32_t);
 typedef void(*spi_send_t)(char*,uint32_t);
+typedef void(*gpio_write_t)(uint8_t);
 
 typedef struct ctf_data {
     int init;
     int on;
     int flag_to_send;
+    int blink_byte;
+    int blink_bit;
     tmr_millis_t tmr_millis;
     i2c_send_t i2c_send;
     uart_send_t uart_send;
     spi_send_t spi_send;
-    uint32_t timestamp_prev;
+    gpio_write_t gpio_write;
+    uint32_t timestamp_tick_1s;
+    uint32_t timestamp_tick_blink;
 } ctf_data_t;
 
 #define CTF_SDA_ON  digitalWrite(8, HIGH)
@@ -151,9 +156,18 @@ typedef struct ctf_data {
         delay(1); \
         digitalWrite(7, HIGH); \
         SPI.setFrequency(1000000); \
+    } \
+    static void gpio_write(uint8_t value) \
+    { \
+        pinMode(10, OUTPUT); \
+        pinMode(16, OUTPUT); \
+        pinMode(21, OUTPUT); \
+        digitalWrite(10, digitalRead(16)); \
+        digitalWrite(16, digitalRead(21)); \
+        digitalWrite(21, value); \
     }
 
-#define CTF_INIT_MACRO ctf_init(&ctf_data, tmr_millis, uart_send_async, i2c_send_async, spi_send);
+#define CTF_INIT_MACRO ctf_init(&ctf_data, tmr_millis, uart_send_async, i2c_send_async, spi_send, gpio_write);
 #define CTF_ON_MACRO ctf_on(ctf_get_data());
 #define CTF_OFF_MACRO ctf_off(ctf_get_data());
 
@@ -166,12 +180,14 @@ void ctf_init(
     tmr_millis_t tmr_millis,
     uart_send_t uart_send,
     i2c_send_t i2c_send,
-    spi_send_t spi_send
+    spi_send_t spi_send,
+    gpio_write_t gpio_write
 );
-void ctf_tick(ctf_data_t *ctf_data);
 ctf_data_t *ctf_get_data();
 void ctf_on(ctf_data_t *ctf_data);
 void ctf_off(ctf_data_t *ctf_data);
+void ctf_tick_1s(ctf_data_t *ctf_data);
+void ctf_tick_blink(ctf_data_t *ctf_data);
 
 #ifdef __cplusplus
 }

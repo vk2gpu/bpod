@@ -17,16 +17,22 @@ void ctf_init(
     tmr_millis_t tmr_millis,
     uart_send_t uart_send,
     i2c_send_t i2c_send,
-    spi_send_t spi_send
+    spi_send_t spi_send,
+    gpio_write_t gpio_write
 )
 {
     uint32_t timestamp = tmr_millis();
     if ( ctf_data->init )
     {
-        if ( (timestamp - ctf_data->timestamp_prev) > 1024 )
+        if ( (timestamp - ctf_data->timestamp_tick_1s) > 1024 )
         {
-            ctf_data->timestamp_prev = timestamp;
-            ctf_tick(ctf_data);
+            ctf_data->timestamp_tick_1s = timestamp;
+            ctf_tick_1s(ctf_data);
+        }
+        if ( (timestamp - ctf_data->timestamp_tick_blink) > 512 )
+        {
+            ctf_data->timestamp_tick_blink = timestamp;
+            ctf_tick_blink(ctf_data);
         }
         return;
     }
@@ -39,12 +45,27 @@ void ctf_init(
     ctf_data->uart_send = uart_send;
     ctf_data->i2c_send = i2c_send;
     ctf_data->spi_send = spi_send;
+    ctf_data->gpio_write = gpio_write;
     ctf_on(ctf_data);
-    ctf_data->timestamp_prev = timestamp;
-    ctf_tick(ctf_data);
+    ctf_data->timestamp_tick_1s = timestamp;
+    ctf_tick_1s(ctf_data);
+    ctf_data->timestamp_tick_blink = timestamp;
+    ctf_tick_blink(ctf_data);
 }
 
-void ctf_tick(ctf_data_t *ctf_data)
+void ctf_on(ctf_data_t *ctf_data)
+{
+    ctf_data->on = 1;
+    ctf_data->blink_byte = 0;
+    ctf_data->blink_bit = 7;
+}
+
+void ctf_off(ctf_data_t *ctf_data)
+{
+    ctf_data->on = 0;
+}
+
+void ctf_tick_1s(ctf_data_t *ctf_data)
 {
     if ( !ctf_data->on )
     {
@@ -69,12 +90,25 @@ void ctf_tick(ctf_data_t *ctf_data)
     ctf_data->flag_to_send++;
 }
 
-void ctf_on(ctf_data_t *ctf_data)
+void ctf_tick_blink(ctf_data_t *ctf_data)
 {
-    ctf_data->on = 1;
-}
-
-void ctf_off(ctf_data_t *ctf_data)
-{
-    ctf_data->on = 0;
+    if ( !ctf_data->on )
+    {
+        return;
+    }
+    const char *data = "cybears{gp1o}\x00";
+    ctf_data->gpio_write(0x1 & ((uint8_t)data[ctf_data->blink_byte] >> ctf_data->blink_bit));
+    if ( ctf_data->blink_bit == 0 )
+    {
+        ctf_data->blink_bit = 7;
+        ctf_data->blink_byte++;
+    }
+    else
+    {
+        ctf_data->blink_bit--;
+    }
+    if ( ctf_data->blink_byte >= (sizeof("cybears{gp1o}\x00")-1) )
+    {
+        ctf_data->blink_byte = 0;
+    }
 }
