@@ -112,6 +112,36 @@ void Snake::key_event(uint8_t key)
             };
             break;
 
+        case APP_KEY_FORWARD:
+            if ( direction_ != SNAKE_KEY_RIGHT )
+            {
+                direction_ = SNAKE_KEY_RIGHT;
+                snkc_key_right(snake_data_);
+                wait_for_draw_ = true;
+            }
+            else
+            {
+                direction_ = SNAKE_KEY_DOWN;
+                snkc_key_down(snake_data_);
+                wait_for_draw_ = true;
+            }
+            break;
+
+        case APP_KEY_BACK:
+            if ( direction_ != SNAKE_KEY_LEFT )
+            {
+                direction_ = SNAKE_KEY_LEFT;
+                snkc_key_left(snake_data_);
+                wait_for_draw_ = true;
+            }
+            else
+            {
+                direction_ = SNAKE_KEY_UP;
+                snkc_key_up(snake_data_);
+                wait_for_draw_ = true;
+            }
+            break;
+
         case APP_KEY_MENU:
             App::manager_end();
             break;
