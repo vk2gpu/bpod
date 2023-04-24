@@ -54,10 +54,10 @@ void Bpod::begin()
     wheel.begin();
 
     // bPod boot logo
-    //BpodLoadAnimation::run(tft);
+    BpodLoadAnimation::run(tft);
 
     // BSides 2023 lazer magpie
-    //BSidesLogoAnimation::run(tft);
+    BSidesLogoAnimation::run(tft);
 
     // Main menu
     App::manager_begin(main_menu);
