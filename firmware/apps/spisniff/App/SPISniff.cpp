@@ -158,6 +158,7 @@ static int spi_read_byte(uint8_t *v)
 void SPISniffMonitor::begin()
 {
     TextView::set_title("Reading");
+    TextView::set_dark_mode();
     TextView::begin();
 
     spi_reset();

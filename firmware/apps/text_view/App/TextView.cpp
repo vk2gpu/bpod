@@ -79,6 +79,7 @@ void TextView::draw_string(size_t x, size_t y, const char *text)
         gfx.setFont(&Picopixel);
         y += 4;
     }
+    gfx.setTextColor(dark_mode_ ? 0xffff : 0x0000);
     gfx.setTextSize(1);
     gfx.setCursor(x, y);
     gfx.print(text);
@@ -157,7 +158,7 @@ void TextView::draw(Adafruit_GFX &gfx)
         vwrc_get_row(this->viewerc_, &row);
         text_width_ = gfx.width() - 2;
         text_height_ = BpodTitleBar::view_height(gfx) - 2;
-        BpodTitleBar::draw(gfx, title_);
+        BpodTitleBar::draw(gfx, title_, dark_mode_);
 
         vwrc_set_text(this->viewerc_, this->text_.size(), viewerc_read, this);
         vwrc_set_view(this->viewerc_, text_width_, text_height_);
@@ -194,8 +195,9 @@ void TextView::draw(Adafruit_GFX &gfx)
             vwrc_get_rows_per_view(this->viewerc_, &rows_per_view);
             BpodScrollBar::draw(gfx, BpodTitleBar::view_y(gfx), row, rows_per_view, rows);
         }
-        gfx.fillRect(0, BpodTitleBar::view_y(gfx), (int16_t)text_width_ + 2, (int16_t)text_height_ + 2, 0xffff);
-        gfx.setTextColor(0x0000);
+        gfx.fillRect(0, BpodTitleBar::view_y(gfx), (int16_t)text_width_ + 2, (int16_t)text_height_ + 2, 
+            dark_mode_ ? 0x8410 : 0xffff);
+        gfx.setTextColor(dark_mode_ ? 0xffff : 0x0000);
         gfx.setTextSize(1, 1);
         vwrc_draw_view(this->viewerc_);
     }

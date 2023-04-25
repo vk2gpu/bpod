@@ -234,6 +234,7 @@ static int i2c_read_byte(uint8_t *v)
 void I2CSniffMonitor::begin()
 {
     TextView::set_title("Reading");
+    TextView::set_dark_mode();
     TextView::begin();
 
     Wire.end();

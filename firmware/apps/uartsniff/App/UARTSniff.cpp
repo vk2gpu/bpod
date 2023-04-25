@@ -118,6 +118,7 @@ uint32_t UARTSniffConfig::config()
 void UARTSniffOutput::begin()
 {
     pause_ = false;
+    TextView::set_dark_mode();
     TextView::begin();
 }
 
