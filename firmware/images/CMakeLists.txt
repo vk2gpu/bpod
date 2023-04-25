@@ -5,6 +5,7 @@ list(APPEND RawImages
     ${RAW_IMAGE_DIR}/bpod-icon.bmp
     ${RAW_IMAGE_DIR}/bsides-2023-icon.bmp
     ${RAW_IMAGE_DIR}/bpod-title-bar-colors.bmp
+    ${RAW_IMAGE_DIR}/bpod-title-bar-colors-dark.bmp
     ${RAW_IMAGE_DIR}/bpod-menu-bar-colors.bmp
     ${RAW_IMAGE_DIR}/bpod-menu-bar-arrow.bmp
     ${RAW_IMAGE_DIR}/bpod-scroll-empty.bmp
@@ -15,6 +16,7 @@ list(APPEND HppImages
     ${IMAGES_DIR}/BpodLogo.hpp
     ${IMAGES_DIR}/BSidesLogo.hpp
     ${IMAGES_DIR}/BpodTitleBarBackground.hpp
+    ${IMAGES_DIR}/BpodTitleBarBackgroundDark.hpp
     ${IMAGES_DIR}/BpodMenuItemBackground.hpp
     ${IMAGES_DIR}/BpodMenuItemArrow.hpp
     ${IMAGES_DIR}/BpodScrollEmpty.hpp

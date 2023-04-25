@@ -12,4 +12,5 @@ target_link_libraries(AppMainMenu
     AppSchedule
     AppGameMenu
     AppToolMenu
+    AppAbout
 )

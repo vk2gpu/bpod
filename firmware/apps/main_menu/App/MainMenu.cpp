@@ -5,12 +5,13 @@
 #include <App/TextView.hpp>
 #include <App/QrCodeView.hpp>
 #include <App/ToolMenu.hpp>
+#include <App/About.hpp>
 
 Schedule scheudle;
 GameMenu game_menu;
-TextView about;
 QrCodeView website;
 ToolMenu tools;
+About about;
 
 void MainMenu::begin(BpodMenu &menu) {
     menu.set_title("bPod");
@@ -23,9 +24,5 @@ void MainMenu::begin(BpodMenu &menu) {
         website.set_text("https://www.bsidesau.com.au/");
         App::manager_begin(website);
     });
-    menu.add("About", [](){
-        about.set_title("About");
-        about.set_text("Made by Peter\n@rankstar591");
-        App::manager_begin(about);
-    });
+    menu.add("About", [](){ App::manager_begin(about); });
 }
