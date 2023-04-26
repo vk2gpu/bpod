@@ -82,6 +82,15 @@ class BpodMenu
             redraw_ = true;
             draw(gfx);
         };
+        void draw_output()
+        {
+            printf("\x1b[2J");
+            printf("==== %s ====\n", title_.c_str());
+            for ( size_t i = 0; i < name_.size(); i++ )
+            {
+                printf("%c %s\n", i == pos_ ? '*' : ' ', name_[i].c_str());
+            }
+        }
         void draw(Adafruit_GFX &gfx) {
             size_t row = 0;
             size_t pos = 0;
@@ -92,6 +101,7 @@ class BpodMenu
             if ( redraw_ )
             {
                 // draw all the components for the menu
+                draw_output();
                 BpodTitleBar::draw(gfx, title_);
                 view_width = scroll_bar_visible(gfx) ? BpodScrollBar::view_width(gfx) : gfx.width();
                 for ( row = 0; row < view_row_count(gfx); row++ )
@@ -135,6 +145,8 @@ class BpodMenu
             // update view (or just move the selection)
             if ( prev_view != view_ )
             {
+                draw_output();
+
                 view_width = scroll_bar_visible(gfx) ? BpodScrollBar::view_width(gfx) : gfx.width();
 
                 // up all entries (our view of the menu has moved)
@@ -161,6 +173,8 @@ class BpodMenu
                 // move selection in current view
                 if ( prev_pos_ != pos_ )
                 {
+                    draw_output();
+
                     // un-select previous row
                     if ( prev_pos_ < name_.size() )
                     {

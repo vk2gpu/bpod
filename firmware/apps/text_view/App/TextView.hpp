@@ -28,6 +28,7 @@ class TextView : public App  {
             redraw_ = true;
         };
         void append_text(const std::string &text, size_t max) {
+            printf(text.c_str());
             if ( text.size() == 0 )
             {
                 // easy win

@@ -3,10 +3,34 @@
 #include <Adafruit_GFX.h>
 #include <Images/BSidesLogo.hpp>
 
+#define BSIDES2023_LOGO_ASCII "" \
+    "888888b.    .d8888b.  d8b      888                    .d8888b.   .d8888b.   .d8888b.   .d8888b.\n" \
+    "888  \"88b  d88P  Y88b Y8P      888                   d88P  Y88b d88P  Y88b d88P  Y88b d88P  Y88b\n" \
+    "888  .88P  Y88b.               888                          888 888    888        888      .d88P\n" \
+    "8888888K.   \"Y888b.   888  .d88888  .d88b.  .d8888b       .d88P 888    888      .d88P     8888\"\n" \
+    "888  \"Y88b     \"Y88b. 888 d88\" 888 d8P  Y8b 88K       .od888P\"  888    888  .od888P\"       \"Y8b.\n" \
+    "888    888       \"888 888 888  888 88888888 \"Y8888b. d88P\"      888    888 d88P\"      888    888\n" \
+    "888   d88P Y88b  d88P 888 Y88b 888 Y8b.          X88 888\"       Y88b  d88P 888\"       Y88b  d88P\n" \
+    "8888888P\"   \"Y8888P\"  888  \"Y88888  \"Y8888   88888P' 888888888   \"Y8888P\"  888888888   \"Y8888P\"\n" \
+    "\n" \
+    "\n" \
+    "\n" \
+    "888      8888888b.               888\n" \
+    "888      888   Y88b              888\n" \
+    "888      888    888              888\n" \
+    "88888b.  888   d88P .d88b.   .d88888\n" \
+    "888 \"88b 8888888P\" d88\"\"88b d88\" 888\n" \
+    "888  888 888       888  888 888  888\n" \
+    "888 d88P 888       Y88..88P Y88b 888\n" \
+    "88888P\"  888        \"Y88P\"   \"Y88888\n" \
+    "\n"                                             
+
 class BSidesLogoAnimation
 {
     public:
         static void run(Adafruit_GFX &gfx) {
+            printf("\x1b[2J");
+            printf(BSIDES2023_LOGO_ASCII);
             uint8_t sta_mac[6];
             esp_efuse_mac_get_default(sta_mac);
             uint32_t devid = 0;

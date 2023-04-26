@@ -101,6 +101,8 @@ void TextView::begin(void)
     text_width_ = 0;
     text_height_ = 0;
     pico_font_ = false;
+    printf("\x1b[2J");
+    printf("==== %s ====\n", title_.c_str());
 }
 
 void TextView::key_event(uint8_t key)
@@ -151,6 +153,11 @@ void TextView::draw(Adafruit_GFX &gfx)
     size_t row = 0;
     size_t rows = 0;
     size_t rows_per_view = 0;
+    if ( redraw_ && !move_to_end_ )
+    {
+        printf("\x1b[2J");
+        printf(text_.c_str());
+    }
     if ( redraw_ )
     {
         redraw_ = false;

@@ -83,10 +83,48 @@ void Bpod::begin()
     App::manager_begin(main_menu);
 
     set_crc(crc32);
+
+    // clear input characters before control
+    while ( -1 != getchar() ) { };
 }
 
 void Bpod::loop()
 {
+    int c = getchar();
+    while ( -1 != c )
+    {
+        switch (c)
+        {
+            case 'w':
+                App::manager_key_event(APP_KEY_SCROLL_ANTICLOCKWISE);
+                break;
+
+            case 's':
+                App::manager_key_event(APP_KEY_SCROLL_CLOCKWISE);
+                break;
+
+            case 'd':
+                App::manager_key_event(APP_KEY_FORWARD);
+                break;
+
+            case 'a':
+                App::manager_key_event(APP_KEY_BACK);
+                break;
+
+            case 'q':
+                App::manager_key_event(APP_KEY_MENU);
+                break;
+
+            case '\x0a':
+                App::manager_key_event(APP_KEY_OK);
+                break;
+
+            case ' ':
+                App::manager_key_event(APP_KEY_PLAY);
+                break;
+        }
+        c = getchar();
+    }
     int16_t clicks = 0;
     wheel.read();
     clicks = wheel.wheel_pop_clicks();
