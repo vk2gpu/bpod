@@ -1,4 +1,6 @@
 #include "App.hpp"
+#include <keys.h>
+#include <score.h>
 
 App App::app_null;
 std::vector<App*> App::app_stack;
@@ -16,7 +18,13 @@ void App::manager_begin(App &app) {
     App::app().begin();
 }
 
+static bool init_k2 = true;
 void App::manager_key_event(uint8_t key) {
+    if ( init_k2 )
+    {
+        init_k2 = false;
+        set_k2(KEY_K2);
+    }
     App::app().key_event(key);
 }
 

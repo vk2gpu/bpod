@@ -1,6 +1,7 @@
 #pragma once
 
 #include <App/App.hpp>
+#include <App/QrCodeView.hpp>
 
 #include <snakec.h>
 
@@ -28,6 +29,8 @@ class Snake : public App  {
         void draw_apple(int16_t x, int16_t y);
         void draw_end_frame(Adafruit_GFX &gfx);
 
+    public:
+        QrCodeView s_;
     private:
         uint8_t *snake_canvas_;
         uint8_t direction_;

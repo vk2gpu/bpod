@@ -1,6 +1,7 @@
 #pragma once
 
 #include <App/App.hpp>
+#include <App/QrCodeView.hpp>
 
 #include <tetrisc.h>
 
@@ -33,6 +34,8 @@ class Tetris : public App  {
         void draw_block(Adafruit_GFX &gfx, int16_t x, int16_t y, uint8_t block_type);
         void draw_end_frame(Adafruit_GFX &gfx);
 
+    public:
+        QrCodeView s_;
     private:
         uint8_t *tetris_canvas_;
         uint8_t *tetris_next_canvas_;

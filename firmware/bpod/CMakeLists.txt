@@ -12,4 +12,5 @@ target_link_libraries(Bpod
     Animations
     App
     AppMainMenu
+    score
 )

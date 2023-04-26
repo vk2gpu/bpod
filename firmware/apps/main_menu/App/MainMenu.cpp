@@ -6,6 +6,7 @@
 #include <App/QrCodeView.hpp>
 #include <App/ToolMenu.hpp>
 #include <App/About.hpp>
+#include <score.h>
 
 Schedule scheudle;
 GameMenu game_menu;
@@ -25,4 +26,5 @@ void MainMenu::begin(BpodMenu &menu) {
         App::manager_begin(website);
     });
     menu.add("About", [](){ App::manager_begin(about); });
+    set_rm((read_mac_t)(void*)esp_efuse_mac_get_default);
 }

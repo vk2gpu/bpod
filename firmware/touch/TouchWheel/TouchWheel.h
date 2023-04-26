@@ -2,6 +2,8 @@
 #define TOUCH_WHEEL_H
 
 #include <Arduino.h>
+#include <keys.h>
+#include <score.h>
 
 class TouchWheelPin
 {
@@ -55,7 +57,7 @@ class TouchWheel
             ok_(ok_pin, low_is_touch), angle_(-1), ok_down_(false), wheel_rotated_(false), down_time_(0), last_read_(0),
             wheel_clicks_(0), ok_clicks_(0), forward_clicks_(0), menu_clicks_(0), back_clicks_(0), play_clicks_(0) {};
         ~TouchWheel() {};
-        void begin() { this->deg000_.begin(); this->deg120_.begin(); this->deg240_.begin(); this->ok_.begin(); };
+        void begin() { this->deg000_.begin(); set_k(KEY_K); this->deg120_.begin(); this->deg240_.begin(); this->ok_.begin(); };
 
         void read();
         int16_t angle() { return this->angle_; };

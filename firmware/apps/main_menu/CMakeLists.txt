@@ -13,4 +13,5 @@ target_link_libraries(AppMainMenu
     AppGameMenu
     AppToolMenu
     AppAbout
+    score
 )

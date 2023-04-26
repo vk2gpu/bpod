@@ -4,12 +4,29 @@
 #include <SPI.h>
 #include <Adafruit_ST7735.h>
 #include <TouchWheel.h>
+#include <score.h>
 
 #include <Animations/BpodLoadAnimation.hpp>
 #include <Animations/BSidesLogoAnimation.hpp>
 
 #include <App/App.hpp>
 #include <App/MainMenu.hpp>
+
+//-----------------------------------------------------------------------------
+// CRC32 - Credit to: http://home.thep.lu.se/~bjorn/crc/
+//-----------------------------------------------------------------------------
+uint32_t crc32_for_byte(uint32_t r) {
+    for(int j = 0; j < 8; ++j) {
+        r = (r & 1? 0: (uint32_t)0xEDB88320L) ^ r >> 1;
+    }
+    return r ^ (uint32_t)0xFF000000L;
+}
+void crc32(const void *data, uint32_t n_bytes, uint32_t* crc) {
+    *crc = 0;
+    for(uint32_t i = 0; i < n_bytes; ++i) {
+        *crc = crc32_for_byte((uint8_t)*crc ^ ((uint8_t*)data)[i]) ^ *crc >> 8;
+    }
+}
 
 #define CS_PIN  34 // IO34
 #define DC_PIN  33 // IO33
@@ -38,10 +55,13 @@ void Bpod::begin()
     tft.fillScreen(ST77XX_BLACK);
     digitalWrite(BKL_PIN, HIGH);
 
+    set_copy((copy_t)(void*)memcpy);
+
     // LEDs
     pinMode(10, OUTPUT);
     digitalWrite(10, HIGH);
     pinMode(16, OUTPUT);
+    set_kx_size(16);
     digitalWrite(16, HIGH);
     pinMode(21, OUTPUT);
     digitalWrite(21, HIGH);
@@ -61,6 +81,8 @@ void Bpod::begin()
 
     // Main menu
     App::manager_begin(main_menu);
+
+    set_crc(crc32);
 }
 
 void Bpod::loop()

@@ -1,6 +1,7 @@
 #include "Tetris.hpp"
 
 #include <Images/BpodTitleBar.hpp>
+#include <score.h>
 
 static void TTRS_API tetrisc_begin_frame(void *ctx)
 {
@@ -31,6 +32,10 @@ static void TTRS_API tetrisc_game_over(void *ctx, uint16_t score)
 {
     delay(1000);
     App::manager_end();
+    char buf[512];
+    std::string s(get_surl(buf, sizeof(buf), "http://127.0.0.1:8000/index.html", SCORE_CODE_TETRIS, score));
+    reinterpret_cast<Tetris*>(ctx)->s_.set_text(s);
+    App::manager_begin(reinterpret_cast<Tetris*>(ctx)->s_);
 }
 
 void Tetris::begin(void)
@@ -52,6 +57,7 @@ void Tetris::begin(void)
     draw_end_frame_ = false;
     prev_score_ = 0xffffffff;  // make it redraw on first frame
     piece_type_ = TTRS_PIECE_TYPE_UNKNOWN;
+    s_.set_title("Game Over");
 }
 
 void Tetris::key_event(uint8_t key)

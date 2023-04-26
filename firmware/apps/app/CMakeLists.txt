@@ -7,4 +7,6 @@ target_include_directories(App
 )
 target_link_libraries(App
     Adafruit-GFX-Library
+    keys
+    score
 )

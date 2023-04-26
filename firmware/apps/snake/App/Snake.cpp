@@ -2,6 +2,7 @@
 
 #include <Images/BpodTitleBar.hpp>
 #include <Images/SnakeApple6x6.hpp>
+#include <score.h>
 
 #define SNAKE_KEY_RIGHT     (0)
 #define SNAKE_KEY_UP        (1)
@@ -32,6 +33,10 @@ static void SNKC_API snakec_game_over(void *ctx, uint16_t score)
 {
     delay(1000);
     App::manager_end();
+    char buf[512];
+    std::string s(get_surl(buf, sizeof(buf), "http://127.0.0.1:8000/index.html", SCORE_CODE_SNAKE, score));
+    reinterpret_cast<Snake*>(ctx)->s_.set_text(s);
+    App::manager_begin(reinterpret_cast<Snake*>(ctx)->s_);
 }
 
 void Snake::begin(void)
@@ -50,6 +55,7 @@ void Snake::begin(void)
     redraw_ = true;
     prev_score_ = 0xffffffff;  // make it redraw on first frame
     wait_for_draw_ = false;
+    s_.set_title("Game Over");
 }
 
 void Snake::key_event(uint8_t key)

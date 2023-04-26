@@ -52,4 +52,6 @@ target_include_directories(Images
 )
 target_link_libraries(Images
     Adafruit-GFX-Library
+    tinyaes
+    score
 )

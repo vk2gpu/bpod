@@ -7,6 +7,8 @@ target_include_directories(AppSnake
 )
 target_link_libraries(AppSnake
     App
+    AppQrCodeView
     Images
     snakec
+    score
 )

@@ -8,8 +8,8 @@ from Crypto.Cipher import AES
 class Token(object):
     BLOCK_SIZE = 16
     SCORE_CODE_DEBUG = 0x11
-    SCORE_CODE_SNAKE = 0x55
-    SCORE_CODE_TETRIS = 0xaa
+    SCORE_CODE_SNAKE = 0x12
+    SCORE_CODE_TETRIS = 0x13
 
     def __init__(self):
         self.device_id = 0
@@ -196,7 +196,7 @@ class Token(object):
         data = cls.fb64_decode(data)
         data = cls.decrypt_aes_128_cbc_no_iv_single_block(key, data)
         obj.device_id = struct.unpack('<I', data[0: 4])[0]
-        obj.score = struct.unpack('<I', data[4: 8])[0]
+        obj.score = struct.unpack('<I', data[4: 8])[0] * 100
         obj.game_code = struct.unpack('<B', data[8: 9])[0]
         expected = cls.crc32(data[:12] + data[:4])
         result = struct.unpack('<I', data[12: 16])[0]
@@ -214,7 +214,7 @@ class Token(object):
 
     def encode(self, key, key2):
         key = self.decode_key(key, key2)
-        data = struct.pack('<IIB', self.device_id, self.score, self.game_code)
+        data = struct.pack('<IIB', self.device_id, int(self.score / 100), self.game_code)
         data += os.urandom(3)
         data += struct.pack('<I', self.crc32(data + data[:4]))
         assert len(data) == 16
