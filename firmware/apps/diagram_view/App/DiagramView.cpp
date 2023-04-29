@@ -191,11 +191,29 @@ void DiagramView::draw(Adafruit_GFX &gfx)
         redraw_ = false;
         BpodTitleBar::draw(gfx, title_);
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
+        printf("\x1b[2J");
+        printf("==== %s ====\n", title_.c_str());
+        printf("  bPod           %8s\n", other_name_.c_str());
         for ( size_t i = 0; i < PIN_COUNT; i++ )
         {
             if ( label_[i].show )
             {
                 draw_pin_label(gfx, i, label_[i]);
+                printf("o [%s]", label_[i].label.c_str());
+                if ( label_[i].show_wiring )
+                {
+                    size_t count = (20 - label_[i].label.size() - label_[i].other_label.size());
+                    while ( count-- > 0 )
+                    {
+                        printf("-");
+                    }
+                    printf("[%s]", label_[i].other_label.c_str());
+                }
+                printf("\n");
+            }
+            else
+            {
+                printf("o\n");
             }
         }
         size_t w = 0;

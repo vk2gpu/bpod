@@ -126,6 +126,8 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
         gfx.setTextColor(0x0000);
         gfx.setFont(&Picopixel);
         gfx.setTextSize(1);
+        printf("\x1b[2J");
+        printf("==== %s ====\n", "i2cdetect");
 
         // column headers
         for ( uint8_t addr = 0; addr < 8; addr++ )
@@ -135,6 +137,12 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
             gfx.setCursor(x, y);
             gfx.printf("%01X", addr);
         }
+        printf("   ");
+        for ( size_t i = 0; i < 0x10; i++ )
+        {
+            printf(" %2x", i);
+        }
+        printf("\n");
 
         // row headers
         for ( uint8_t addr = 0; addr <= 0x70; addr += 8 )
@@ -145,6 +153,10 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
             gfx.printf("%02X", addr);
         }
         gfx.setFont(nullptr);
+        for ( size_t i = 0; i < 0x80; i += 0x10 )
+        {
+            printf("%02x:\n", i);
+        }
 
         // redraw grid
         memset(prev_detected_, 0xff, sizeof(prev_detected_));
@@ -168,23 +180,40 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
                     // selected
                     gfx.fillRect(x - 1, y - 5, 9, 7, 0x051f);
                     gfx.setTextColor(0xffff);
+                    printf("\x1b[%d;%dH[\n", 3 + (addr >> 4), 4 + ((addr & 0xf) * 3));
+                    printf("\x1b[%d;%dH]\n", 3 + (addr >> 4), 7 + ((addr & 0xf) * 3));
                 }
                 else
                 {
                     // not selected
                     gfx.fillRect(x - 1, y - 5, 9, 7, 0xffff);
                     gfx.setTextColor(0x0000);
+                    if ( ( (addr_ + 1) == addr ) && ((addr & 0xf) >= 1) )
+                    {
+                        // don't write over selected bracked
+                    }
+                    else
+                    {
+                        printf("\x1b[%d;%dH \n", 3 + (addr >> 4), 4 + ((addr & 0xf) * 3));
+                    }
+                    printf("\x1b[%d;%dH \n", 3 + (addr >> 4), 7 + ((addr & 0xf) * 3));
                 }
                 gfx.setCursor(x, y);
                 if ( addr_present(addr) || (addr == addr_) )
                 {
                     gfx.printf("%02X", addr);
+                    printf("\x1b[%d;%dH%02x\n", 3 + (addr >> 4), 5 + ((addr & 0xf) * 3), addr);
                 }
                 else
                 {
-                    if ( addr > 3 )
+                    if ( addr >= 3 )
                     {
                         gfx.print("--");
+                        printf("\x1b[%d;%dH--\n", 3 + (addr >> 4), 5 + ((addr & 0xf) * 3));
+                    }
+                    else
+                    {
+                        printf("\x1b[%d;%dH  \n", 3 + (addr >> 4), 5 + ((addr & 0xf) * 3));
                     }
                 }
             }

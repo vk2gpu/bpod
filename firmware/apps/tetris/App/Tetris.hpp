@@ -31,7 +31,7 @@ class Tetris : public App  {
         void draw_piece(int16_t x,int16_t y, TTRS_PIECE_TYPE type);
         void draw_next_piece(int16_t x,int16_t y, TTRS_PIECE_TYPE type);
         void draw_block(int16_t x, int16_t y);
-        void draw_block(Adafruit_GFX &gfx, int16_t x, int16_t y, uint8_t block_type);
+        void draw_block(Adafruit_GFX &gfx, int16_t gx, int16_t gy, int16_t x, int16_t y, uint8_t block_type);
         void draw_end_frame(Adafruit_GFX &gfx);
 
     public:

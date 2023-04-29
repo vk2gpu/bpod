@@ -195,16 +195,19 @@ void Snake::draw_end_frame(Adafruit_GFX &gfx) {
                     // apple
                     gfx.fillRect(x, y, SNAKE_SQUARE_SIZE, SNAKE_SQUARE_SIZE, 0xffff);
                     SnakeApple6x6::draw(x, y, gfx);
+                    printf("\x1b[%d;%dH<>\n", gy + 2, (gx + 1) * 2);
                 }
                 else if ( snake_canvas_[i] & 0x01 )
                 {
                     // snake
                     gfx.fillRect(x, y, SNAKE_SQUARE_SIZE, SNAKE_SQUARE_SIZE, 0x0000);
+                    printf("\x1b[%d;%dH[]\n", gy + 2, (gx + 1) * 2);
                 }
                 else
                 {
                     // empty
                     gfx.fillRect(x, y, SNAKE_SQUARE_SIZE, SNAKE_SQUARE_SIZE, 0xffff);
+                    printf("\x1b[%d;%dH  \n", gy + 2, (gx + 1) * 2);
                 }
             }
 
@@ -222,6 +225,28 @@ void Snake::draw(Adafruit_GFX &gfx)
         BpodTitleBar::draw(gfx, "Snake");
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
         gfx.drawRect(SNAKE_GRID_OFFSET_X, SNAKE_GRID_OFFSET_Y, SNAKE_BOARDER_WIDTH, SNAKE_BOARDER_HEIGTH, 0x001F);
+        printf("\x1b[2J");
+        for ( size_t y = 0; y < (SNAKE_GRID_HEIGHT + 2); y++ )
+        {
+            if ( y == 0 || y == (SNAKE_GRID_HEIGHT + 1) )
+            {
+                printf("+");
+                for ( size_t x = 0; x < (SNAKE_GRID_WIDTH * 2); x++)
+                {
+                    printf("-");
+                }
+                printf("+\n");
+            }
+            else
+            {
+                printf("|");
+                for ( size_t x = 0; x < (SNAKE_GRID_WIDTH * 2); x++)
+                {
+                    printf(" ");
+                }
+                printf("|\n");
+            }
+        }
         redraw_ = false;
     }
 
@@ -248,6 +273,7 @@ void Snake::draw(Adafruit_GFX &gfx)
         char score_text[20];
         sprintf(score_text, "%8d", score);
         gfx.print(score_text);
+        printf("\x1b[%d;%dHScore: %8d\n", 23, 1, score);
         prev_score_ = score;
     }
 }

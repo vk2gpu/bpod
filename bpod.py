@@ -224,6 +224,12 @@ def monitor(args):
         s.close()
 
 
+def minicom(args):
+    prep_serial_device(args)
+    s = serial.Serial(port=args.device, baudrate=115600)
+    os.system('minicom -D {}'.format(args.device))
+
+
 def main():
     parser = argparse.ArgumentParser(prog='bPod', description = 'Build, run, debug bPod firmware')
     parser.add_argument('--download', default=False, action='store_true', help='Download required files')
@@ -231,6 +237,7 @@ def main():
     parser.add_argument('--build', default=False, action='store_true', help='Build firmware')
     parser.add_argument('--flash', default=False, action='store_true', help='Flash firmware')
     parser.add_argument('--monitor', default=False, action='store_true', help='Monitor serial output of device')
+    parser.add_argument('--minicom', default=False, action='store_true', help='Connect minicom to device')
     parser.add_argument('--target', default='esp32s2', choices=['esp32', 'esp32s2'], help='Target CPU')
     parser.add_argument('--device', default='/dev/ttyACM0', type=str, help='Path to USB serial device for flashing e.g. /dev/ttyUSB0')
     args = parser.parse_args()
@@ -256,6 +263,8 @@ def main():
         flash(args)
     if args.monitor:
         monitor(args)
+    if args.minicom:
+        minicom(args)
 
 
 if __name__ == '__main__':

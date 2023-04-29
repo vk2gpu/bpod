@@ -240,6 +240,5 @@ const char *get_surl(char *buf, unsigned int size, const char *url, unsigned cha
         return url;
     }
     fb64_encode(buf, size, token, sizeof(token));
-    printf("URL: %s\n", surl);
     return surl;
 }

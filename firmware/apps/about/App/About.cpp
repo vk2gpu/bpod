@@ -78,15 +78,19 @@ void About::draw(Adafruit_GFX &gfx)
         ipsn[11] = '\0';
         BpodTitleBar::draw(gfx, "About", true);
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0x8410);
+        printf("\x1b[2J");
+        printf("==== %s ====\n", "About");
         gfx.setTextColor(0x0000);
         gfx.setTextSize(1);
         gfx.setCursor((gfx.width() / 2) - ((strlen("bPod") * 6) / 2), 32);
         gfx.print("bPod");
+        printf("%6s: %s\n", "Model", "bPod");
         gfx.setTextSize(1);
         gfx.setTextColor(0xffff);
         gfx.setCursor(44, 64);
         gfx.setFont(&FreeSansBold9pt7b);
         gfx.printf("%dMB", spi_flash_get_chip_size() / (1024 * 1024));
+        printf("%6s: %dMB\n", "Flash", spi_flash_get_chip_size() / (1024 * 1024));
         int16_t w = 50;
         int16_t h = 30;
         gfx.drawRoundRect((gfx.width() / 2) - (w / 2), 49, w, h, 5, 0xffff);
@@ -95,10 +99,12 @@ void About::draw(Adafruit_GFX &gfx)
         gfx.setTextSize(1);
         gfx.setCursor((gfx.width() / 2) - ((strlen(chip) * 6) / 2), 87);
         gfx.print(chip);
+        printf("%6s: %s\n", "Chip", chip);
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
         gfx.setCursor(44, gfx.height() - 48);
         gfx.printf("%dMHz", clockCyclesPerMicrosecond());
+        printf("%6s: %dMHz\n", "Clock", clockCyclesPerMicrosecond());
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
         gfx.setCursor(40, gfx.height() - 36);
@@ -110,15 +116,19 @@ void About::draw(Adafruit_GFX &gfx)
         {
             gfx.printf("%d core", chip_info.cores);
         }
+        printf("%6s: %d\n", "Cores", chip_info.cores);
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
         gfx.setCursor(14, gfx.height() - 24);
         gfx.printf("%02x:%02x:%02x:%02x:%02x:%02x",
             sta_mac[0], sta_mac[1], sta_mac[2], sta_mac[3], sta_mac[4], sta_mac[5]);
+        printf("%6s: %02x:%02x:%02x:%02x:%02x:%02x\n", "MAC",
+            sta_mac[0], sta_mac[1], sta_mac[2], sta_mac[3], sta_mac[4], sta_mac[5]);
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
         gfx.setCursor(30, gfx.height() - 12);
         gfx.print(ipsn);
+        printf("%6s: %s\n", "Serial", ipsn);
     }
 }
 

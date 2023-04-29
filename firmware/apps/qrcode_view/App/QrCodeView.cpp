@@ -27,6 +27,9 @@ void QrCodeView::draw(Adafruit_GFX &gfx)
     {
         BpodTitleBar::draw(gfx, title_);
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
+        printf("\x1b[2J");
+        printf("==== %s ====\n", title_.c_str());
+        printf("URL: %s\n", text_.c_str());
         qrcodegen_encodeText(text_.c_str(), qrcode_temp_mem_, qrcode_mem_, qrcodegen_Ecc_LOW,
             qrcodegen_MAX_VERSION, qrcodegen_MAX_VERSION, qrcodegen_Mask_0, true);
         int size = qrcodegen_getSize(qrcode_mem_);

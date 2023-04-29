@@ -144,7 +144,7 @@ void Tetris::draw_block(int16_t x, int16_t y)
     tetris_canvas_[i] = (tetris_canvas_[i] & 0xf0) | 0x8 | (type + 1);
 }
 
-void Tetris::draw_block(Adafruit_GFX &gfx, int16_t x, int16_t y, uint8_t block_type)
+void Tetris::draw_block(Adafruit_GFX &gfx, int16_t gx, int16_t gy, int16_t x, int16_t y, uint8_t block_type)
 {
     uint16_t colour = 0x0000;
     TTRS_PIECE_TYPE piece = (TTRS_PIECE_TYPE)((block_type - 1) & 0x7);
@@ -183,17 +183,20 @@ void Tetris::draw_block(Adafruit_GFX &gfx, int16_t x, int16_t y, uint8_t block_t
     {
         // fixed
         gfx.fillRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, colour);
+        printf("\x1b[%d;%dH[]\n", gy + 1, (gx + 1) * 2);
     }
     else if ( block_type & 0x7 )
     {
         // dropping
         gfx.fillRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, 0xffff);
         gfx.drawRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, colour);
+        printf("\x1b[%d;%dH[]\n", gy + 1, (gx + 1) * 2);
     }
     else
     {
         // empty
         gfx.fillRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, 0xffff);
+        printf("\x1b[%d;%dH  \n", gy + 1, (gx + 1) * 2);
     }
 }
 
@@ -210,7 +213,7 @@ void Tetris::draw_end_frame(Adafruit_GFX &gfx)
             {
                 int16_t x = TETRIS_GRID_OFFSET_X + TETRIS_BOARDER_INDENT + (gx * TETRIS_SQUARE_SIZE);
                 int16_t y = TETRIS_GRID_OFFSET_Y + TETRIS_BOARDER_INDENT + (gy * TETRIS_SQUARE_SIZE);
-                draw_block(gfx, x, y, tetris_canvas_[i] & 0x0f);
+                draw_block(gfx, gx, gy, x, y, tetris_canvas_[i] & 0x0f);
             }
 
             // next square on canvas
@@ -227,7 +230,7 @@ void Tetris::draw_end_frame(Adafruit_GFX &gfx)
             {
                 int16_t x = TETRIS_NEXT_OFFSET_X + (gx * TETRIS_SQUARE_SIZE);
                 int16_t y = TETRIS_NEXT_OFFSET_Y + (gy * TETRIS_SQUARE_SIZE);
-                draw_block(gfx, x, y, tetris_next_canvas_[i] & 0x0f);
+                draw_block(gfx, gx + 13, gy + 10, x, y, tetris_next_canvas_[i] & 0x0f);
             }
 
             // next square on canvas
@@ -248,6 +251,29 @@ void Tetris::draw(Adafruit_GFX &gfx)
         gfx.setTextColor(0x0000);
         gfx.setTextSize(1, 1);
         gfx.print("NEXT");
+        printf("\x1b[2J");
+        for ( size_t y = 0; y < (TETRIS_GRID_HEIGHT + 1); y++ )
+        {
+            if ( y == TETRIS_GRID_HEIGHT )
+            {
+                printf("+");
+                for ( size_t x = 0; x < (TETRIS_GRID_WIDTH * 2); x++)
+                {
+                    printf("-");
+                }
+                printf("+\n");
+            }
+            else
+            {
+                printf("|");
+                for ( size_t x = 0; x < (TETRIS_GRID_WIDTH * 2); x++)
+                {
+                    printf(" ");
+                }
+                printf("|\n");
+            }
+        }
+        printf("\x1b[%d;%dHNEXT\n", 10, 30);
         redraw_ = false;
     }
 
@@ -279,6 +305,7 @@ void Tetris::draw(Adafruit_GFX &gfx)
         gfx.setTextSize(1, 1);
         char score_text[20];
         sprintf(score_text, "%8d", score);
+        printf("\x1b[%d;%dHScore: %8d\n", 22, 1, score);
         gfx.print(score_text);
         prev_score_ = score;
     }
