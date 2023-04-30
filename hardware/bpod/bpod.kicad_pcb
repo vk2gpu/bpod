@@ -8758,7 +8758,7 @@
     (property "Sheetname" "")
     (path "/b0268cb5-3923-4c35-aef9-8883cf94d11d")
     (attr smd)
-    (fp_text reference "R7" (at -1.89 0.9) (layer "B.SilkS")
+    (fp_text reference "R7" (at 0.11 1.05) (layer "B.SilkS")
         (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
       (tstamp fccc265b-3e1c-48cd-af40-1c65a88e5070)
     )
