@@ -101,8 +101,6 @@ void TextView::begin(void)
     text_width_ = 0;
     text_height_ = 0;
     pico_font_ = false;
-    printf("\x1b[2J");
-    printf("==== %s ====\n", title_.c_str());
 }
 
 void TextView::key_event(uint8_t key)
@@ -156,7 +154,70 @@ void TextView::draw(Adafruit_GFX &gfx)
     if ( redraw_ && !move_to_end_ )
     {
         printf("\x1b[2J");
-        printf(text_.c_str());
+        printf("==== %s ====\n", title_.c_str());
+        char line[120];
+        const char *start = text_.c_str();
+        const char *end = start;
+        const char *last_space = NULL;
+        while ( 1 )
+        {
+            if ( *end == '\0' )
+            {
+                // print the last line and exit loop
+                line[end - start] = '\0';
+                printf("%s\n", line);
+                break;
+            }
+            else if ( *end == '\n' )
+            {
+                // print line and move to a new line
+                line[end - start] = '\0';
+                printf("%s\n", line);
+
+                // rest line state and move to next line in text
+                end++;
+                start = end;
+                last_space = NULL;
+            }
+            else
+            {
+                // is there space on this line
+                if ( ( (end - start) + 1) > sizeof(line) )
+                {
+                    // no space left, can we move back to last space
+                    if ( last_space )
+                    {
+                        // move back to last space
+                        end = last_space;
+                    }
+                    else
+                    {
+                        // cut this over multiple lines
+                    }
+
+                    // print line and move to a new line
+                    line[end - start] = '\0';
+                    printf("%s\n", line);
+
+                    // rest line state and move to next character
+                    end++;
+                    start = end;
+                    last_space = NULL;
+                }
+                else
+                {
+                    // keep track of last space (or tab)
+                    if ( (*end == ' ') || (*end == '\t') )
+                    {
+                        last_space = end;
+                    }
+
+                    // store and move to next character
+                    line[end - start] = *end;
+                    end++;
+                }
+            }
+        }
     }
     if ( redraw_ )
     {
