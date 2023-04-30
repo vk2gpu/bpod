@@ -17,11 +17,13 @@ class Menu : public App  {
         virtual void draw(Adafruit_GFX &gfx);
         virtual void end(void);
 
-        size_t pos() const { return menu.pos(); };
-        void set_pos(size_t pos) { menu.move_to(pos); };
-        void set(size_t pos, const std::string &name) { menu.set(pos, name); }
+        size_t pos() const { return menu_.pos(); };
+        void set_pos(size_t pos) { menu_.move_to(pos); };
+        void set(size_t pos, const std::string &name) { menu_.set(pos, name); }
+
+        BpodMenu &menu() { return menu_; };
 
     private:
-        BpodMenu menu;
+        BpodMenu menu_;
         bool redraw_;
 };

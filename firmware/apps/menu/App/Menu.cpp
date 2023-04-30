@@ -1,23 +1,23 @@
 #include "Menu.hpp"
 
 void Menu::begin(void) {
-    menu.clear();
-    begin(menu);
+    menu_.clear();
+    begin(menu_);
 }
 
 void Menu::key_event(uint8_t key) {
     switch( key )
     {
         case APP_KEY_SCROLL_CLOCKWISE:
-            menu.move_down();
+            menu_.move_down();
             break;
 
         case APP_KEY_SCROLL_ANTICLOCKWISE:
-            menu.move_up();
+            menu_.move_up();
             break;
 
         case APP_KEY_OK:
-            menu.click();
+            menu_.click();
             break;
 
         case APP_KEY_MENU:
@@ -30,10 +30,10 @@ void Menu::draw(Adafruit_GFX &gfx) {
     if ( redraw_ )
     {
         redraw_ = false;
-        menu.redraw(gfx);
+        menu_.redraw(gfx);
         return;
     }
-    menu.draw(gfx);
+    menu_.draw(gfx);
 }
 
 void Menu::visible() {
@@ -41,5 +41,5 @@ void Menu::visible() {
 }
 
 void Menu::end(void) {
-    menu.clear();
+    menu_.clear();
 }

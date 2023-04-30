@@ -8,6 +8,7 @@
 #include <App/Leds.hpp>
 #include <App/MCP23017.hpp>
 #include <App/MCP23S17.hpp>
+#include <App/WifiScan.hpp>
 #include <ctf.h>
 
 I2CDetect i2cdetect;
@@ -18,6 +19,7 @@ GPIOs gpio;
 Leds leds;
 MCP23017 mcp23017;
 MCP23S17 mcp23S17;
+WifiScan wifiscan;
 
 void ToolMenu::begin(BpodMenu &menu)
 {
@@ -30,6 +32,7 @@ void ToolMenu::begin(BpodMenu &menu)
     menu.add("leds", [](){ App::manager_begin(leds); });
     menu.add("mcp23017", [](){ App::manager_begin(mcp23017); });
     menu.add("mcp23S17", [](){ App::manager_begin(mcp23S17); });
+    menu.add("wifiscan", [](){ App::manager_begin(wifiscan); });
 
     CTF_OFF_MACRO
 }
