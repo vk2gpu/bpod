@@ -11,8 +11,8 @@ C5        10uF                 C_0402_1005Metric                          11.700
 C6        10uF                 C_0402_1005Metric                          15.4000     3.7000   90.0000  bottom
 C7        100nF                C_0402_1005Metric                          17.7000    78.3000  -90.0000  bottom
 C8        1uF                  C_0402_1005Metric                          16.7000    78.3000  -90.0000  bottom
-C9        26pF                 C_0402_1005Metric                           8.2000    89.5000  180.0000  bottom
-C10       26pF                 C_0402_1005Metric                           8.3200    84.1000    0.0000  bottom
+C9        25pF                 C_0402_1005Metric                           8.2000    89.5000  180.0000  bottom
+C10       25pF                 C_0402_1005Metric                           8.3200    84.1000    0.0000  bottom
 C11       100nF                C_0402_1005Metric                           3.1000    47.2000  180.0000  bottom
 C12       100nF                C_0402_1005Metric                          31.3000    88.0800   90.0000  bottom
 C13       10uF                 C_0402_1005Metric                          32.4000    88.1000   90.0000  bottom
