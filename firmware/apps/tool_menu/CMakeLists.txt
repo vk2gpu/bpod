@@ -10,7 +10,7 @@ target_link_libraries(AppToolMenu
     AppI2CDetect
     AppI2CSniff
     AppSPISniff
-    AppUARTSniff
+    AppUARTTerm
     AppGPIO
     AppLeds
     AppMCP23017

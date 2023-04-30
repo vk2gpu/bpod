@@ -21,6 +21,7 @@ class App  {
 
         static void manager_begin(App &app);
         static void manager_key_event(uint8_t key);
+        static void manager_keyboard_event(int key);
         static void manager_draw(Adafruit_GFX &gfx);
         static void manager_loop(void);
         static void manager_end();
@@ -28,6 +29,7 @@ class App  {
         virtual void begin(void);
         virtual void visible();
         virtual void key_event(uint8_t key);
+        virtual void keyboard_event(int key);
         virtual void draw(Adafruit_GFX &gfx);
         virtual void loop(void);
         virtual void hidden(void);

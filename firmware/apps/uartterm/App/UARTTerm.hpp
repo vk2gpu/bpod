@@ -8,10 +8,10 @@
 #include <App/TextView.hpp>
 #include <App/DiagramView.hpp>
 
-class UARTSniffBaudRate : public Menu  {
+class UARTTermBaudRate : public Menu  {
     public:
-        UARTSniffBaudRate() : baud_(0) {};
-        virtual ~UARTSniffBaudRate() {};
+        UARTTermBaudRate() : baud_(0) {};
+        virtual ~UARTTermBaudRate() {};
         virtual void begin(BpodMenu &menu);
 
         uint32_t baud();
@@ -20,10 +20,10 @@ class UARTSniffBaudRate : public Menu  {
         uint32_t baud_;
 };
 
-class UARTSniffConfig : public Menu  {
+class UARTTermConfig : public Menu  {
     public:
-        UARTSniffConfig() : config_(0) {};
-        virtual ~UARTSniffConfig() {};
+        UARTTermConfig() : config_(0) {};
+        virtual ~UARTTermConfig() {};
         virtual void begin(BpodMenu &menu);
 
         uint32_t config();
@@ -32,24 +32,25 @@ class UARTSniffConfig : public Menu  {
         uint32_t config_;
 };
 
-class UARTSniffOutput : public TextView  {
+class UARTTermOutput : public TextView  {
     public:
-        UARTSniffOutput() : pause_(false) {};
-        virtual ~UARTSniffOutput() {};
+        UARTTermOutput() : pause_(false) {};
+        virtual ~UARTTermOutput() {};
 
         virtual void begin();
         virtual void loop();
         virtual void key_event(uint8_t key);
+        virtual void keyboard_event(int key);
         virtual void end();
 
     private:
         bool pause_;
 };
 
-class UARTSniff : public Menu  {
+class UARTTerm : public Menu  {
     public:
-        UARTSniff() {};
-        virtual ~UARTSniff() {};
+        UARTTerm() {};
+        virtual ~UARTTerm() {};
         virtual void begin(BpodMenu &menu);
         virtual void visible();
 
@@ -57,9 +58,9 @@ class UARTSniff : public Menu  {
         uint32_t config() { return config_.config(); };
 
     private:
-        UARTSniffBaudRate baud_;
-        UARTSniffConfig config_;
-        UARTSniffOutput output_;
+        UARTTermBaudRate baud_;
+        UARTTermConfig config_;
+        UARTTermOutput output_;
         TextView notes_;
         DiagramView diagram_;
 };

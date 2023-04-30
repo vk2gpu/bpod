@@ -93,36 +93,7 @@ void Bpod::loop()
     int c = getchar();
     while ( -1 != c )
     {
-        switch (c)
-        {
-            case 'w':
-                App::manager_key_event(APP_KEY_SCROLL_ANTICLOCKWISE);
-                break;
-
-            case 's':
-                App::manager_key_event(APP_KEY_SCROLL_CLOCKWISE);
-                break;
-
-            case 'd':
-                App::manager_key_event(APP_KEY_FORWARD);
-                break;
-
-            case 'a':
-                App::manager_key_event(APP_KEY_BACK);
-                break;
-
-            case 'q':
-                App::manager_key_event(APP_KEY_MENU);
-                break;
-
-            case '\x0a':
-                App::manager_key_event(APP_KEY_OK);
-                break;
-
-            case ' ':
-                App::manager_key_event(APP_KEY_PLAY);
-                break;
-        }
+        App::manager_keyboard_event(c);
         c = getchar();
     }
     int16_t clicks = 0;

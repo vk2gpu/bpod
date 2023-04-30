@@ -29,6 +29,8 @@ class TextView : public App  {
         };
         void append_text(const std::string &text, size_t max) {
             printf(text.c_str());
+            fflush(stdout);
+            fsync(fileno(stdout));
             if ( text.size() == 0 )
             {
                 // easy win

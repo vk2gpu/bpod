@@ -28,6 +28,11 @@ void App::manager_key_event(uint8_t key) {
     App::app().key_event(key);
 }
 
+void App::manager_keyboard_event(int key)
+{
+    App::app().keyboard_event(key);
+}
+
 void App::manager_draw(Adafruit_GFX &gfx) {
     App::app().draw(gfx);
 }
@@ -56,6 +61,39 @@ void App::visible() {
 
 void App::key_event(uint8_t key) {
 
+}
+
+void App::keyboard_event(int key) {
+    switch (key)
+    {
+        case 'w':
+            App::manager_key_event(APP_KEY_SCROLL_ANTICLOCKWISE);
+            break;
+
+        case 's':
+            App::manager_key_event(APP_KEY_SCROLL_CLOCKWISE);
+            break;
+
+        case 'd':
+            App::manager_key_event(APP_KEY_FORWARD);
+            break;
+
+        case 'a':
+            App::manager_key_event(APP_KEY_BACK);
+            break;
+
+        case 'q':
+            App::manager_key_event(APP_KEY_MENU);
+            break;
+
+        case '\x0a':
+            App::manager_key_event(APP_KEY_OK);
+            break;
+
+        case ' ':
+            App::manager_key_event(APP_KEY_PLAY);
+            break;
+    }
 }
 
 void App::draw(Adafruit_GFX &gfx) {
