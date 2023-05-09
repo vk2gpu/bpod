@@ -1,7 +1,11 @@
 import os
 import sys
 import time
+import json
+import zlib
+import base64
 import shutil
+import hashlib
 import argparse
 import subprocess
 
@@ -103,7 +107,6 @@ def esp_idf_environ(args):
         sys.stderr.write(stderr.decode())
         raise Exception("Developer error: my trick for finding PATH variable in stdout broke")
     environ['PATH'] = path_variables[0]
-    # TODO: remove # environ['ARDUINO_SKIP_IDF_VERSION_CHECK'] = '1'  # for arduino-esp32
     return environ
 
 
@@ -171,10 +174,141 @@ def menuconfig(args):
     esp_idf_menuconfig(args)
 
 
+def package(args):
+    script_version_string = 'v1'
+    out = args.out + '_bpod_flash_{}.py'.format(script_version_string)
+
+    # read esptool.py script text
+    esptool_path = os.path.join(args.esp_idf, 'components', 'esptool_py', 'esptool', 'esptool.py')
+    assert os.path.exists(esptool_path)
+    with open(esptool_path, 'rt') as handle:
+        text = handle.read()
+
+    # read flasher args json file
+    flasher_args_path = os.path.join(args.out, 'flasher_args.json')
+    with open(flasher_args_path, 'rt') as handle:
+        flasher_args = json.loads(handle.read())
+
+    # replace lines
+    serial_help_line_found = False
+    main_call_found = False
+    lines = list()
+    for line in text.split('\n'):
+        if line.startswith('    print("Pyserial is not installed'):
+            serial_help_line_found = True
+            line = "    print('{}'.format(sys.executable))".format('REQUIRED: please install pyserial using line "{} -m pip install pyserial"')
+        if line.startswith("if __name__ == '__main__':"):
+            main_call_found = True
+            break
+        lines.append(line)
+    assert serial_help_line_found
+    assert main_call_found
+    text = '\n'.join(lines)
+    assert text.find('_main()') != -1
+
+    # embed flashing files in script
+    file_list = list()
+    for offset_string, relpath_bin in flasher_args['flash_files'].items():
+        path_bin = os.path.join(args.out, relpath_bin)
+        name = os.path.splitext(os.path.basename(path_bin))[0].replace('-', '_')
+        with open(path_bin, 'rb') as handle:
+            data = handle.read()
+        assert len(data) > 0
+        md5 = hashlib.md5(data).hexdigest().upper()
+        data = zlib.compress(data)
+        data = base64.b64encode(data).decode('ascii')
+        data_split = []
+        count = 0
+        chars_per_line = 160
+        for i in range(0, len(data), chars_per_line):
+            data_split.append(data[i: i + chars_per_line])
+            count += chars_per_line
+        if count < len(data):
+            data_split.append(data[count: ])
+        text += '{}_DATA = zlib.decompress(base64.b64decode(b"""\\\n'.format(name.upper())
+        text += '\\\n'.join(data_split) + '\\\n'
+        text += '"""))\n'
+        text += "{}_MD5 = '{}'\n".format(name.upper(), md5)
+        text += 'assert hashlib.md5({}_DATA).hexdigest().upper() == {}_MD5\n'.format(name.upper(), name.upper())
+        file_list.append((os.path.basename(path_bin), offset_string, '{}_DATA'.format(name.upper()), '{}_MD5'.format(name.upper())))
+    text += 'FILE_LIST = [\n'
+    for items in file_list:
+        text += "    ('{}', '{}', {}, {}),\n".format(items[0], items[1], items[2], items[3])
+    text += ']\n'
+    text += 'assert len(FILE_LIST) == {}\n'.format(len(file_list))
+
+    # arguments for esptool.py
+    FLASHER_ARGS = []
+    for name, value in flasher_args['extra_esptool_args'].items():
+        if not isinstance(value, str):
+            continue
+        assert isinstance(name, str)
+        FLASHER_ARGS.extend(['--{}'.format(name), value])
+    FLASHER_ARGS.append('write_flash')
+    FLASHER_ARGS.extend(flasher_args['write_flash_args'])
+    for offset_string, path in flasher_args['flash_files'].items():
+        assert isinstance(offset_string, str)
+        assert isinstance(path, str)
+        path = os.path.basename(path)
+        FLASHER_ARGS.extend([offset_string, path])
+    text += 'FLASHER_ARGS = {}\n'.format(FLASHER_ARGS)
+
+    # function to extract file
+    text += """
+def extract_files():
+    for path, _, data, md5 in FILE_LIST:
+        write_file = True
+        if os.path.exists(path):
+            with open(path, 'rb') as handle:
+                file_data = handle.read()
+            if hashlib.md5(file_data).hexdigest().upper() == md5:
+                write_file = False
+        if write_file:
+            print('Extracting {}'.format(path))
+            with open(path, 'wb') as handle:
+                handle.write(data)
+    for path, _, _, md5 in FILE_LIST:
+        print('Checking {} md5 equals {}'.format(path, md5))
+        with open(path, 'rb') as handle:
+            check_data = handle.read()
+        assert hashlib.md5(check_data).hexdigest().upper() == md5
+"""
+
+    # redirect esptool.py to do my custom command
+    text += """
+
+def flash_main():
+    if len(sys.argv) <= 1:
+        print('<FILE_NAME_REPLACE> <device>  # e.g. /dev/ttyACM0 e.g. COM11')
+        if len(list_ports.comports()) == 0:
+            print('(no serial ports found)')
+        for p in list_ports.comports():
+            print(p)
+        return
+    device = sys.argv[1]
+    print('<FILE_NAME_REPLACE> {}'.format(device))
+    extract_files()
+    args = sys.argv[:1]
+    args.extend(['-p', device])
+    args.extend(['-b', '460800'])
+    args.extend(FLASHER_ARGS)
+    sys.argv = args
+    print(' '.join(sys.argv))
+    _main()
+
+if __name__ == '__main__':
+    flash_main()
+""".replace('<FILE_NAME_REPLACE>', os.path.basename(out))
+
+    with open(out, 'wt') as handle:
+        handle.write(text)
+
+
 def build(args):
     if not args.esp_idf_environ:
         args.esp_idf_environ = esp_idf_environ(args)
     esp_idf_build(args)
+    package(args)
 
 
 def prep_serial_device(args):
