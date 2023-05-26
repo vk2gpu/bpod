@@ -1,8 +1,8 @@
 #include "I2CDetect.hpp"
 
 #include <Images/BpodTitleBar.hpp>
-
 #include <Fonts/Picopixel.h>
+#include <stringdb.h>
 
 void I2CDetect::begin(void)
 {
@@ -121,13 +121,15 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
     {
         redraw_ = false;
         prev_addr_ = 0xff; // force a selection update
-        BpodTitleBar::draw(gfx, "i2cdetect");
+        BpodTitleBar::draw(gfx, STRING(STRING_I2CDETECT));
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
         gfx.setTextColor(0x0000);
         gfx.setFont(&Picopixel);
         gfx.setTextSize(1);
-        printf("\x1b[2J");
-        printf("==== %s ====\n", "i2cdetect");
+        printf(STRING(CONSOLE_CLEAR));
+        STRING_CACHE();
+        printf(STRING(FMT_TITLE), STRING(STRING_I2CDETECT));
+        STRING_CLEAR();
 
         // column headers
         for ( uint8_t addr = 0; addr < 8; addr++ )
@@ -135,12 +137,12 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
             int16_t x = 26 + 4 + (((addr & 0x7) * 3) * 4);
             int16_t y = 30;
             gfx.setCursor(x, y);
-            gfx.printf("%01X", addr);
+            gfx.printf(STRING(I2CDETECT_GFX_FMT_COLUMN), addr);
         }
-        printf("   ");
+        printf(STRING(I2CDETECT_CONSOLE_TAB));
         for ( size_t i = 0; i < 0x10; i++ )
         {
-            printf(" %2x", i);
+            printf(STRING(I2CDETECT_CONSOLE_FMT_COLUMN), i);
         }
         printf("\n");
 
@@ -150,12 +152,12 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
             int16_t x = 4;
             int16_t y = 40 + (((addr >>  3) * 1) * (6 + 2));
             gfx.setCursor(x, y);
-            gfx.printf("%02X", addr);
+            gfx.printf(STRING(I2CDETECT_GFX_FMT_ROW), addr);
         }
         gfx.setFont(nullptr);
         for ( size_t i = 0; i < 0x80; i += 0x10 )
         {
-            printf("%02x:\n", i);
+            printf(STRING(I2CDETECT_CONSOLE_FMT_ROW), i);
         }
 
         // redraw grid
@@ -180,8 +182,8 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
                     // selected
                     gfx.fillRect(x - 1, y - 5, 9, 7, 0x051f);
                     gfx.setTextColor(0xffff);
-                    printf("\x1b[%d;%dH[\n", 3 + (addr >> 4), 4 + ((addr & 0xf) * 3));
-                    printf("\x1b[%d;%dH]\n", 3 + (addr >> 4), 7 + ((addr & 0xf) * 3));
+                    printf(STRING(CONSOLE_CURSOR_STRING), 3 + (addr >> 4), 4 + ((addr & 0xf) * 3), "[");
+                    printf(STRING(CONSOLE_CURSOR_STRING), 3 + (addr >> 4), 7 + ((addr & 0xf) * 3), "]");
                 }
                 else
                 {
@@ -194,26 +196,30 @@ void I2CDetect::draw(Adafruit_GFX &gfx)
                     }
                     else
                     {
-                        printf("\x1b[%d;%dH \n", 3 + (addr >> 4), 4 + ((addr & 0xf) * 3));
+                        printf(STRING(CONSOLE_CURSOR_STRING), 3 + (addr >> 4), 4 + ((addr & 0xf) * 3), " ");
                     }
-                    printf("\x1b[%d;%dH \n", 3 + (addr >> 4), 7 + ((addr & 0xf) * 3));
+                    printf(STRING(CONSOLE_CURSOR_STRING), 3 + (addr >> 4), 7 + ((addr & 0xf) * 3), " ");
                 }
                 gfx.setCursor(x, y);
                 if ( addr_present(addr) || (addr == addr_) )
                 {
-                    gfx.printf("%02X", addr);
-                    printf("\x1b[%d;%dH%02x\n", 3 + (addr >> 4), 5 + ((addr & 0xf) * 3), addr);
+                    gfx.printf(STRING(FMT_HEX_BYTE_UPPER), addr);
+                    printf(STRING(CONSOLE_CURSOR_HEX_BYTE), 3 + (addr >> 4), 5 + ((addr & 0xf) * 3), addr);
                 }
                 else
                 {
                     if ( addr >= 3 )
                     {
-                        gfx.print("--");
-                        printf("\x1b[%d;%dH--\n", 3 + (addr >> 4), 5 + ((addr & 0xf) * 3));
+                        STRING_CACHE();
+                        gfx.print(STRING(I2CDETECT_ADDR_NOT_FOUND));
+                        printf(STRING(CONSOLE_CURSOR_STRING), 3 + (addr >> 4), 5 + ((addr & 0xf) * 3), STRING(I2CDETECT_ADDR_NOT_FOUND));
+                        STRING_CLEAR();
                     }
                     else
                     {
-                        printf("\x1b[%d;%dH  \n", 3 + (addr >> 4), 5 + ((addr & 0xf) * 3));
+                        STRING_CACHE();
+                        printf(STRING(CONSOLE_CURSOR_STRING), 3 + (addr >> 4), 5 + ((addr & 0xf) * 3), STRING(I2CDETECT_ADDR_NOT_USED));
+                        STRING_CLEAR();
                     }
                 }
             }

@@ -3,6 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Images/BpodLogo.hpp>
 
+#include <stringdb.h>
 
 #define BPOD_LOGO_ASCII "" \
     "                                               /##&@@@@@@@@&%%#/.\n" \
@@ -36,7 +37,7 @@ class BpodLoadAnimation
 {
     public:
         static void run(Adafruit_GFX &gfx) {
-            printf("\x1b[2J");
+            printf(STRING(CONSOLE_CLEAR));
             printf(BPOD_LOGO_ASCII);
             uint8_t sta_mac[6];
             esp_efuse_mac_get_default(sta_mac);
@@ -46,9 +47,7 @@ class BpodLoadAnimation
             devid |= (((uint32_t)sta_mac[3]) << 16) & 0x00ff0000;
             devid |= (((uint32_t)sta_mac[2]) << 24) & 0xff000000;
             char ipsn[12];
-            ipsn[0] = 'F';
-            ipsn[1] = '7';
-            ipsn[2] = 'Z';
+            STRING_MEMCPY(&ipsn[0], SERIAL_3BYTE_PREFIX);
             uint32_t value = devid;
             for (size_t i = 0; i < 5; i++ )
             {
@@ -63,10 +62,7 @@ class BpodLoadAnimation
                     ipsn[3 + i] = 'A' + (digit - 10);
                 }
             }
-            ipsn[8] = '3';
-            ipsn[9] = 'Q';
-            ipsn[10] = 'U';
-            ipsn[11] = '\0';
+            STRING_STRCPY(&ipsn[8], SERIAL_3BYTE_SUFFIX);
             // FUTURE: calculate these values (rather than assume ST7735 screen)
             gfx.fillScreen(0x0000);
             BpodLogo::draw(21, 30, gfx);

@@ -10,6 +10,7 @@
 #include <App/MCP23S17.hpp>
 #include <App/WifiScan.hpp>
 #include <ctf.h>
+#include <stringdb.h>
 
 I2CDetect i2cdetect;
 I2CSniff i2csniff;
@@ -23,16 +24,16 @@ WifiScan wifiscan;
 
 void ToolMenu::begin(BpodMenu &menu)
 {
-    menu.set_title("Tools");
-    menu.add("i2cdetect", [](){ App::manager_begin(i2cdetect); });
-    menu.add("i2csniff", [](){ App::manager_begin(i2csniff); });
-    menu.add("spisniff", [](){ App::manager_begin(spisniff); });
-    menu.add("uartterm", [](){ App::manager_begin(uartterm); });
-    menu.add("gpio", [](){ App::manager_begin(gpio); });
-    menu.add("leds", [](){ App::manager_begin(leds); });
-    menu.add("mcp23017", [](){ App::manager_begin(mcp23017); });
-    menu.add("mcp23S17", [](){ App::manager_begin(mcp23S17); });
-    menu.add("wifiscan", [](){ App::manager_begin(wifiscan); });
+    menu.set_title(STRING(STRING_TOOLS));
+    menu.add(STRING(STRING_I2CDETECT), [](){ App::manager_begin(i2cdetect); });
+    menu.add(STRING(STRING_I2CSNIFF), [](){ App::manager_begin(i2csniff); });
+    menu.add(STRING(STRING_SPISNIFF), [](){ App::manager_begin(spisniff); });
+    menu.add(STRING(STRING_UARTTERM), [](){ App::manager_begin(uartterm); });
+    menu.add(STRING(STRING_GPIO_LOWER), [](){ App::manager_begin(gpio); });
+    menu.add(STRING(STRING_LEDS_LOWER), [](){ App::manager_begin(leds); });
+    menu.add(STRING(STRING_MCP23017_LOWER), [](){ App::manager_begin(mcp23017); });
+    menu.add(STRING(STRING_MCP23S17_LOWER), [](){ App::manager_begin(mcp23S17); });
+    menu.add(STRING(STRING_WIFISCAN), [](){ App::manager_begin(wifiscan); });
 
     CTF_OFF_MACRO
 }

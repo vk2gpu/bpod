@@ -11,4 +11,5 @@ target_link_libraries(AppSnake
     Images
     snakec
     score
+    stringdb
 )

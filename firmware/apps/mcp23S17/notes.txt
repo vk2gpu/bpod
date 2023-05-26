@@ -1,0 +1,8 @@
+The MCP23S17 is a GPIO expander chip. To control the GPIO, follow the wiring diagram 
+to connect the needed power and SPI lines. MISO stands for MASTER IN SLAVE OUT and needs 
+to be connected to the SLAVE OUT (SO). MOSI stands for MASTER OUT SLAVE IN and needs 
+to be connected to the SLAVE IN (IN). A clock signal controlled by the master (bPod) signals 
+when data is transfered. Clock is commonly labeled SCK or CLK. To select the slave device, a 
+Chip Select (CS) wire is used. CS is often ACTIVE LOW - meaning that the slave is selected 
+when the CS line is low or no voltage (instead of high/3V). In schematics, this is shown with 
+a line drawn across the top of CS label.

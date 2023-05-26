@@ -2,8 +2,8 @@
 
 #include <Images/BpodTitleBar.hpp>
 #include <Images/BpodScrollBar.hpp>
-
 #include <Fonts/Picopixel.h>
+#include <stringdb.h>
 
 ssize_t VWRC_API viewerc_read(void *ctx, size_t offset, char *text, size_t text_size)
 {
@@ -153,8 +153,8 @@ void TextView::draw(Adafruit_GFX &gfx)
     size_t rows_per_view = 0;
     if ( redraw_ && !move_to_end_ )
     {
-        printf("\x1b[2J");
-        printf("==== %s ====\n", title_.c_str());
+        printf(STRING(CONSOLE_CLEAR));
+        printf(STRING(FMT_TITLE), title_.c_str());
         char line[120];
         const char *start = text_.c_str();
         const char *end = start;
@@ -165,14 +165,14 @@ void TextView::draw(Adafruit_GFX &gfx)
             {
                 // print the last line and exit loop
                 line[end - start] = '\0';
-                printf("%s\n", line);
+                printf(STRING(FMT_LINE), line);
                 break;
             }
             else if ( *end == '\n' )
             {
                 // print line and move to a new line
                 line[end - start] = '\0';
-                printf("%s\n", line);
+                printf(STRING(FMT_LINE), line);
 
                 // rest line state and move to next line in text
                 end++;
@@ -197,7 +197,7 @@ void TextView::draw(Adafruit_GFX &gfx)
 
                     // print line and move to a new line
                     line[end - start] = '\0';
-                    printf("%s\n", line);
+                    printf(STRING(FMT_LINE), line);
 
                     // rest line state and move to next character
                     end++;

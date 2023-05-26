@@ -1,5 +1,7 @@
 #include "schedulec.h"
 
+#include <stringdb.h>
+
 // because we are operating in C (not C++)
 #ifdef PROGMEM
 #undef PROGMEM
@@ -120,17 +122,17 @@ size_t schedule_get_talk_text_size(size_t talk_index)
     size_t size = 0;
 
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_DAY_VALUE_ID);
-    size += sizeof(" - ") - 1;
+    size += STRING_STRLEN(SCHEDULE_DAY_TIME_SEP);
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_TIME_VALUE_ID);
-    size += sizeof("\n") - 1;
+    size += STRING_STRLEN(SCHEDULE_NL_SEP);;
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_TITLE_VALUE_ID);
-    size += sizeof("\n") - 1;
+    size += STRING_STRLEN(SCHEDULE_NL_SEP);;
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_PRESENTER_VALUE_ID);
-    size += sizeof("\n\n") - 1;
+    size += STRING_STRLEN(SCHEDULE_NLNL_SEP);;
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_ABSTRACT_VALUE_ID);
     if ( schedule_get_talk_value_size(talk_index, SCHEDULE_BIO_VALUE_ID) )
     {
-        size += sizeof("\n\nBIO:\n") - 1;
+        size += STRING_STRLEN(SCHEDULE_TALK_BIO_SEP);
         size += schedule_get_talk_value_size(talk_index, SCHEDULE_BIO_VALUE_ID);
     }
 
@@ -154,22 +156,22 @@ size_t schedule_get_talk_text(size_t talk_index, size_t offset, char *text, size
     size_t recd = 0;
 
     recd += schedule_get_talk_value(talk_index, SCHEDULE_DAY_VALUE_ID, 0, text + recd, size - recd);
-    memcpy(text + recd, " - ", sizeof(" - ") - 1);
-    recd += sizeof(" - ") - 1;
+    STRING_MEMCPY(text + recd, SCHEDULE_DAY_TIME_SEP);
+    recd += STRING_STRLEN(SCHEDULE_DAY_TIME_SEP);
     recd += schedule_get_talk_value(talk_index, SCHEDULE_TIME_VALUE_ID, 0, text + recd, size - recd);
-    memcpy(text + recd, "\n", sizeof("\n") - 1);
-    recd += sizeof("\n") - 1;
+    STRING_MEMCPY(text + recd, SCHEDULE_NL_SEP);
+    recd += STRING_STRLEN(SCHEDULE_NL_SEP);
     recd += schedule_get_talk_value(talk_index, SCHEDULE_TITLE_VALUE_ID, 0, text + recd, size - recd);
-    memcpy(text + recd, "\n", sizeof("\n") - 1);
-    recd += sizeof("\n") - 1;
+    STRING_MEMCPY(text + recd, SCHEDULE_NL_SEP);
+    recd += STRING_STRLEN(SCHEDULE_NL_SEP);
     recd += schedule_get_talk_value(talk_index, SCHEDULE_PRESENTER_VALUE_ID, 0, text + recd, size - recd);
-    memcpy(text + recd, "\n\n", sizeof("\n\n") - 1);
-    recd += sizeof("\n\n") - 1;
+    STRING_MEMCPY(text + recd, SCHEDULE_NLNL_SEP);
+    recd += STRING_STRLEN(SCHEDULE_NLNL_SEP);
     recd += schedule_get_talk_value(talk_index, SCHEDULE_ABSTRACT_VALUE_ID, 0, text + recd, size - recd);
     if ( schedule_get_talk_value_size(talk_index, SCHEDULE_BIO_VALUE_ID) )
     {
-        memcpy(text + recd, "\n\nBIO:\n", sizeof("\n\nBIO:\n") - 1);
-        recd += sizeof("\n\nBIO:\n") - 1;
+        STRING_MEMCPY(text + recd, SCHEDULE_TALK_BIO_SEP);
+        recd += STRING_STRLEN(SCHEDULE_TALK_BIO_SEP);
         recd += schedule_get_talk_value(talk_index, SCHEDULE_BIO_VALUE_ID, 0, text + recd, size - recd);
     }
     return recd;

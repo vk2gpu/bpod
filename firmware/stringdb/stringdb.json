@@ -1,0 +1,602 @@
+[
+    {
+        "macro": "CONSOLE_CLEAR",
+        "encoding": "hex",
+        "data": "1b5b324a"
+    },
+    {
+        "macro": "CONSOLE_CURSOR_STRING",
+        "encoding": "hex",
+        "data": "1b5b25643b25644825730a"
+    },
+    {
+        "macro": "CONSOLE_CURSOR_HEX_BYTE",
+        "encoding": "hex",
+        "data": "1b5b25643b256448253032780a"
+    },
+    {
+        "macro": "CONSOLE_POS_GAME_SCORE",
+        "encoding": "hex",
+        "data": "1b5b25643b25644853636f72653a202538640a"
+    },
+    {
+        "macro": "SERIAL_3BYTE_PREFIX",
+        "encoding": "ascii",
+        "data": "F7Z"
+    },
+    {
+        "macro": "SERIAL_3BYTE_SUFFIX",
+        "encoding": "ascii",
+        "data": "3QU"
+    },
+    {
+        "macro": "STRING_BPOD",
+        "encoding": "ascii",
+        "data": "bPod"
+    },
+    {
+        "macro": "STRING_SCHEDULE",
+        "encoding": "ascii",
+        "data": "Schedule"
+    },
+    {
+        "macro": "STRING_ABOUT",
+        "encoding": "ascii",
+        "data": "About"
+    },
+    {
+        "macro": "STRING_MODEL",
+        "encoding": "ascii",
+        "data": "Model"
+    },
+    {
+        "macro": "STRING_FLASH",
+        "encoding": "ascii",
+        "data": "Flash"
+    },
+    {
+        "macro": "STRING_CHIP",
+        "encoding": "ascii",
+        "data": "Chip"
+    },
+    {
+        "macro": "STRING_CLOCK",
+        "encoding": "ascii",
+        "data": "Clock"
+    },
+    {
+        "macro": "STRING_SERIAL",
+        "encoding": "ascii",
+        "data": "Serial"
+    },
+    {
+        "macro": "STRING_MAC",
+        "encoding": "ascii",
+        "data": "MAC"
+    },
+    {
+        "macro": "STRING_CORES",
+        "encoding": "ascii",
+        "data": "Cores"
+    },
+    {
+        "macro": "STRING_UNKNOWN",
+        "encoding": "ascii",
+        "data": "UNKNOWN"
+    },
+    {
+        "macro": "STRING_GAMES",
+        "encoding": "ascii",
+        "data": "Games"
+    },
+    {
+        "macro": "STRING_REBOOT",
+        "encoding": "ascii",
+        "data": "Reboot"
+    },
+    {
+        "macro": "STRING_WEBSITE",
+        "encoding": "ascii",
+        "data": "Website"
+    },
+    {
+        "macro": "STRING_BSIDES",
+        "encoding": "ascii",
+        "data": "BSides"
+    },
+    {
+        "macro": "URL_BSIDES",
+        "encoding": "ascii",
+        "data": "https://www.bsidesau.com.au/"
+    },
+    {
+        "macro": "STRING_GAMEOVER",
+        "encoding": "ascii",
+        "data": "Game Over"
+    },
+    {
+        "macro": "STRING_TOOLS",
+        "encoding": "ascii",
+        "data": "Tools"
+    },
+    {
+        "macro": "STRING_SNAKE",
+        "encoding": "ascii",
+        "data": "Snake"
+    },
+    {
+        "macro": "STRING_TETRIS",
+        "encoding": "ascii",
+        "data": "Tetris"
+    },
+    {
+        "macro": "STRING_NEXT_UPPER",
+        "encoding": "ascii",
+        "data": "NEXT"
+    },
+    {
+        "macro": "STRING_DIAGRAM",
+        "encoding": "ascii",
+        "data": "Diagram"
+    },
+    {
+        "macro": "STRING_NOTES",
+        "encoding": "ascii",
+        "data": "Notes"
+    },
+    {
+        "macro": "STRING_DATASHEET",
+        "encoding": "ascii",
+        "data": "Datasheet"
+    },
+    {
+        "macro": "STRING_SNIFF",
+        "encoding": "ascii",
+        "data": "Sniff"
+    },
+    {
+        "macro": "STRING_PAUSE",
+        "encoding": "ascii",
+        "data": "Pause"
+    },
+    {
+        "macro": "STRING_READING",
+        "encoding": "ascii",
+        "data": "Reading"
+    },
+    {
+        "macro": "STRING_LEDS",
+        "encoding": "ascii",
+        "data": "LEDs"
+    },
+    {
+        "macro": "STRING_LEDS_LOWER",
+        "encoding": "ascii",
+        "data": "leds"
+    },
+    {
+        "macro": "STRING_GPIO_UPPER",
+        "encoding": "ascii",
+        "data": "GPIO"
+    },
+    {
+        "macro": "STRING_GPIO_LOWER",
+        "encoding": "ascii",
+        "data": "gpio"
+    },
+    {
+        "macro": "STRING_WIFISCAN",
+        "encoding": "ascii",
+        "data": "wifiscan"
+    },
+    {
+        "macro": "STRING_WIFISCAN_CAMELCASE",
+        "encoding": "ascii",
+        "data": "WifiScan"
+    },
+    {
+        "macro": "STRING_MCP23S17_UPPER",
+        "encoding": "ascii",
+        "data": "MCP23S17"
+    },
+    {
+        "macro": "STRING_MCP23S17_LOWER",
+        "encoding": "ascii",
+        "data": "mcp23S17"
+    },
+    {
+        "macro": "STRING_MCP23017_UPPER",
+        "encoding": "ascii",
+        "data": "MCP23017"
+    },
+    {
+        "macro": "STRING_MCP23017_LOWER",
+        "encoding": "ascii",
+        "data": "mcp23017"
+    },
+    {
+        "macro": "STRING_I2C_ADDR_LABEL",
+        "encoding": "ascii",
+        "data": "Addr: "
+    },
+    {
+        "macro": "STRING_IO",
+        "encoding": "ascii",
+        "data": "IO"
+    },
+    {
+        "macro": "STRING_IOA",
+        "encoding": "ascii",
+        "data": "IOA"
+    },
+    {
+        "macro": "STRING_IOB",
+        "encoding": "ascii",
+        "data": "IOB"
+    },
+    {
+        "macro": "STRING_ON",
+        "encoding": "ascii",
+        "data": "ON"
+    },
+    {
+        "macro": "STRING_OFF",
+        "encoding": "ascii",
+        "data": "OFF"
+    },
+    {
+        "macro": "STRING_I2CDETECT",
+        "encoding": "ascii",
+        "data": "i2cdetect"
+    },
+    {
+        "macro": "STRING_I2CSNIFF",
+        "encoding": "ascii",
+        "data": "i2csniff"
+    },
+    {
+        "macro": "STRING_SPISNIFF",
+        "encoding": "ascii",
+        "data": "spisniff"
+    },
+    {
+        "macro": "STRING_UARTTERM",
+        "encoding": "ascii",
+        "data": "uartterm"
+    },
+    {
+        "macro": "STRING_UART_CONFIG_UNKNOWN",
+        "encoding": "ascii",
+        "data": "XXX"
+    },
+    {
+        "macro": "STRING_BAUD",
+        "encoding": "ascii",
+        "data": "Baud"
+    },
+    {
+        "macro": "STRING_CONFIG",
+        "encoding": "ascii",
+        "data": "Config"
+    },
+    {
+        "macro": "STRING_TERMINAL",
+        "encoding": "ascii",
+        "data": "Terminal"
+    },
+    {
+        "macro": "STRING_RX1",
+        "encoding": "ascii",
+        "data": "RX1"
+    },
+    {
+        "macro": "STRING_TX1",
+        "encoding": "ascii",
+        "data": "TX1"
+    },
+    {
+        "macro": "FMT_TITLE",
+        "encoding": "ascii",
+        "data": "==== %s ====\n"
+    },
+    {
+        "macro": "FMT_MENU_ITEM",
+        "encoding": "ascii",
+        "data": "%c %s\n"
+    },
+    {
+        "macro": "FMT_LINE",
+        "encoding": "ascii",
+        "data": "%s\n"
+    },
+    {
+        "macro": "FMT_HEX_BYTE_UPPER",
+        "encoding": "ascii",
+        "data": "%02X"
+    },
+    {
+        "macro": "FMT_I2C_ADDR",
+        "encoding": "ascii",
+        "data": "0x%02x"
+    },
+    {
+        "macro": "FMT_URL",
+        "encoding": "ascii",
+        "data": "URL: %s\n"
+    },
+    {
+        "macro": "FMT_SCORE",
+        "encoding": "ascii",
+        "data": "%8d"
+    },
+    {
+        "macro": "FMT_SIZE_IN_MB",
+        "encoding": "ascii",
+        "data": "%dMB"
+    },
+    {
+        "macro": "FMT_FREQ_IN_MHZ",
+        "encoding": "ascii",
+        "data": "%dMHz"
+    },
+    {
+        "macro": "FMT_MAC_ADDR",
+        "encoding": "ascii",
+        "data": "%02x:%02x:%02x:%02x:%02x:%02x"
+    },
+    {
+        "macro": "FMT_CORE",
+        "encoding": "ascii",
+        "data": "%02x:%02x:%02x:%02x:%02x:%02x"
+    },
+    {
+        "macro": "FMT_CORE_S",
+        "encoding": "ascii",
+        "data": "%d core%s"
+    },
+    {
+        "macro": "FMT_ABOUT_STRING",
+        "encoding": "ascii",
+        "data": "%6s: %s\n"
+    },
+    {
+        "macro": "FMT_ABOUT_SIZE",
+        "encoding": "ascii",
+        "data": "%6s: %dMB\n"
+    },
+    {
+        "macro": "FMT_ABOUT_FREQ",
+        "encoding": "ascii",
+        "data": "%6s: %dMHz\n"
+    },
+    {
+        "macro": "FMT_ABOUT_NUMBER",
+        "encoding": "ascii",
+        "data": "%6s: %d\n"
+    },
+    {
+        "macro": "FMT_ABOUT_MAC",
+        "encoding": "ascii",
+        "data": "%6s: %02x:%02x:%02x:%02x:%02x:%02x\n"
+    },
+    {
+        "macro": "CHIP_ESP32",
+        "encoding": "ascii",
+        "data": "ESP32"
+    },
+    {
+        "macro": "CHIP_ESP32S2",
+        "encoding": "ascii",
+        "data": "ESP32-S2"
+    },
+    {
+        "macro": "CHIP_ESP32S3",
+        "encoding": "ascii",
+        "data": "ESP32-S3"
+    },
+    {
+        "macro": "CHIP_ESP32C3",
+        "encoding": "ascii",
+        "data": "ESP32-C3"
+    },
+    {
+        "macro": "CHIP_ESP32H2",
+        "encoding": "ascii",
+        "data": "ESP32-H2"
+    },
+    {
+        "macro": "DIAGRAM_HEADER",
+        "encoding": "ascii",
+        "data": "  bPod           %8s\n"
+    },
+    {
+        "macro": "DIAGRAM_OTHER",
+        "encoding": "ascii",
+        "data": "other"
+    },
+    {
+        "macro": "DIAGRAM_GND",
+        "encoding": "ascii",
+        "data": "GND"
+    },
+    {
+        "macro": "DIAGRAM_3V",
+        "encoding": "ascii",
+        "data": "3V"
+    },
+    {
+        "macro": "DIAGRAM_SCK",
+        "encoding": "ascii",
+        "data": "SCK"
+    },
+    {
+        "macro": "DIAGRAM_SDA",
+        "encoding": "ascii",
+        "data": "SDA"
+    },
+    {
+        "macro": "DIAGRAM_CS",
+        "encoding": "ascii",
+        "data": "~CS"
+    },
+    {
+        "macro": "DIAGRAM_MOSI",
+        "encoding": "ascii",
+        "data": "MOSI"
+    },
+    {
+        "macro": "DIAGRAM_MISO",
+        "encoding": "ascii",
+        "data": "MISO"
+    },
+    {
+        "macro": "DIAGRAM_CLK",
+        "encoding": "ascii",
+        "data": "CLK"
+    },
+    {
+        "macro": "DIAGRAM_CONSOLE_INPUT",
+        "encoding": "ascii",
+        "data": "o [%s]"
+    },
+    {
+        "macro": "DIAGRAM_CONSOLE_OUTPUT",
+        "encoding": "ascii",
+        "data": "[%s]"
+    },
+    {
+        "macro": "I2CDETECT_CONSOLE_TAB",
+        "encoding": "ascii",
+        "data": "   "
+    },
+    {
+        "macro": "I2CDETECT_CONSOLE_FMT_COLUMN",
+        "encoding": "ascii",
+        "data": " %2x"
+    },
+    {
+        "macro": "I2CDETECT_CONSOLE_FMT_ROW",
+        "encoding": "ascii",
+        "data": "%02x:\n"
+    },
+    {
+        "macro": "I2CDETECT_GFX_FMT_COLUMN",
+        "encoding": "ascii",
+        "data": "%01X"
+    },
+    {
+        "macro": "I2CDETECT_GFX_FMT_ROW",
+        "encoding": "ascii",
+        "data": "%02X"
+    },
+    {
+        "macro": "I2CDETECT_ADDR_NOT_FOUND",
+        "encoding": "ascii",
+        "data": "--"
+    },
+    {
+        "macro": "I2CDETECT_ADDR_NOT_USED",
+        "encoding": "ascii",
+        "data": "  "
+    },
+    {
+        "macro": "I2CSNIFF_NOTES",
+        "encoding": "file_text",
+        "data": "../apps/i2csniff/notes.txt"
+    },
+    {
+        "macro": "MCP23S17_NOTES",
+        "encoding": "file_text",
+        "data": "../apps/mcp23S17/notes.txt"
+    },
+    {
+        "macro": "MCP23S17_DATASHEET_URL",
+        "encoding": "file_text",
+        "data": "../apps/mcp23S17/datasheet.txt"
+    },
+    {
+        "macro": "MCP23017_NOTES",
+        "encoding": "file_text",
+        "data": "../apps/mcp23017/notes.txt"
+    },
+    {
+        "macro": "MCP23017_DATASHEET_URL",
+        "encoding": "file_text",
+        "data": "../apps/mcp23017/datasheet.txt"
+    },
+    {
+        "macro": "UARTTERM_NOTES",
+        "encoding": "file_text",
+        "data": "../apps/uartterm/notes.txt"
+    },
+    {
+        "macro": "GRID_ASCII_LEFT_CORNER",
+        "encoding": "ascii",
+        "data": "+"
+    },
+    {
+        "macro": "GRID_ASCII_TOP_BOTTOM_WALL",
+        "encoding": "ascii",
+        "data": "-"
+    },
+    {
+        "macro": "GRID_ASCII_RIGHT_CORNER",
+        "encoding": "ascii",
+        "data": "+\n"
+    },
+    {
+        "macro": "GRID_ASCII_LEFT_WALL",
+        "encoding": "ascii",
+        "data": "|"
+    },
+    {
+        "macro": "GRID_ASCII_EMPTY",
+        "encoding": "ascii",
+        "data": " "
+    },
+    {
+        "macro": "GRID_ASCII_RIGHT_WALL",
+        "encoding": "ascii",
+        "data": "|\n"
+    },
+    {
+        "macro": "BLOCK_APPLE",
+        "encoding": "ascii",
+        "data": "<>"
+    },
+    {
+        "macro": "BLOCK_SQUARE",
+        "encoding": "ascii",
+        "data": "[]"
+    },
+    {
+        "macro": "BLOCK_EMPTY",
+        "encoding": "ascii",
+        "data": "  "
+    },
+    {
+        "macro": "SCHEDULE_DAY_TIME_SEP",
+        "encoding": "ascii",
+        "data": " - "
+    },
+    {
+        "macro": "SCHEDULE_NL_SEP",
+        "encoding": "ascii",
+        "data": "\n"
+    },
+    {
+        "macro": "SCHEDULE_NLNL_SEP",
+        "encoding": "ascii",
+        "data": "\n"
+    },
+    {
+        "macro": "SCHEDULE_TALK_BIO_SEP",
+        "encoding": "ascii",
+        "data": "\n\nBIO:\n"
+    },
+    {
+        "macro": "GAME_SCORE_SUBMIT_URL",
+        "encoding": "file_text",
+        "data": "../../server/score_submit_url.txt"
+    }
+]

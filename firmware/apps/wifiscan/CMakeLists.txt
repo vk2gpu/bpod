@@ -7,4 +7,5 @@ target_include_directories(AppWifiScan
 )
 target_link_libraries(AppWifiScan
     AppMenu
+    stringdb
 )

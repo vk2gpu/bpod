@@ -4,6 +4,7 @@
 #include <App/Tetris.hpp>
 #include <ctf.h>
 #include <score.h>
+#include <stringdb.h>
 
 uint8_t rng_part(uint16_t value, uint8_t i)
 {
@@ -42,9 +43,9 @@ Tetris tetris;
 
 static bool init_rng = true;
 void GameMenu::begin(BpodMenu &menu) {
-    menu.set_title("Games");
-    menu.add("Snake", [](){ App::manager_begin(snake); });
-    menu.add("Tetris", [](){ App::manager_begin(tetris); });
+    menu.set_title(STRING(STRING_GAMES));
+    menu.add(STRING(STRING_SNAKE), [](){ App::manager_begin(snake); });
+    menu.add(STRING(STRING_TETRIS), [](){ App::manager_begin(tetris); });
     if ( init_rng )
     {
         init_rng = false;

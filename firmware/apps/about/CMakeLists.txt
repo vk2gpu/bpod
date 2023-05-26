@@ -8,4 +8,5 @@ target_include_directories(AppAbout
 target_link_libraries(AppAbout
     App
     Images
+    stringdb
 )

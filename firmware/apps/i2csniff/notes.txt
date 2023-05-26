@@ -1,0 +1,13 @@
+Limited i2c traffic sniffing tool. Due to small buffers and limited chip speed,
+this is a best-effort to read and decode i2c traffic. Attach bPod to i2c lines
+running between an existing master and slave(s) following the wiring diagram.
+
+Example:
+ S20W+13+FF+s
+  S : start bit
+  20: addr
+  W : write
+  + : ack
+  13: data
+  FF: data
+  s : stop bit

@@ -1,18 +1,5 @@
 #include "I2CSniff.hpp"
-
-const static char *NOTES = "" \
-    "Limited i2c traffic sniffing tool. Due to small buffers and limited chip speed, " \
-    "this is a best-effort to read and decode i2c traffic. Attach bPod to i2c lines running " \
-    "between an existing master and slave(s) following the wiring diagram. \n\n" \
-    "Example:\n" \
-    " S20W+13+FF+s\n" \
-    "  S : start bit\n" \
-    "  20: addr\n" \
-    "  W : write\n" \
-    "  + : ack\n" \
-    "  13: data\n" \
-    "  FF: data\n" \
-    "  s : stop bit\n";
+#include <stringdb.h>
 
 #define I2C_PIN_SDA 8
 #define I2C_PIN_SCL 9
@@ -233,7 +220,7 @@ static int i2c_read_byte(uint8_t *v)
 
 void I2CSniffMonitor::begin()
 {
-    TextView::set_title("Reading");
+    TextView::set_title(STRING(STRING_READING));
     TextView::set_dark_mode();
     TextView::begin();
 
@@ -254,11 +241,11 @@ void I2CSniffMonitor::key_event(uint8_t key)
     {
         pause_ = !pause_;
         if ( pause_ ) {
-            TextView::set_title("Paused");
+            TextView::set_title(STRING(STRING_PAUSE));
         }
         else
         {
-            TextView::set_title("Reading");
+            TextView::set_title(STRING(STRING_READING));
         }
     }
     TextView::key_event(key);
@@ -313,23 +300,23 @@ void I2CSniffMonitor::end()
 }
 
 void I2CSniff::begin(BpodMenu &menu) {
-    menu.set_title("i2csniff");
-    menu.add("Sniff", [this](){
+    menu.set_title(STRING(STRING_I2CSNIFF));
+    menu.add(STRING(STRING_SNIFF), [this](){
         App::manager_begin(sniff_);
     });
-    menu.add("Diagram", [this](){
-        diagram_.set_title("Diagram");
+    menu.add(STRING(STRING_DIAGRAM), [this](){
+        diagram_.set_title(STRING(STRING_DIAGRAM));
         diagram_.add_gnd_label();
-        diagram_.add_pin_label(9, "SCK", 0xffff, 0x8170);
-        diagram_.add_pin_label(8, "SDA", 0x0000, 0x07e0);
+        diagram_.add_pin_label(9, STRING(DIAGRAM_SCK), 0xffff, 0x8170);
+        diagram_.add_pin_label(8, STRING(DIAGRAM_SDA), 0x0000, 0x07e0);
         diagram_.add_wire_gnd();
-        diagram_.add_wire(9, "SCK", 0xffff, 0x8170);
-        diagram_.add_wire(8, "SDA", 0x0000, 0x07e0);
+        diagram_.add_wire(9, STRING(DIAGRAM_SCK), 0xffff, 0x8170);
+        diagram_.add_wire(8, STRING(DIAGRAM_SDA), 0x0000, 0x07e0);
         App::manager_begin(diagram_);
     });
-    menu.add("Notes", [this](){
-        notes_.set_title("Notes");
-        notes_.set_text(std::string(NOTES));
+    menu.add(STRING(STRING_NOTES), [this](){
+        notes_.set_title(STRING(STRING_NOTES));
+        notes_.set_text(std::string(STRING(I2CSNIFF_NOTES)));
         App::manager_begin(notes_);
     });
 }

@@ -10,4 +10,5 @@ target_include_directories(Animations
 target_link_libraries(Animations
     Adafruit-GFX-Library
     Images
+    stringdb
 )

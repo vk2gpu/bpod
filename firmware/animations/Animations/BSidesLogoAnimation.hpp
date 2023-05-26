@@ -3,6 +3,8 @@
 #include <Adafruit_GFX.h>
 #include <Images/BSidesLogo.hpp>
 
+#include <stringdb.h>
+
 #define BSIDES2023_LOGO_ASCII "" \
     "888888b.    .d8888b.  d8b      888                    .d8888b.   .d8888b.   .d8888b.   .d8888b.\n" \
     "888  \"88b  d88P  Y88b Y8P      888                   d88P  Y88b d88P  Y88b d88P  Y88b d88P  Y88b\n" \
@@ -39,9 +41,7 @@ class BSidesLogoAnimation
             devid |= (((uint32_t)sta_mac[3]) << 16) & 0x00ff0000;
             devid |= (((uint32_t)sta_mac[2]) << 24) & 0xff000000;
             char ipsn[12];
-            ipsn[0] = 'F';
-            ipsn[1] = '7';
-            ipsn[2] = 'Z';
+            STRING_MEMCPY(&ipsn[0], SERIAL_3BYTE_PREFIX);
             uint32_t value = devid;
             for (size_t i = 0; i < 5; i++ )
             {
@@ -56,10 +56,7 @@ class BSidesLogoAnimation
                     ipsn[3 + i] = 'A' + (digit - 10);
                 }
             }
-            ipsn[8] = '3';
-            ipsn[9] = 'Q';
-            ipsn[10] = 'U';
-            ipsn[11] = '\0';
+            STRING_STRCPY(&ipsn[8], SERIAL_3BYTE_SUFFIX);
             // FUTURE: calculate these values (rather than assume ST7735 screen)
             gfx.setTextColor(0x4208, 0x0000);
             gfx.setTextSize(1);

@@ -7,4 +7,5 @@ target_include_directories(AppGPIO
 )
 target_link_libraries(AppGPIO
     AppMenu
+    stringdb
 )

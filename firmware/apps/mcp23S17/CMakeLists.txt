@@ -10,4 +10,5 @@ target_link_libraries(AppMCP23S17
     AppDiagramView
     AppTextView
     AppQrCodeView
+    stringdb
 )

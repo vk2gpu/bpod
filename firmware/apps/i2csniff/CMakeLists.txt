@@ -10,4 +10,5 @@ target_link_libraries(AppI2CSniff
     AppMenu
     AppDiagramView
     AppTextView
+    stringdb
 )

@@ -7,4 +7,5 @@ target_include_directories(AppLeds
 )
 target_link_libraries(AppLeds
     AppMenu
+    stringdb
 )

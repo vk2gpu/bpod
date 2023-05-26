@@ -10,4 +10,5 @@ target_link_libraries(AppUARTTerm
     AppMenu
     AppTextView
     AppDiagramView
+    stringdb
 )

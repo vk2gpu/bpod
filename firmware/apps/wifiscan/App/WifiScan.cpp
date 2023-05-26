@@ -1,6 +1,7 @@
 #include "WifiScan.hpp"
 
 #include <WiFi.h>
+#include <stringdb.h>
 
 void WifiScan::begin()
 {
@@ -14,7 +15,7 @@ void WifiScan::begin()
 }
 
 void WifiScan::begin(BpodMenu &menu) {
-    menu.set_title("WifiScan");
+    menu.set_title(STRING(STRING_WIFISCAN_CAMELCASE));
 }
 
 static void *scan_thread(void *ctx)
@@ -49,7 +50,7 @@ void WifiScan::loop()
         last_scan_ = millis();
         size_t pos = Menu::pos();
         Menu::menu().clear();
-        Menu::menu().set_title("WifiScan");
+        Menu::menu().set_title(STRING(STRING_WIFISCAN_CAMELCASE));
         for (int i = 0; i < n; ++i) {
             Menu::menu().add(WiFi.SSID(i).c_str(), [](){} );
         }

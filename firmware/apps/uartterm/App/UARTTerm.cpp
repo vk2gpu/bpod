@@ -1,18 +1,6 @@
 #include "UARTTerm.hpp"
 
-const static char *NOTES = "" \
-    "To view UART messages, use the wiring diagram to " \
-    "join the bPod to the other device. Once wired, select " \
-    "baud rate (how fast the other device is transmitting) and "\
-    "config (data bits, parity bit and stop bit).\n" \
-    "Example 8N1:\n" \
-    " - 8 data bits\n" \
-    " - No parity bit\n" \
-    " - 1 stop bit\n" \
-    "You can then select Terminal to start seeing messages. You can " \
-    "press play to stop and resume the capture. Note that you " \
-    "wire TX-->RX and RX-->TX between devices.\n" \
-    "If using USB, this becomes a terminal - exit with CTRL+Q.";
+#include <stringdb.h>
 
 static uint32_t baud_rate_list[] = {
     300,
@@ -67,12 +55,12 @@ static const char *config_to_string(uint32_t config)
             return config_list[i].name;
         }
     }
-    return "XXX";
+    return STRING(STRING_UART_CONFIG_UNKNOWN);
 }
 
 void UARTTermBaudRate::begin(BpodMenu &menu)
 {
-    menu.set_title("Baud");
+    menu.set_title(STRING(STRING_BAUD));
     for ( size_t i = 0; i < sizeof(baud_rate_list) / sizeof(baud_rate_list[0]); i++ )
     {
         uint32_t b = baud_rate_list[i];
@@ -96,7 +84,7 @@ uint32_t UARTTermBaudRate::baud()
 
 void UARTTermConfig::begin(BpodMenu &menu)
 {
-    menu.set_title("Config");
+    menu.set_title(STRING(STRING_CONFIG));
     for ( size_t i = 0; i < sizeof(config_list) / sizeof(config_list[0]); i++ )
     {
         uint32_t c = config_list[i].value;
@@ -130,11 +118,11 @@ void UARTTermOutput::key_event(uint8_t key)
     {
         pause_ = !pause_;
         if ( pause_ ) {
-            TextView::set_title("Paused");
+            TextView::set_title(STRING(STRING_PAUSE));
         }
         else
         {
-            TextView::set_title("Reading");
+            TextView::set_title(STRING(STRING_READING));
         }
     }
     TextView::key_event(key);
@@ -174,29 +162,37 @@ void UARTTermOutput::end()
 
 void UARTTerm::begin(BpodMenu &menu)
 {
-    menu.set_title("uartterm");
+    menu.set_title(STRING(STRING_UARTTERM));
     menu.add(std::to_string(baud()), [this](){ App::manager_begin(baud_); });
+    STRING_CACHE();
     menu.add(config_to_string(config()), [this](){ App::manager_begin(config_); });
-    menu.add("Terminal", [this](){
+    STRING_CLEAR();
+    menu.add(STRING(STRING_TERMINAL), [this](){
         Serial1.end();
         Serial1.setRxBufferSize(0x1000);
         Serial1.begin(baud(), config());
-        output_.set_title("Reading");
+        output_.set_title(STRING(STRING_READING));
         App::manager_begin(output_);
     });
-    menu.add("Diagram", [this](){
-        diagram_.set_title("Diagram");
+    menu.add(STRING(STRING_DIAGRAM), [this](){
+        diagram_.set_title(STRING(STRING_DIAGRAM));
         diagram_.add_gnd_label();
-        diagram_.add_pin_label(17, "TX1", 0x0000, 0x07e0);  // GREEN / BLACK
-        diagram_.add_pin_label(18, "RX1", 0xffff, 0x001f);  // BLUE / BLACK
-        diagram_.add_wire(17, "RX", 0xffff, 0x001f);
-        diagram_.add_wire(18, "TX", 0x0000, 0x07e0);
+        char tx[4];
+        char rx[4];
+        STRING_STRCPY(tx, STRING_TX1);
+        STRING_STRCPY(rx, STRING_RX1);
+        diagram_.add_pin_label(17, tx, 0x0000, 0x07e0);  // GREEN / BLACK
+        diagram_.add_pin_label(18, rx, 0xffff, 0x001f);  // BLUE / BLACK
+        tx[2] = '\0';
+        rx[2] = '\0';
+        diagram_.add_wire(17, rx, 0xffff, 0x001f);
+        diagram_.add_wire(18, tx, 0x0000, 0x07e0);
         diagram_.add_wire_gnd();
         App::manager_begin(diagram_);
     });
-    menu.add("Notes", [this](){
-        notes_.set_title("Notes");
-        notes_.set_text(std::string(NOTES));
+    menu.add(STRING(STRING_NOTES), [this](){
+        notes_.set_title(STRING(STRING_NOTES));
+        notes_.set_text(std::string(STRING(UARTTERM_NOTES)));
         App::manager_begin(notes_);
     });
 }
@@ -205,7 +201,9 @@ void UARTTerm::visible()
 {
     // update text on the menu, but keep the scroll position
     Menu::set(0, std::to_string(baud()));
+    STRING_CACHE();
     Menu::set(1, config_to_string(config()));
+    STRING_CLEAR();
 
     // don't need to keep the notes and diagram
     notes_.clear();

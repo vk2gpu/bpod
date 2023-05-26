@@ -14,4 +14,5 @@ target_link_libraries(AppMainMenu
     AppToolMenu
     AppAbout
     score
+    stringdb
 )

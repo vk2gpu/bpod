@@ -1,0 +1,6 @@
+The MCP23017 is a GPIO expander chip. To control the GPIO, follow the wiring diagram 
+to connect the needed power and I2C lines. Each I2C device has its own address ranging 
+from 0x00 to 0x7f. The MCP23017 allows you to set its address using pins A0 A1 A2. If you 
+connect A0 A1 A2 to GND, the address is 0x20. If you connect A0 A1 A2 to 3V, the address 
+is 0x2f. Hence you can have multiple devices connected to the one pair of SDA/SCK wires. Make sure 
+you select the correct I2C address so your GPIO commands go to the right chip.

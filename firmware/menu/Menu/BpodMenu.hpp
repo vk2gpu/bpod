@@ -4,10 +4,10 @@
 #include <vector>
 #include <functional>
 #include <Adafruit_GFX.h>
-
 #include <Images/BpodTitleBar.hpp>
 #include <Images/BpodScrollBar.hpp>
 #include <Images/BpodMenuItem.hpp>
+#include <stringdb.h>
 
 class BpodMenu
 {
@@ -84,11 +84,11 @@ class BpodMenu
         };
         void draw_output()
         {
-            printf("\x1b[2J");
-            printf("==== %s ====\n", title_.c_str());
+            printf(STRING(CONSOLE_CLEAR));
+            printf(STRING(FMT_TITLE), title_.c_str());
             for ( size_t i = 0; i < name_.size(); i++ )
             {
-                printf("%c %s\n", i == pos_ ? '*' : ' ', name_[i].c_str());
+                printf(STRING(FMT_MENU_ITEM), i == pos_ ? '*' : ' ', name_[i].c_str());
             }
         }
         void draw(Adafruit_GFX &gfx) {

@@ -8,4 +8,5 @@ target_include_directories(Menu
 target_link_libraries(Menu
     Adafruit-GFX-Library
     Images
+    stringdb
 )

@@ -3,6 +3,7 @@
 #include <Images/BpodTitleBar.hpp>
 #include <Images/SnakeApple6x6.hpp>
 #include <score.h>
+#include <stringdb.h>
 
 #define SNAKE_KEY_RIGHT     (0)
 #define SNAKE_KEY_UP        (1)
@@ -34,7 +35,9 @@ static void SNKC_API snakec_game_over(void *ctx, uint16_t score)
     delay(1000);
     App::manager_end();
     char buf[512];
-    std::string s(get_surl(buf, sizeof(buf), "http://127.0.0.1:8000/index.html", SCORE_CODE_SNAKE, score));
+    char url[512];
+    STRING_STRCPY(url, GAME_SCORE_SUBMIT_URL);
+    std::string s(get_surl(buf, sizeof(buf), url, SCORE_CODE_SNAKE, score));
     reinterpret_cast<Snake*>(ctx)->s_.set_text(s);
     App::manager_begin(reinterpret_cast<Snake*>(ctx)->s_);
 }
@@ -55,7 +58,7 @@ void Snake::begin(void)
     redraw_ = true;
     prev_score_ = 0xffffffff;  // make it redraw on first frame
     wait_for_draw_ = false;
-    s_.set_title("Game Over");
+    s_.set_title(STRING(STRING_GAMEOVER));
 }
 
 void Snake::key_event(uint8_t key)
@@ -195,19 +198,25 @@ void Snake::draw_end_frame(Adafruit_GFX &gfx) {
                     // apple
                     gfx.fillRect(x, y, SNAKE_SQUARE_SIZE, SNAKE_SQUARE_SIZE, 0xffff);
                     SnakeApple6x6::draw(x, y, gfx);
-                    printf("\x1b[%d;%dH<>\n", gy + 2, (gx + 1) * 2);
+                    STRING_CACHE();
+                    printf(STRING(CONSOLE_CURSOR_STRING), gy + 2, (gx + 1) * 2, STRING(BLOCK_APPLE));
+                    STRING_CLEAR();
                 }
                 else if ( snake_canvas_[i] & 0x01 )
                 {
                     // snake
                     gfx.fillRect(x, y, SNAKE_SQUARE_SIZE, SNAKE_SQUARE_SIZE, 0x0000);
-                    printf("\x1b[%d;%dH[]\n", gy + 2, (gx + 1) * 2);
+                    STRING_CACHE();
+                    printf(STRING(CONSOLE_CURSOR_STRING), gy + 2, (gx + 1) * 2, STRING(BLOCK_SQUARE));
+                    STRING_CLEAR();
                 }
                 else
                 {
                     // empty
                     gfx.fillRect(x, y, SNAKE_SQUARE_SIZE, SNAKE_SQUARE_SIZE, 0xffff);
-                    printf("\x1b[%d;%dH  \n", gy + 2, (gx + 1) * 2);
+                    STRING_CACHE();
+                    printf(STRING(CONSOLE_CURSOR_STRING), gy + 2, (gx + 1) * 2, STRING(BLOCK_EMPTY));
+                    STRING_CLEAR();
                 }
             }
 
@@ -222,29 +231,29 @@ void Snake::draw(Adafruit_GFX &gfx)
     // redraw on game start
     if ( redraw_ )
     {
-        BpodTitleBar::draw(gfx, "Snake");
+        BpodTitleBar::draw(gfx, STRING(STRING_SNAKE));
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
         gfx.drawRect(SNAKE_GRID_OFFSET_X, SNAKE_GRID_OFFSET_Y, SNAKE_BOARDER_WIDTH, SNAKE_BOARDER_HEIGTH, 0x001F);
-        printf("\x1b[2J");
+        printf(STRING(CONSOLE_CLEAR));
         for ( size_t y = 0; y < (SNAKE_GRID_HEIGHT + 2); y++ )
         {
             if ( y == 0 || y == (SNAKE_GRID_HEIGHT + 1) )
             {
-                printf("+");
+                printf(STRING(GRID_ASCII_LEFT_CORNER));
                 for ( size_t x = 0; x < (SNAKE_GRID_WIDTH * 2); x++)
                 {
-                    printf("-");
+                    printf(STRING(GRID_ASCII_TOP_BOTTOM_WALL));
                 }
-                printf("+\n");
+                printf(STRING(GRID_ASCII_RIGHT_CORNER));
             }
             else
             {
-                printf("|");
+                printf(STRING(GRID_ASCII_LEFT_WALL));
                 for ( size_t x = 0; x < (SNAKE_GRID_WIDTH * 2); x++)
                 {
-                    printf(" ");
+                    printf(STRING(GRID_ASCII_EMPTY));
                 }
-                printf("|\n");
+                printf(STRING(GRID_ASCII_RIGHT_WALL));
             }
         }
         redraw_ = false;
@@ -271,9 +280,9 @@ void Snake::draw(Adafruit_GFX &gfx)
         gfx.setCursor(gfx.width() - text_width - 1, gfx.height() - text_height - 1);
         gfx.setTextSize(1, 1);
         char score_text[20];
-        sprintf(score_text, "%8d", score);
+        sprintf(score_text, STRING(FMT_SCORE), score);
         gfx.print(score_text);
-        printf("\x1b[%d;%dHScore: %8d\n", 23, 1, score);
+        printf(STRING(CONSOLE_POS_GAME_SCORE), 23, 1, score);
         prev_score_ = score;
     }
 }

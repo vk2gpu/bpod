@@ -9,4 +9,5 @@ target_link_libraries(AppQrCodeView
     qrcodegen
     App
     Images
+    stringdb
 )

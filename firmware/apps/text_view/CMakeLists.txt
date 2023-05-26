@@ -9,4 +9,5 @@ target_link_libraries(AppTextView
     viewerc
     App
     Images
+    stringdb
 )

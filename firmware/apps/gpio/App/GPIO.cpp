@@ -1,5 +1,7 @@
 #include "GPIO.hpp"
 
+#include <stringdb.h>
+
 #define GPIO_COUNT (3)
 static const uint8_t gpio_pin[GPIO_COUNT] = {
     5,
@@ -17,13 +19,17 @@ void GPIOs::begin()
 }
 
 void GPIOs::begin(BpodMenu &menu) {
-    menu.set_title("GPIO");
+    menu.set_title(STRING(STRING_GPIO_UPPER));
     for ( size_t i = 0; i < GPIO_COUNT; i++ )
     {
         uint8_t pin = gpio_pin[i];
-        menu.add("IO " + std::to_string(pin) + " " + std::string(digitalRead(pin) ? "ON" : "OFF"), [&menu, i, pin, this](){ 
+        STRING_CACHE();
+        menu.add(STRING(STRING_IO) + std::to_string(pin) + " " + std::string(digitalRead(pin) ? STRING(STRING_ON) : STRING(STRING_OFF)), [&menu, i, pin, this](){ 
             digitalWrite(pin, digitalRead(pin) ? 0 : 1);
-            menu.set(i, "IO " + std::to_string(pin) + " " + std::string(digitalRead(pin) ? "ON" : "OFF"));
+            STRING_CACHE();
+            menu.set(i, STRING(STRING_IO) + std::to_string(pin) + " " + std::string(digitalRead(pin) ? STRING(STRING_ON) : STRING(STRING_OFF)));
+            STRING_CLEAR();
         });
+        STRING_CLEAR();
     }
 }

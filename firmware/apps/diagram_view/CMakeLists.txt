@@ -8,4 +8,5 @@ target_include_directories(AppDiagramView
 target_link_libraries(AppDiagramView
     App
     Images
+    stringdb
 )

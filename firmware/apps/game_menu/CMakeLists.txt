@@ -11,4 +11,5 @@ target_link_libraries(AppGameMenu
     AppTetris
     ctf
     score
+    stringdb
 )

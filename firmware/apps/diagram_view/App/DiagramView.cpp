@@ -5,6 +5,8 @@
 
 #include <Fonts/Picopixel.h>
 
+#include <stringdb.h>
+
 #define PIN_COUNT       12
 #define PIN_TOP_Y       17
 #define PIN_BOTTOM_Y    145
@@ -19,7 +21,7 @@ void DiagramView::begin()
 
 void DiagramView::clear()
 {
-    this->other_name_ = "other";
+    this->other_name_ = STRING(DIAGRAM_OTHER);
     for ( size_t i = 0; i < PIN_COUNT; i++ )
     {
         label_[i].pin = 0;
@@ -35,7 +37,7 @@ void DiagramView::clear()
         label_[i].show_wiring = false;
     }
     label_[0].pin = 0xff;
-    label_[0].label = "GND";
+    label_[0].label = STRING(DIAGRAM_GND);
     label_[0].fg = 0xffff;
     label_[0].bg = 0x0000;
     label_[0].other_label = label_[0].label;
@@ -52,7 +54,7 @@ void DiagramView::clear()
     label_[9].pin = 17;
     label_[10].pin = 18;
     label_[11].pin = 0xff;
-    label_[11].label = "3V";
+    label_[11].label = STRING(DIAGRAM_3V);
     label_[11].fg = 0xffff;
     label_[11].bg = 0xf800;
     label_[11].other_label = label_[11].label;
@@ -191,15 +193,15 @@ void DiagramView::draw(Adafruit_GFX &gfx)
         redraw_ = false;
         BpodTitleBar::draw(gfx, title_);
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
-        printf("\x1b[2J");
-        printf("==== %s ====\n", title_.c_str());
-        printf("  bPod           %8s\n", other_name_.c_str());
+        printf(STRING(CONSOLE_CLEAR));
+        printf(STRING(FMT_TITLE), title_.c_str());
+        printf(STRING(DIAGRAM_HEADER), other_name_.c_str());
         for ( size_t i = 0; i < PIN_COUNT; i++ )
         {
             if ( label_[i].show )
             {
                 draw_pin_label(gfx, i, label_[i]);
-                printf("o [%s]", label_[i].label.c_str());
+                printf(STRING(DIAGRAM_CONSOLE_INPUT), label_[i].label.c_str());
                 if ( label_[i].show_wiring )
                 {
                     size_t count = (20 - label_[i].label.size() - label_[i].other_label.size());
@@ -207,7 +209,7 @@ void DiagramView::draw(Adafruit_GFX &gfx)
                     {
                         printf("-");
                     }
-                    printf("[%s]", label_[i].other_label.c_str());
+                    printf(STRING(DIAGRAM_CONSOLE_OUTPUT), label_[i].other_label.c_str());
                 }
                 printf("\n");
             }
@@ -230,7 +232,7 @@ void DiagramView::draw(Adafruit_GFX &gfx)
             gfx.setTextColor(0x0000, 0xffff);
             gfx.setTextSize(1);
             gfx.setCursor(2, 22);
-            gfx.print("bPod");
+            gfx.print(STRING(STRING_BPOD));
             gfx.setTextColor(0x0000, 0xffff);
             gfx.setTextSize(1);
             int16_t x = 60;

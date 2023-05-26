@@ -2,6 +2,7 @@
 
 #include <Images/BpodTitleBar.hpp>
 #include <score.h>
+#include <stringdb.h>
 
 static void TTRS_API tetrisc_begin_frame(void *ctx)
 {
@@ -33,7 +34,9 @@ static void TTRS_API tetrisc_game_over(void *ctx, uint16_t score)
     delay(1000);
     App::manager_end();
     char buf[512];
-    std::string s(get_surl(buf, sizeof(buf), "http://127.0.0.1:8000/index.html", SCORE_CODE_TETRIS, score));
+    char url[512];
+    STRING_STRCPY(url, GAME_SCORE_SUBMIT_URL);
+    std::string s(get_surl(buf, sizeof(buf), url, SCORE_CODE_TETRIS, score));
     reinterpret_cast<Tetris*>(ctx)->s_.set_text(s);
     App::manager_begin(reinterpret_cast<Tetris*>(ctx)->s_);
 }
@@ -57,7 +60,7 @@ void Tetris::begin(void)
     draw_end_frame_ = false;
     prev_score_ = 0xffffffff;  // make it redraw on first frame
     piece_type_ = TTRS_PIECE_TYPE_UNKNOWN;
-    s_.set_title("Game Over");
+    s_.set_title(STRING(STRING_GAMEOVER));
 }
 
 void Tetris::key_event(uint8_t key)
@@ -183,20 +186,26 @@ void Tetris::draw_block(Adafruit_GFX &gfx, int16_t gx, int16_t gy, int16_t x, in
     {
         // fixed
         gfx.fillRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, colour);
-        printf("\x1b[%d;%dH[]\n", gy + 1, (gx + 1) * 2);
+        STRING_CACHE();
+        printf(STRING(CONSOLE_CURSOR_STRING), gy + 1, (gx + 1) * 2, STRING(BLOCK_SQUARE));
+        STRING_CLEAR();
     }
     else if ( block_type & 0x7 )
     {
         // dropping
         gfx.fillRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, 0xffff);
         gfx.drawRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, colour);
-        printf("\x1b[%d;%dH[]\n", gy + 1, (gx + 1) * 2);
+        STRING_CACHE();
+        printf(STRING(CONSOLE_CURSOR_STRING), gy + 1, (gx + 1) * 2, STRING(BLOCK_SQUARE));
+        STRING_CLEAR();
     }
     else
     {
         // empty
         gfx.fillRect(x, y, TETRIS_SQUARE_SIZE, TETRIS_SQUARE_SIZE, 0xffff);
-        printf("\x1b[%d;%dH  \n", gy + 1, (gx + 1) * 2);
+        STRING_CACHE();
+        printf(STRING(CONSOLE_CURSOR_STRING), gy + 1, (gx + 1) * 2, STRING(BLOCK_EMPTY));
+        STRING_CLEAR();
     }
 }
 
@@ -244,36 +253,38 @@ void Tetris::draw(Adafruit_GFX &gfx)
     // redraw on game start
     if ( redraw_ )
     {
-        BpodTitleBar::draw(gfx, "Tetris");
+        BpodTitleBar::draw(gfx, STRING(STRING_TETRIS));
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
         gfx.drawRect(TETRIS_GRID_OFFSET_X, TETRIS_GRID_OFFSET_Y, TETRIS_BOARDER_WIDTH, TETRIS_BOARDER_HEIGTH, 0x001F);
         gfx.setCursor(TETRIS_NEXT_OFFSET_X + TETRIS_SQUARE_SIZE, TETRIS_NEXT_OFFSET_Y - TETRIS_SQUARE_SIZE - 2);
         gfx.setTextColor(0x0000);
         gfx.setTextSize(1, 1);
-        gfx.print("NEXT");
-        printf("\x1b[2J");
+        gfx.print(STRING(STRING_NEXT_UPPER));
+        printf(STRING(CONSOLE_CLEAR));
         for ( size_t y = 0; y < (TETRIS_GRID_HEIGHT + 1); y++ )
         {
             if ( y == TETRIS_GRID_HEIGHT )
             {
-                printf("+");
+                printf(STRING(GRID_ASCII_LEFT_CORNER));
                 for ( size_t x = 0; x < (TETRIS_GRID_WIDTH * 2); x++)
                 {
-                    printf("-");
+                    printf(STRING(GRID_ASCII_TOP_BOTTOM_WALL));
                 }
-                printf("+\n");
+                printf(STRING(GRID_ASCII_RIGHT_CORNER));
             }
             else
             {
-                printf("|");
+                printf(STRING(GRID_ASCII_LEFT_WALL));
                 for ( size_t x = 0; x < (TETRIS_GRID_WIDTH * 2); x++)
                 {
-                    printf(" ");
+                    printf(STRING(GRID_ASCII_EMPTY));
                 }
-                printf("|\n");
+                printf(STRING(GRID_ASCII_RIGHT_WALL));
             }
         }
-        printf("\x1b[%d;%dHNEXT\n", 10, 30);
+        STRING_CACHE();
+        printf(STRING(CONSOLE_CURSOR_STRING), 10, 30, STRING(STRING_NEXT_UPPER));
+        STRING_CLEAR();
         redraw_ = false;
     }
 
@@ -304,8 +315,8 @@ void Tetris::draw(Adafruit_GFX &gfx)
         gfx.setCursor(gfx.width() - text_width - 1, gfx.height() - text_height - 1);
         gfx.setTextSize(1, 1);
         char score_text[20];
-        sprintf(score_text, "%8d", score);
-        printf("\x1b[%d;%dHScore: %8d\n", 22, 1, score);
+        sprintf(score_text, STRING(FMT_SCORE), score);
+        printf(STRING(CONSOLE_POS_GAME_SCORE), 22, 1, score);
         gfx.print(score_text);
         prev_score_ = score;
     }

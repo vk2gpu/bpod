@@ -1,7 +1,7 @@
 #include "Schedule.hpp"
 
 #include <schedulec.h>
-
+#include <stringdb.h>
 #include <set>
 
 static std::string get_talk_value(size_t talk_index, size_t value_id)
@@ -18,7 +18,7 @@ static std::string get_talk_value(size_t talk_index, size_t value_id)
 }
 
 void Schedule::begin(BpodMenu &menu) {
-    menu.set_title("Schedule");
+    menu.set_title(STRING(STRING_SCHEDULE));
 
     std::set<std::string> days;
 

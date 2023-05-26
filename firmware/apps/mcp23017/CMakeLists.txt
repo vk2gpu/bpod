@@ -11,4 +11,5 @@ target_link_libraries(AppMCP23017
     AppTextView
     AppQrCodeView
     AppI2CDetect
+    stringdb
 )

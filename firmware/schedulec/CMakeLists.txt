@@ -20,4 +20,5 @@ target_include_directories(schedulec
 )
 target_link_libraries(schedulec
     __idf_arduino-esp32
+    stringdb
 )

@@ -9,4 +9,5 @@ target_link_libraries(AppSchedule
     AppMenu
     AppTextView
     schedulec
+    stringdb
 )

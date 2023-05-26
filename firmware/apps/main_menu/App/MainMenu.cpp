@@ -7,6 +7,7 @@
 #include <App/ToolMenu.hpp>
 #include <App/About.hpp>
 #include <score.h>
+#include <stringdb.h>
 
 Schedule scheudle;
 GameMenu game_menu;
@@ -15,16 +16,16 @@ ToolMenu tools;
 About about;
 
 void MainMenu::begin(BpodMenu &menu) {
-    menu.set_title("bPod");
-    menu.add("Schedule", [](){ App::manager_begin(scheudle); });
-    menu.add("Games", [](){ App::manager_begin(game_menu); });
-    menu.add("Tools", [](){ App::manager_begin(tools); });
-    menu.add("Reboot", [](){ esp_restart(); });
-    menu.add("Website", [](){
-        website.set_title("BSides");
-        website.set_text("https://www.bsidesau.com.au/");
+    menu.set_title(STRING(STRING_BPOD));
+    menu.add(STRING(STRING_SCHEDULE), [](){ App::manager_begin(scheudle); });
+    menu.add(STRING(STRING_GAMES), [](){ App::manager_begin(game_menu); });
+    menu.add(STRING(STRING_TOOLS), [](){ App::manager_begin(tools); });
+    menu.add(STRING(STRING_REBOOT), [](){ esp_restart(); });
+    menu.add(STRING(STRING_WEBSITE), [](){
+        website.set_title(STRING(STRING_BSIDES));
+        website.set_text(STRING(URL_BSIDES));
         App::manager_begin(website);
     });
-    menu.add("About", [](){ App::manager_begin(about); });
+    menu.add(STRING(STRING_ABOUT), [](){ App::manager_begin(about); });
     set_rm((read_mac_t)(void*)esp_efuse_mac_get_default);
 }

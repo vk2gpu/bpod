@@ -11,4 +11,5 @@ target_link_libraries(AppTetris
     Images
     tetrisc
     score
+    stringdb
 )

@@ -1,0 +1,15 @@
+To view UART messages, use the wiring diagram to 
+join the bPod to the other device. Once wired, select 
+baud rate (how fast the other device is transmitting) and 
+config (data bits, parity bit and stop bit).
+
+Example 8N1:
+ - 8 data bits
+ - No parity bit
+ - 1 stop bit
+
+You can then select Terminal to start seeing messages. You can 
+press play to stop and resume the capture. Note that you 
+wire TX-->RX and RX-->TX between devices.
+
+If using USB, this becomes a terminal - exit with CTRL+Q.

@@ -8,4 +8,5 @@ target_include_directories(AppI2CDetect
 target_link_libraries(AppI2CDetect
     App
     Images
+    stringdb
 )
