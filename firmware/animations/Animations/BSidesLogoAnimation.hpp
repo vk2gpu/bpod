@@ -31,7 +31,7 @@ class BSidesLogoAnimation
 {
     public:
         static void run(Adafruit_GFX &gfx) {
-            printf("\x1b[2J");
+            printf(STRING(CONSOLE_CLEAR));
             printf(BSIDES2023_LOGO_ASCII);
             uint8_t sta_mac[6];
             esp_efuse_mac_get_default(sta_mac);

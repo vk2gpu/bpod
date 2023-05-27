@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(bpod)
 
+add_subdirectory(tinyaes)
 add_subdirectory(stringdb)
 add_subdirectory(ctf)
 add_subdirectory(adafruit)
-add_subdirectory(tinyaes)
 add_subdirectory(touch)
 add_subdirectory(keys)
 add_subdirectory(score)

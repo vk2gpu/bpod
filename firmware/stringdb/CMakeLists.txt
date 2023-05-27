@@ -20,3 +20,6 @@ target_include_directories(stringdb
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
     PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
 )
+target_link_libraries(stringdb
+    tinyaes
+)

@@ -1,18 +1,6 @@
 #include "SPISniff.hpp"
 
-const static char *NOTES = "" \
-    "Limited SPI traffic sniffing tool. Due to small buffers and limited chip speed, " \
-    "this is a best-effort to read and decode SPI traffic. Attach bPod to SPI lines running " \
-    "between an existing master and slave following the wiring diagram. You need to connect the " \
-    "CS line so that only the selected slave is sniffed. Works with 10000Hz CLK, faster is going to get " \
-    "unreliable very quickly. NOTE that the wiring diagram DOES NOT use the marked SPI pins on " \
-    "the bPod - this would stop the screen working so we use other pins.\n\n" \
-    "Example:\n" \
-    " 12:34+56:78+\n" \
-    "  12 : MOSI\n" \
-    "  34 : MISO\n" \
-    "  56 : MOSI\n" \
-    "  78 : MISO\n";
+#include <stringdb.h>
 
 #define SPI_PIN_CS      7
 #define SPI_PIN_MISO    5
@@ -157,7 +145,7 @@ static int spi_read_byte(uint8_t *v)
 
 void SPISniffMonitor::begin()
 {
-    TextView::set_title("Reading");
+    TextView::set_title(STRING(STRING_READING));
     TextView::set_dark_mode();
     TextView::begin();
 
@@ -181,11 +169,11 @@ void SPISniffMonitor::key_event(uint8_t key)
     {
         pause_ = !pause_;
         if ( pause_ ) {
-            TextView::set_title("Paused");
+            TextView::set_title(STRING(STRING_PAUSE));
         }
         else
         {
-            TextView::set_title("Reading");
+            TextView::set_title(STRING(STRING_READING));
         }
     }
     TextView::key_event(key);
@@ -230,27 +218,27 @@ void SPISniffMonitor::end()
 }
 
 void SPISniff::begin(BpodMenu &menu) {
-    menu.set_title("spisniff");
-    menu.add("Sniff", [this](){
+    menu.set_title(STRING(STRING_SPISNIFF));
+    menu.add(STRING(STRING_SNIFF), [this](){
         App::manager_begin(sniff_);
     });
-    menu.add("Diagram", [this](){
-        diagram_.set_title("Diagram");
+    menu.add(STRING(STRING_DIAGRAM), [this](){
+        diagram_.set_title(STRING(STRING_DIAGRAM));
         diagram_.add_gnd_label();
-        diagram_.add_pin_label(SPI_PIN_CS, "IO" + std::to_string(SPI_PIN_CS), 0x0000, 0xffe0);
-        diagram_.add_pin_label(SPI_PIN_MISO, "IO" + std::to_string(SPI_PIN_MISO), 0xffff, 0x001f);
-        diagram_.add_pin_label(SPI_PIN_CLK, "SCK", 0xffff, 0x8170);
-        diagram_.add_pin_label(SPI_PIN_MOSI, "IO" + std::to_string(SPI_PIN_MOSI), 0x0000, 0x07e0);
+        diagram_.add_pin_label(SPI_PIN_CS, STRING(STRING_IO) + std::to_string(SPI_PIN_CS), 0x0000, 0xffe0);
+        diagram_.add_pin_label(SPI_PIN_MISO, STRING(STRING_IO) + std::to_string(SPI_PIN_MISO), 0xffff, 0x001f);
+        diagram_.add_pin_label(SPI_PIN_CLK, STRING(DIAGRAM_SCK), 0xffff, 0x8170);
+        diagram_.add_pin_label(SPI_PIN_MOSI, STRING(STRING_IO) + std::to_string(SPI_PIN_MOSI), 0x0000, 0x07e0);
         diagram_.add_wire_gnd();
-        diagram_.add_wire(SPI_PIN_CS, "~CS", 0x0000, 0xffe0);
-        diagram_.add_wire(SPI_PIN_MISO, "SO", 0xffff, 0x001f);
-        diagram_.add_wire(SPI_PIN_CLK, "SCK", 0xffff, 0x8170);
-        diagram_.add_wire(SPI_PIN_MOSI, "SI", 0x0000, 0x07e0);
+        diagram_.add_wire(SPI_PIN_CS, STRING(DIAGRAM_CS), 0x0000, 0xffe0);
+        diagram_.add_wire(SPI_PIN_MISO, STRING(DIAGRAM_MISO) + 2, 0xffff, 0x001f);
+        diagram_.add_wire(SPI_PIN_CLK, STRING(DIAGRAM_SCK), 0xffff, 0x8170);
+        diagram_.add_wire(SPI_PIN_MOSI, STRING(DIAGRAM_MOSI) + 2, 0x0000, 0x07e0);
         App::manager_begin(diagram_);
     });
-    menu.add("Notes", [this](){
-        notes_.set_title("Notes");
-        notes_.set_text(std::string(NOTES));
+    menu.add(STRING(STRING_NOTES), [this](){
+        notes_.set_title(STRING(STRING_NOTES));
+        notes_.set_text(std::string(STRING(SPISNIFF_NOTES)));
         App::manager_begin(notes_);
     });
 }

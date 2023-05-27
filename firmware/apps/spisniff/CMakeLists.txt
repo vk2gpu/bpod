@@ -10,4 +10,5 @@ target_link_libraries(AppSPISniff
     AppMenu
     AppDiagramView
     AppTextView
+    stringdb
 )

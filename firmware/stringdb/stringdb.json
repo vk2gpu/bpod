@@ -157,7 +157,7 @@
     {
         "macro": "STRING_PAUSE",
         "encoding": "ascii",
-        "data": "Pause"
+        "data": "Paused"
     },
     {
         "macro": "STRING_READING",
@@ -528,6 +528,11 @@
         "macro": "UARTTERM_NOTES",
         "encoding": "file_text",
         "data": "../apps/uartterm/notes.txt"
+    },
+    {
+        "macro": "SPISNIFF_NOTES",
+        "encoding": "file_text",
+        "data": "../apps/spisniff/notes.txt"
     },
     {
         "macro": "GRID_ASCII_LEFT_CORNER",

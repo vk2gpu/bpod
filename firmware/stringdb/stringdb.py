@@ -2,10 +2,25 @@ import os
 import sys
 import json
 import struct
+import string
 import binascii
 import argparse
 import io
 import shutil
+from Crypto.Cipher import AES
+
+
+def obfuscate(data, offset, size):
+    key = struct.pack('<I', offset) + struct.pack('<I', size) + (b'\x00' * 8)
+    aes = AES.new(key, AES.MODE_CBC, key)
+    mask = aes.encrypt(key)
+    enc_data = b''
+    for i in range(0, len(data)):
+        value = data[i] ^ mask[i & 0xf]
+        mask = mask[:i & 0xf] + struct.pack('<B', (mask[i & 0xf] + i) & 0xff) + mask[(i & 0xf) + 1:]
+        enc_data += struct.pack('<B', value)
+    assert len(data) == len(enc_data)
+    return enc_data
 
 
 def main():
@@ -62,6 +77,7 @@ def main():
             out('#define SDB_END_{} ((size_t){})'.format(s['macro'], len(data) + len(s_data)))
             if len(s_data) > max_string_len:
                 max_string_len = len(s_data)
+            s_data = obfuscate(s_data, len(data), len(s_data))
             data += s_data
         nl()
         out('#endif')
@@ -80,15 +96,28 @@ def main():
         out('static const char STRINGDB_DATA[STRINGDB_DATA_SIZE] = {')
         col = 0
         text = ''
+        ascii_text = ''
+        printable = bytes(string.printable, 'ascii')
+        not_printable = bytes('\n\t\r\m\x0b', 'ascii')
         lines = list()
         for data_byte in data:
+            if data_byte in printable and data_byte not in not_printable and data_byte < 0x7f and data_byte >= 0x20:
+                ascii_text += chr(data_byte)
+            else:
+                ascii_text += '.'
             line = "'\\x{:02x}',".format(data_byte)
             col += 1
             if col == 16:
                 col = 0
-                line += '\n'
+                line += '// {}\n'.format(ascii_text)
+                ascii_text = ''
             lines.append(line)
         text += ''.join(lines)
+        if not text.endswith('\n'):
+            if len(ascii_text) != 0:
+                text += '// {}\n'.format(ascii_text)
+            else:
+                text += '\n'
         text += '};\n'
         for line in text.split('\n'):
             out(line)

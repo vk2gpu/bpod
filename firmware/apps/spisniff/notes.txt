@@ -1,0 +1,12 @@
+Limited SPI traffic sniffing tool. Due to small buffers and limited chip speed, 
+this is a best-effort to read and decode SPI traffic. Attach bPod to SPI lines running 
+between an existing master and slave following the wiring diagram. You need to connect the 
+CS line so that only the selected slave is sniffed. Works with 10000Hz CLK, faster is going to get 
+unreliable very quickly. NOTE that the wiring diagram DOES NOT use the marked SPI pins on 
+the bPod - this would stop the screen working so we use other pins.
+Example:
+ 12:34+56:78+
+  12 : MOSI
+  34 : MISO
+  56 : MOSI
+  78 : MISO

@@ -69,6 +69,11 @@ def esp_idf_download_and_install(args):
                 env=esp_idf_environ(args))
             stdout, stderr = p.communicate()
             assert 0 == p.returncode
+            p = subprocess.Popen(['python3', '-m', 'pip', 'install', 'pycryptodome'],
+                cwd=args.firmware,
+                env=esp_idf_environ(args))
+            stdout, stderr = p.communicate()
+            assert 0 == p.returncode
         except:
             if os.path.exists(args.esp_idf):
                 shutil.rmtree(args.esp_idf)
