@@ -29,6 +29,7 @@ static void read_data(size_t offset, void *data, size_t size)
     for ( size_t i = 0; i < size; i++ )
     {
         ((uint8_t*)data)[i] = (uint8_t)pgm_read_byte(&schedule_data[offset + i]);
+        ((uint8_t*)data)[i] = ((uint8_t*)data)[i] ^ ((((offset + i) & 0x1f) ^ 0xd5) & 0xff);
     }
 }
 

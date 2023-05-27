@@ -1,5 +1,6 @@
 import os
 import sys
+import string
 import struct
 import argparse
 import io
@@ -69,15 +70,28 @@ class HexDataHeader(object):
         text += '{}const char {}[{}] PROGMEM  = {}\n'.format(' ' * indent, self.var_data_name, len(self.data), '{')
         indent += 4
         text += ' ' * indent
+        ascii_text = ''
+        printable = bytes(string.printable, 'ascii')
+        not_printable = bytes('\n\t\r\m\x0b', 'ascii')
         lines = list()
         for data_byte in self.data:
+            if data_byte in printable and data_byte not in not_printable and data_byte < 0x7f and data_byte >= 0x20:
+                ascii_text += chr(data_byte)
+            else:
+                ascii_text += '.'
             line = "'\\x{:02x}',".format(data_byte)
             col += 1
             if col == 16:
                 col = 0
-                line += '\n{}'.format(' ' * indent)
+                line += '// {}\n{}'.format(ascii_text, ' ' * indent)
+                ascii_text = ''
             lines.append(line)
         text += ''.join(lines)
+        if not text.endswith('\n'):
+            if len(ascii_text) != 0:
+                text += '// {}\n'.format(ascii_text)
+            else:
+                text += '\n'
         text += '};\n'
         text += '\n'
 
@@ -385,6 +399,15 @@ class Schedule(object):
         return schedule
 
 
+def obufscate(data):
+    enc_data = b''
+    for i in range(0, len(data)):
+        value = data[i] ^ (((i & 0x1f) ^ 0xd5) & 0xff)
+        enc_data += struct.pack('<B', value)
+    assert len(data) == len(enc_data)
+    return enc_data
+
+
 def main():
     parser = argparse.ArgumentParser(description='Encode schedule for the bsides badge as source files')
     parser.add_argument('--in-schedule-md', required=True, type=str, help='Input schedule MD file')
@@ -400,7 +423,7 @@ def main():
     schedule = Schedule.parse(args.in_schedule_md)
 
     header = HexDataHeader()
-    header.data = schedule.pack()
+    header.data = obufscate(schedule.pack())
     header.var_header_guard = '_H_GEN_SCHEDULE_H_'
     header.var_data_name = 'schedule_data'
     header.var_data_size = 'schedule_size'
