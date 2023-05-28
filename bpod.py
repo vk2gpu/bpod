@@ -316,7 +316,9 @@ def build(args):
     with open(os.path.join(args.out, 'bpod.bin'), 'rb') as handle:
         data = handle.read()
     flags = list()
+    keep_flags = list()
     offset = 0
+    plain_text_flags = ['cybears{h0w_l0ng_1s_a_p1ec3_0f_str1ng_ch33s3}']
     while True:
         index = data[offset:].find(b'cybears{')
         if index == -1:
@@ -326,9 +328,15 @@ def build(args):
         assert size != -1
         size += 1
         flag = data[offset: offset + size].decode('ascii')
-        print("FLAG PLAIN TEXT: '{}'".format(flag))
-        flags.append(flags)
+        if flag not in plain_text_flags:
+            print("FLAG PLAIN TEXT: '{}'".format(flag))
+            flags.append(flags)
+        else:
+            keep_flags.append(flag)
         offset += size
+    for ok in plain_text_flags:
+        if ok not in keep_flags:
+            raise Exception("CTF plain text flag not found '{}'".format(ok))
     if len(flags) != 0:
         raise Exception("CTF flags in plain text in binary!")
     package(args)

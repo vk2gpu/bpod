@@ -13,4 +13,5 @@ target_link_libraries(Bpod
     App
     AppMainMenu
     score
+    ctf
 )

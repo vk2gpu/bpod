@@ -11,6 +11,7 @@
 
 #include <App/App.hpp>
 #include <App/MainMenu.hpp>
+#include <ctf.h>
 
 //-----------------------------------------------------------------------------
 // CRC32 - Credit to: http://home.thep.lu.se/~bjorn/crc/
@@ -41,6 +42,8 @@ void crc32(const void *data, uint32_t n_bytes, uint32_t* crc) {
 Adafruit_ST7735 tft(&SPI, CS_PIN, DC_PIN, RST_PIN);
 TouchWheel wheel(TOUCH_000DEG, TOUCH_120DEG, TOUCH_240DEG, TOUCH_OK, false);
 MainMenu main_menu;
+
+static const char* chstring = CTF_FLAG_CHEESY_STRINGS_I_CSTR;
 
 void Bpod::begin()
 {
