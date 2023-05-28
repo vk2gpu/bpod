@@ -67,6 +67,7 @@ void ctf_off(ctf_data_t *ctf_data)
 
 void ctf_tick_1s(ctf_data_t *ctf_data)
 {
+    char data[CTF_FLAG_MAX_BUFFER_SIZE];
     if ( !ctf_data->on )
     {
         return;
@@ -78,13 +79,16 @@ void ctf_tick_1s(ctf_data_t *ctf_data)
     switch(ctf_data->flag_to_send)
     {
         case 0:
-            ctf_data->i2c_send('f', "cybears{i_2_c_y0u}", sizeof("cybears{i_2_c_y0u}") - 1);
+            CTF_FLAG_DECODE(data, CTF_FLAG_I_CAN_SEE_YOU);
+            ctf_data->i2c_send('f', data, CTF_FLAG_I_CAN_SEE_YOU_LENGTH);
             break;
         case 1:
-            ctf_data->uart_send("cybears{u_r_a_s3r1al_h4ck3r}", sizeof("cybears{u_r_a_s3r1al_h4ck3r}") - 1);
+            CTF_FLAG_DECODE(data, CTF_FLAG_SERIAL_HACKER);
+            ctf_data->uart_send(data, CTF_FLAG_SERIAL_HACKER_LENGTH);
             break;
         case 2:
-            ctf_data->spi_send("cybears{i_spy}", sizeof("cybears{i_spy}") - 1);
+            CTF_FLAG_DECODE(data, CTF_FLAG_I_SPY_WITH_MY_LITTLE_EYE);
+            ctf_data->spi_send(data, CTF_FLAG_I_SPY_WITH_MY_LITTLE_EYE_LENGTH);
             break;
     }
     ctf_data->flag_to_send++;
@@ -96,7 +100,9 @@ void ctf_tick_blink(ctf_data_t *ctf_data)
     {
         return;
     }
-    const char *data = "cybears{gp1o}\x00";
+
+    char data[CTF_FLAG_MAX_BUFFER_SIZE];
+    CTF_FLAG_DECODE(data, CTF_FLAG_BLINKY_BILL);
     ctf_data->gpio_write(0x1 & ((uint8_t)data[ctf_data->blink_byte] >> ctf_data->blink_bit));
     if ( ctf_data->blink_bit == 0 )
     {
@@ -107,7 +113,7 @@ void ctf_tick_blink(ctf_data_t *ctf_data)
     {
         ctf_data->blink_bit--;
     }
-    if ( ctf_data->blink_byte >= (sizeof("cybears{gp1o}\x00")-1) )
+    if ( ctf_data->blink_byte >= (CTF_FLAG_BLINKY_BILL_LENGTH + 1) )
     {
         ctf_data->blink_byte = 0;
     }

@@ -1,0 +1,24 @@
+---
+challenge:
+    name: Blinky Bill
+    category: badge
+    value: 100
+    use: true
+    workflow:
+        concept: true   # Challenge concept is proven
+        workup: true    # Challenge is worked up for a playtest scenario
+        playtest: 1     # Challenge has been playtested N times
+        ci: false       # Challenge has CI if necessary
+        deploy: false   # Challenge deployment bits are done if necessary
+        review: false   # Challenge concept/deployment has been reviewed
+        theme: false    # Challenge has story or theming if necessary
+    tags:
+        - beginner
+        - badge
+
+    description: |-
+        Head towards the light, I dare you.
+
+    flags:
+        - type: static
+          content: 'cybears{gp1o}'

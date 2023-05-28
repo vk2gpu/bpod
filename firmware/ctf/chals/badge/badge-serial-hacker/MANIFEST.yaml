@@ -1,0 +1,23 @@
+---
+challenge:
+    name: Serial Hacker
+    category: badge
+    value: 300
+    use: true
+    workflow:
+        concept: true   # Challenge concept is proven
+        workup: true    # Challenge is worked up for a playtest scenario
+        playtest: 1     # Challenge has been playtested N times
+        ci: false       # Challenge has CI if necessary
+        deploy: false   # Challenge deployment bits are done if necessary
+        review: false   # Challenge concept/deployment has been reviewed
+        theme: false    # Challenge has story or theming if necessary
+    tags:
+        - badge
+
+    description: |-
+        Are you a serial hacker?
+
+    flags:
+        - type: static
+          content: 'cybears{u_r_a_s3r1al_h4ck3r}'

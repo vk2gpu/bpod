@@ -313,6 +313,24 @@ def build(args):
     if not args.esp_idf_environ:
         args.esp_idf_environ = esp_idf_environ(args)
     esp_idf_build(args)
+    with open(os.path.join(args.out, 'bpod.bin'), 'rb') as handle:
+        data = handle.read()
+    flags = list()
+    offset = 0
+    while True:
+        index = data[offset:].find(b'cybears{')
+        if index == -1:
+            break
+        offset += index
+        size = data[offset:].find(b'}')
+        assert size != -1
+        size += 1
+        flag = data[offset: offset + size].decode('ascii')
+        print("FLAG PLAIN TEXT: '{}'".format(flag))
+        flags.append(flags)
+        offset += size
+    if len(flags) != 0:
+        raise Exception("CTF flags in plain text in binary!")
     package(args)
 
 

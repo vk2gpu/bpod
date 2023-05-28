@@ -10,6 +10,8 @@
 #include <stddef.h>
 #endif
 
+#include <ctf_flags.h>
+
 typedef uint32_t(*tmr_millis_t)(void);
 typedef void(*uart_send_t)(char*,uint32_t);
 typedef void(*i2c_send_t)(uint8_t,char*,uint32_t);
