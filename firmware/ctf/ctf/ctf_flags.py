@@ -36,6 +36,10 @@ def main():
     for path in args.in_manifest:
         assert os.path.exists(path)
 
+    cheesy_string_ii_found = False
+    cheesy_string_ii_name = 'Cheesy Strings II'
+    cheesy_string_ii_path = os.path.join(os.path.dirname(args.out_h), 'stringdb_flag.txt')
+
     with open(args.out_h, 'wt') as handle:
         def out(line):
             handle.write(line + '\n')
@@ -53,6 +57,10 @@ def main():
             assert len(name.strip()) > 0
             assert flag.startswith('cybears{')
             assert flag.endswith('}')
+            if name == cheesy_string_ii_name:
+                with open(cheesy_string_ii_path, 'wt') as cheesy_string_ii_handle:
+                    cheesy_string_ii_handle.write(flag)
+                cheesy_string_ii_found = True
             flag_pt = flag.encode('ascii')
             if (len(flag_pt) + 1) > max_buffer_size:
                 max_buffer_size = len(flag_pt) + 1
@@ -83,6 +91,9 @@ def main():
         out(DECODE_MACRO)
         nl()
         out('#endif')
+
+    if not cheesy_string_ii_found:
+        raise Exception("'{}' not found in CTF flags".format(cheesy_string_ii_name))
 
 
 if __name__ == '__main__':

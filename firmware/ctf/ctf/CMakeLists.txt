@@ -1,4 +1,11 @@
-file(GLOB_RECURSE MANIFEST_LIST ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/*/MANIFEST.yaml)
+set(MANIFEST_LIST
+    ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/badge-blinky-bill/MANIFEST.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/badge-cheesy-strings-i/MANIFEST.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/badge-cheesy-strings-ii/MANIFEST.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/badge-i-can-see-you/MANIFEST.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/badge-i-spy-with-my-little-eye/MANIFEST.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../chals/badge/badge-serial-hacker/MANIFEST.yaml
+)
 set(CTF_FLAGS_H "${CMAKE_CURRENT_BINARY_DIR}/ctf_flags.h")
 add_custom_command(
     OUTPUT ${CTF_FLAGS_H}

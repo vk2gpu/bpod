@@ -160,6 +160,11 @@
         "data": "Paused"
     },
     {
+        "macro": "CTF_FLAG_CHEESY_STRINGS_II",
+        "encoding": "file_text",
+        "data": "../../out/esp32s2/firmware/ctf/ctf/stringdb_flag.txt"
+    },
+    {
         "macro": "STRING_READING",
         "encoding": "ascii",
         "data": "Reading"

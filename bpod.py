@@ -339,6 +339,20 @@ def build(args):
             raise Exception("CTF plain text flag not found '{}'".format(ok))
     if len(flags) != 0:
         raise Exception("CTF flags in plain text in binary!")
+    with open(os.path.join(args.out, 'firmware/stringdb/stringdb_macro.h'), 'rt') as handle:
+        text = handle.read()
+    start = None
+    end = None
+    for line in text.split('\n'):
+        if line.find('SDB_START_CTF_FLAG_CHEESY_STRINGS_II') != -1:
+            start = int(line.split('(size_t)')[1].split(')')[0], 10)
+        if line.find('SDB_END_CTF_FLAG_CHEESY_STRINGS_II') != -1:
+            end = int(line.split('(size_t)')[1].split(')')[0], 10)
+    if not start and not end:
+        raise Exception('Cheesey Strings II CTF flag not found in stringdb')
+    size = end - start
+    if size != len('cybears{h0w_g0uda_1s_th1s_flag_can_y0u_camemb3rt_1t}'):
+        raise Exception("Cheesey Strings II CTF flag size doesn't look right")
     package(args)
 
 
