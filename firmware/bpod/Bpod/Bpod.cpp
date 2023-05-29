@@ -11,6 +11,7 @@
 
 #include <App/App.hpp>
 #include <App/MainMenu.hpp>
+#include <App/Brightness.hpp>
 #include <ctf.h>
 
 //-----------------------------------------------------------------------------
@@ -57,6 +58,8 @@ void Bpod::begin()
     tft.setRotation(2);
     tft.fillScreen(ST77XX_BLACK);
     digitalWrite(BKL_PIN, HIGH);
+
+    Brightness::setup(BKL_PIN);
 
     set_copy((copy_t)(void*)memcpy);
 

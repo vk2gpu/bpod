@@ -21,7 +21,7 @@ class BpodMenuItem
             if ( selected )
             {
                 // selected
-                BpodMenuItemBackground::draw(x, y, width, gfx);
+                BpodMenuItemBackground::draw_hline(x, y, width, gfx);
                 BpodMenuItemArrow::draw(x + width - BpodMenuItemArrow::width - margin, y + 4, gfx);
                 gfx.setTextColor(0xffff);
             }

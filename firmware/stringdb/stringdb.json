@@ -15,6 +15,11 @@
         "data": "1b5b25643b256448253032780a"
     },
     {
+        "macro": "CONSOLE_CURSOR_PERCENT",
+        "encoding": "hex",
+        "data": "1b5b25643b256448256425252020200a"
+    },
+    {
         "macro": "CONSOLE_POS_GAME_SCORE",
         "encoding": "hex",
         "data": "1b5b25643b25644853636f72653a202538640a"
@@ -38,6 +43,16 @@
         "macro": "STRING_SCHEDULE",
         "encoding": "ascii",
         "data": "Schedule"
+    },
+    {
+        "macro": "STRING_SETTINGS",
+        "encoding": "ascii",
+        "data": "Settings"
+    },
+    {
+        "macro": "STRING_BRIGHTNESS",
+        "encoding": "ascii",
+        "data": "Brightness"
     },
     {
         "macro": "STRING_ABOUT",

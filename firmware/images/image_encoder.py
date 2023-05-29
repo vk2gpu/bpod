@@ -90,11 +90,17 @@ def encoding_none(args):
         out('};')
 
 
-def encoding_fast_hline(args):
+def encoding_fast_line(args):
     img = Image.open(args.in_image).convert('RGB')
     pixels = list(img.getdata())
     width, height = img.size
-    assert width == 1
+    size = None
+    if height != 1:
+        size = height
+        assert width == 1
+    if width != 1:
+        size = width
+        assert height == 1
     data = b''
     for pixel in pixels:
         r = (pixel[0] >> 3) & 0x1F
@@ -102,7 +108,7 @@ def encoding_fast_hline(args):
         b = (pixel[2] >> 3) & 0x1F
         pixel565 = (r << 11) + (g << 5) + b
         data += struct.pack('<H', pixel565)
-    assert len(data) == (height * 2)
+    assert len(data) == (size * 2)
 
     with open(args.out_hpp, 'wt') as handle:
         global indent
@@ -128,8 +134,9 @@ def encoding_fast_hline(args):
 
         out('public:')
         tab()
-        out('const static int16_t height = {};'.format(height))
-        out('static void draw(int16_t x, int16_t y, int16_t w, Adafruit_GFX &gfx) {')
+        out('const static int16_t width = {};'.format(size))
+        out('const static int16_t height = {};'.format(size))
+        out('static void draw_hline(int16_t x, int16_t y, int16_t w, Adafruit_GFX &gfx) {')
         tab()
         out('size_t offset = 0;')
         out('for ( int16_t dy = 0; dy < height; dy++) {')
@@ -140,69 +147,7 @@ def encoding_fast_hline(args):
         out('}')
         shift_tab()
         out('};')
-        out('inline static uint16_t pixel(size_t offset) {')
-        tab()
-        out('const static char data[{}] = {}'.format(width * height * 2, '{'))
-        tab()
-        i = 0
-        while i < len(data):
-            line = ', '.join(['0x{:02x}'.format(value) for value in data[i: i + 16]])
-            if (i + 16) < len(data):
-                line += ','
-            out(line)
-            i += 16
-        shift_tab()
-        out('};')
-        out('return *reinterpret_cast<const uint16_t*>(&data[offset]);')
-        shift_tab()
-        out('};')
-        shift_tab()
-        nl()
-
-        shift_tab()
-        out('};')
-
-
-def encoding_fast_vline(args):
-    img = Image.open(args.in_image).convert('RGB')
-    pixels = list(img.getdata())
-    width, height = img.size
-    assert height == 1
-    data = b''
-    for pixel in pixels:
-        r = (pixel[0] >> 3) & 0x1F
-        g = (pixel[1] >> 2) & 0x3F
-        b = (pixel[2] >> 3) & 0x1F
-        pixel565 = (r << 11) + (g << 5) + b
-        data += struct.pack('<H', pixel565)
-    assert len(data) == (width * 2)
-
-    with open(args.out_hpp, 'wt') as handle:
-        global indent
-        indent = 0
-        def tab():
-            global indent
-            indent += 4
-        def shift_tab():
-            global indent
-            indent -= 4
-        def out(line):
-            global indent
-            handle.write((' ' * indent) + line + '\n')
-        def nl():
-            handle.write('\n')
-        out('#pragma once')
-        nl()
-        out('#include <Adafruit_GFX.h>')
-        nl()
-        out('class {}'.format(args.class_name))
-        out('{')
-        tab()
-
-        out('public:')
-        tab()
-        out('const static int16_t width = {};'.format(width))
-        out('static void draw(int16_t x, int16_t y, int16_t h, Adafruit_GFX &gfx) {')
+        out('static void draw_vline(int16_t x, int16_t y, int16_t h, Adafruit_GFX &gfx) {')
         tab()
         out('size_t offset = 0;')
         out('for ( int16_t dx = 0; dx < width; dx++) {')
@@ -215,7 +160,7 @@ def encoding_fast_vline(args):
         out('};')
         out('inline static uint16_t pixel(size_t offset) {')
         tab()
-        out('const static char data[{}] = {}'.format(width * height * 2, '{'))
+        out('const static char data[{}] = {}'.format(size * 2, '{'))
         tab()
         i = 0
         while i < len(data):
@@ -274,12 +219,29 @@ def encoding_vpattern(args):
         out('public:')
         tab()
         out('const static int16_t width = {};'.format(width))
-        out('static void draw(int16_t x, int16_t y, int16_t h, Adafruit_GFX &gfx) {')
+        out('const static int16_t height = {};'.format(width))
+        out('static void draw_vline(int16_t x, int16_t y, int16_t h, Adafruit_GFX &gfx) {')
         tab()
         out('size_t offset = y * width * sizeof(uint16_t);')
         out('for ( int16_t dy = 0; dy < h; dy++) {')
         tab()
         out('for ( int16_t dx = 0; dx < width; dx++) {')
+        tab()
+        out('if ( offset >= {}) offset = offset % {};'.format(width * height * 2, width * height * 2))
+        out('gfx.drawPixel(x + dx, y + dy, pixel(offset));')
+        out('offset += sizeof(uint16_t);')
+        shift_tab()
+        out('}')
+        shift_tab()
+        out('}')
+        shift_tab()
+        out('};')
+        out('static void draw_hline(int16_t x, int16_t y, int16_t w, Adafruit_GFX &gfx) {')
+        tab()
+        out('size_t offset = y * width * sizeof(uint16_t);')
+        out('for ( int16_t dx = 0; dx < w; dx++) {')
+        tab()
+        out('for ( int16_t dy = 0; dy < height; dy++) {')
         tab()
         out('if ( offset >= {}) offset = offset % {};'.format(width * height * 2, width * height * 2))
         out('gfx.drawPixel(x + dx, y + dy, pixel(offset));')
@@ -336,10 +298,8 @@ def main():
     img = Image.open(args.in_image).convert('RGB')
     width, height = img.size
 
-    if width == 1:
-        encoding_fast_hline(args)
-    elif height == 1:
-        encoding_fast_vline(args)
+    if width == 1 or height == 1:
+        encoding_fast_line(args)
     elif args.in_image.find('scroll-fill') != -1:
         encoding_vpattern(args)
     else:

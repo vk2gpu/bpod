@@ -41,15 +41,15 @@ class BpodScrollBar
             post_y = fill_y + fill_height;
             if ( pre_height > 0 )
             {
-                BpodScrollEmpty::draw(scroll_bar_x, pre_y, pre_height, gfx);
+                BpodScrollEmpty::draw_vline(scroll_bar_x, pre_y, pre_height, gfx);
             }
             if ( fill_height > 0 )
             {
-                BpodScrollFill::draw(scroll_bar_x, fill_y, fill_height, gfx);
+                BpodScrollFill::draw_vline(scroll_bar_x, fill_y, fill_height, gfx);
             }
             if ( post_height > 0 )
             {
-                BpodScrollEmpty::draw(scroll_bar_x, post_y, post_height, gfx);
+                BpodScrollEmpty::draw_vline(scroll_bar_x, post_y, post_height, gfx);
             }
         };
 };

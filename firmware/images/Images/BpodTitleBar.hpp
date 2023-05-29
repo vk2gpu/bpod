@@ -22,12 +22,12 @@ class BpodTitleBar
             if ( dark )
             {
                 gfx.setTextColor(0xffff);
-                BpodTitleBarBackgroundDark::draw(0, 0, gfx.width(), gfx);
+                BpodTitleBarBackgroundDark::draw_hline(0, 0, gfx.width(), gfx);
             }
             else
             {
                 gfx.setTextColor(0x0000);
-                BpodTitleBarBackground::draw(0, 0, gfx.width(), gfx);
+                BpodTitleBarBackground::draw_hline(0, 0, gfx.width(), gfx);
             }
             if ( title.size() > 0 )
             {

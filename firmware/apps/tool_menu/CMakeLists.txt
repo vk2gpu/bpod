@@ -15,7 +15,7 @@ target_link_libraries(AppToolMenu
     AppLeds
     AppMCP23017
     AppMCP23S17
-    AppWifiScan
+    # AppWifiScan
     ctf
     stringdb
 )

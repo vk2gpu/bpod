@@ -12,6 +12,7 @@ target_link_libraries(Bpod
     Animations
     App
     AppMainMenu
+    AppBrightness
     score
     ctf
 )

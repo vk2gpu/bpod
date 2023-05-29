@@ -8,7 +8,7 @@
 #include <App/Leds.hpp>
 #include <App/MCP23017.hpp>
 #include <App/MCP23S17.hpp>
-#include <App/WifiScan.hpp>
+// #include <App/WifiScan.hpp>
 #include <ctf.h>
 #include <stringdb.h>
 
@@ -20,7 +20,7 @@ GPIOs gpio;
 Leds leds;
 MCP23017 mcp23017;
 MCP23S17 mcp23S17;
-WifiScan wifiscan;
+// WifiScan wifiscan;
 
 void ToolMenu::begin(BpodMenu &menu)
 {
@@ -33,7 +33,7 @@ void ToolMenu::begin(BpodMenu &menu)
     menu.add(STRING(STRING_LEDS_LOWER), [](){ App::manager_begin(leds); });
     menu.add(STRING(STRING_MCP23017_LOWER), [](){ App::manager_begin(mcp23017); });
     menu.add(STRING(STRING_MCP23S17_LOWER), [](){ App::manager_begin(mcp23S17); });
-    menu.add(STRING(STRING_WIFISCAN), [](){ App::manager_begin(wifiscan); });
+    // menu.add(STRING(STRING_WIFISCAN), [](){ App::manager_begin(wifiscan); });
 
     CTF_OFF_MACRO
 }
