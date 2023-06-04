@@ -179,7 +179,7 @@ def menuconfig(args):
     esp_idf_menuconfig(args)
 
 
-def package(args):
+def package_script(args):
     script_version_string = 'v1'
     out = args.out + '_bpod_flash_{}.py'.format(script_version_string)
 
@@ -309,10 +309,7 @@ if __name__ == '__main__':
         handle.write(text)
 
 
-def build(args):
-    if not args.esp_idf_environ:
-        args.esp_idf_environ = esp_idf_environ(args)
-    esp_idf_build(args)
+def ctf_verify(args):
     with open(os.path.join(args.out, 'bpod.bin'), 'rb') as handle:
         data = handle.read()
     flags = list()
@@ -353,7 +350,32 @@ def build(args):
     size = end - start
     if size != len('cybears{h0w_g0uda_1s_th1s_flag_can_y0u_camemb3rt_1t}'):
         raise Exception("Cheesey Strings II CTF flag size doesn't look right")
-    package(args)
+
+
+def package_server(args):
+    if os.name != 'posix':
+        print('Server package only produced on linux systems')
+        return
+    bpod_server = os.path.join(args.server, 'bpod')
+    assert os.path.exists(bpod_server)
+    path = os.path.realpath(os.path.join(args.out, '..', 'bpod-server.zip'))
+    if os.path.exists(path):
+        os.remove(path)
+    assert not os.path.exists(path)
+    p = subprocess.Popen(['zip', '-r', path, '.'], cwd=bpod_server)
+    p.communicate()
+    assert 0 == p.returncode
+    assert os.path.exists(path)
+    print('bPod server package created {}'.format(path))
+
+
+def build(args):
+    if not args.esp_idf_environ:
+        args.esp_idf_environ = esp_idf_environ(args)
+    esp_idf_build(args)
+    ctf_verify(args)
+    package_script(args)
+    package_server(args)
 
 
 def prep_serial_device(args):
@@ -427,6 +449,7 @@ def main():
             args.device = '/dev/ttyUSB0'
     args.out = os.path.join(ROOT, 'out', args.target)
     args.firmware = os.path.join(ROOT, 'firmware', args.target)
+    args.server = os.path.join(ROOT, 'server')
     args.esp_idf = os.path.join(ROOT, 'firmware', 'esp-idf')
     args.adafruit = os.path.join(ROOT, 'firmware', 'adafruit')
     args.esp_idf_environ = None  # lazy init when needed

@@ -45,16 +45,16 @@ def main():
     from bsides2023.token import Token
     os.environ['BPOD_DEBUG'] = 'true'
     os.environ['BPOD_DB_VERSION'] = '1'
-    os.environ['RDS_HOSTNAME'] = '127.0.0.1'
-    os.environ['RDS_PORT'] = '3306'
-    os.environ['RDS_USERNAME'] = 'root'
-    os.environ['RDS_PASSWORD'] = 'password'
-    os.environ['RDS_DB_NAME'] = 'bpod'
     os.environ['BPOD_SCORE_ROWS'] = '20'
     with open(os.path.join(os.path.dirname(__file__), '..', 'keys', 'master.hex'), 'rt') as handle:
         os.environ['BPOD_KEY'] = handle.read().strip()
     with open(os.path.join(os.path.dirname(__file__), '..', 'keys', 'master2.hex'), 'rt') as handle:
         os.environ['BPOD_KEY_2'] = handle.read().strip()
+    os.environ['RDS_HOSTNAME'] = '127.0.0.1'
+    os.environ['RDS_PORT'] = '3306'
+    os.environ['RDS_USERNAME'] = 'root'
+    os.environ['RDS_PASSWORD'] = 'password'
+    os.environ['RDS_DB_NAME'] = 'bpod'
     with make_server('', 8000, simple_app) as httpd:
         print("http://{}:{}".format(ip_addr(), 8000))
         httpd.serve_forever()

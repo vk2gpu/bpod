@@ -13,3 +13,8 @@ dependencies.lock
 /firmware/adafruit/Adafruit-GFX-Library/
 /firmware/adafruit/Adafruit-ST7735-Library/
 /out/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
