@@ -258,6 +258,16 @@ def package_script(args):
         FLASHER_ARGS.extend([offset_string, path])
     text += 'FLASHER_ARGS = {}\n'.format(FLASHER_ARGS)
 
+    # add githash
+    p = subprocess.Popen(['git', 'rev-parse', 'HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, _ = p.communicate()
+    githash_hex = '(custom)'
+    try:
+        githash_hex = stdout.decode('ascii').strip()
+    except:
+        pass
+    text += "GITHASH = '{}'\n".format(githash_hex)
+
     # function to extract file
     text += """
 def extract_files():
@@ -283,6 +293,7 @@ def extract_files():
     text += """
 
 def flash_main():
+    print('GIT: {}'.format(GITHASH))
     if len(sys.argv) <= 1:
         print('<FILE_NAME_REPLACE> <device>  # e.g. /dev/ttyACM0 e.g. COM11')
         if len(list_ports.comports()) == 0:
