@@ -180,8 +180,7 @@ def menuconfig(args):
 
 
 def package_script(args):
-    script_version_string = 'v1'
-    out = args.out + '_bpod_flash_{}.py'.format(script_version_string)
+    out = os.path.join(os.path.dirname(args.out), 'bPodUpdater.py')
 
     # read esptool.py script text
     esptool_path = os.path.join(args.esp_idf, 'components', 'esptool_py', 'esptool', 'esptool.py')
