@@ -83,30 +83,30 @@ class Token(object):
 
     @classmethod
     def crc32(cls, data):
-        return zlib.crc32(data) % 2**32
+        return ((zlib.crc32(data) % 2**32) + 1) & 0xffffffff
 
     @classmethod
     def fb64_encode_char(cls, prev, value):
         if 0 != (prev & 0x1):
             if 0 == (prev & 0x2):
                 if value < 10:
-                    return chr(ord('0') + value)
+                    return chr(ord('9') - value)
                 elif value == 10:
-                    return '_'
-                elif value == 11:
                     return '-'
+                elif value == 11:
+                    return '_'
                 elif value > 11:
-                    return chr(ord('N') + (value - 11))
+                    return chr(ord('v') + (value - 11))
             else:
                 if 0 == (prev & 0x4):
-                    return chr(ord('K') + value)
+                    return chr(ord('a') + value)
                 else:
-                    return chr(ord('k') + value)
+                    return chr(ord('A') + value)
         else:
             if 0 == (prev & 0x4):
-                return chr(ord('A') + value)
+                return chr(ord('j') + value)
             else:
-                return chr(ord('a') + value)
+                return chr(ord('K') + value)
 
     @classmethod
     def fb64_encode(cls, data):
@@ -137,23 +137,23 @@ class Token(object):
         if 0 != (prev & 0x1):
             if 0 == (prev & 0x2):
                 if ord(letter) >= ord('0') and ord(letter) <= ord('9'):
-                    return ord(letter) - ord('0')
-                elif letter == '_':
-                    return 10
+                    return ord('9') - ord(letter)
                 elif letter == '-':
+                    return 10
+                elif letter == '_':
                     return 11
                 else:
-                    return (ord(letter) - ord('N')) + 11
+                    return (ord(letter) - ord('v')) + 11
             else:
                 if 0 == (prev & 0x4):
-                    return ord(letter) - ord('K')
+                    return ord(letter) - ord('a')
                 else:
-                    return ord(letter) - ord('k')
+                    return ord(letter) - ord('A')
         else:
             if 0 == (prev & 0x4):
-                return ord(letter) - ord('A')
+                return ord(letter) - ord('j')
             else:
-                return ord(letter) - ord('a')
+                return ord(letter) - ord('K')
 
     @classmethod
     def fb64_decode(cls, data):
@@ -195,9 +195,11 @@ class Token(object):
             data = data.encode('ascii')
         data = cls.fb64_decode(data)
         data = cls.decrypt_aes_128_cbc_no_iv_single_block(key, data)
-        obj.device_id = struct.unpack('<I', data[0: 4])[0]
-        obj.score = struct.unpack('<I', data[4: 8])[0] * 100
-        obj.game_code = struct.unpack('<B', data[8: 9])[0]
+        obj.game_code = struct.unpack('<B', data[0: 1])[0]
+        obj.device_id = struct.unpack('<I', data[4: 8])[0]
+        obj.score = struct.unpack('<I', data[8: 12])[0]
+        assert obj.score % 0x80 == 0  # sent score is a multiple of 0x80
+        obj.score = int(obj.score / 0x80) * 100
         expected = cls.crc32(data[:12] + data[:4])
         result = struct.unpack('<I', data[12: 16])[0]
         assert expected == result, "{} == {}".format(hex(expected), hex(result))
@@ -214,8 +216,8 @@ class Token(object):
 
     def encode(self, key, key2):
         key = self.decode_key(key, key2)
-        data = struct.pack('<IIB', self.device_id, int(self.score / 100), self.game_code)
-        data += os.urandom(3)
+        v1, v2, v3 = struct.unpack('<BBB', os.urandom(3))
+        data = struct.pack('<BBBBII', self.game_code, v1, v2, v3, self.device_id, int(self.score / 100) * 0x80)
         data += struct.pack('<I', self.crc32(data + data[:4]))
         assert len(data) == 16
         data = self.encrypt_aes_128_cbc_no_iv_single_block(key, data)

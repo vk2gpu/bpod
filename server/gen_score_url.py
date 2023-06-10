@@ -32,6 +32,9 @@ def ip_addr():
     raise Exception("shitty ip finder failed")
 
 def main():
+    score_submit_url_path = os.path.realpath(os.path.join(os.path.dirname(__file__), 'score_submit_url.txt'))
+    with open(score_submit_url_path, 'rt') as handle:
+        score_submit_url = handle.read().strip()
     t = Token()
     t.device_id = 2176901350
     t.score = 3400
@@ -40,7 +43,8 @@ def main():
     print(t)
     print(text)
     print(Token.decode(KEY, KEY_2, text))
-    print('http://{}:{}/index.html?t={}'.format(ip_addr(), 8000, text))
+    print('LOCAL : http://{}:{}/index.html?o={}'.format(ip_addr(), 8000, text))
+    print('REMOTE: {}?o={}'.format(score_submit_url, text))
 
 if __name__ == '__main__':
     main()

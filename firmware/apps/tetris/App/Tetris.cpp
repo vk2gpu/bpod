@@ -36,7 +36,7 @@ static void TTRS_API tetrisc_game_over(void *ctx, uint16_t score)
     char buf[512];
     char url[512];
     STRING_STRCPY(url, GAME_SCORE_SUBMIT_URL);
-    std::string s(get_surl(buf, sizeof(buf), url, SCORE_CODE_TETRIS, score));
+    std::string s(get_surl(buf, sizeof(buf), url, SCORE_CODE_TETRIS, score * 0x80));
     reinterpret_cast<Tetris*>(ctx)->s_.set_text(s);
     App::manager_begin(reinterpret_cast<Tetris*>(ctx)->s_);
 }

@@ -141,7 +141,7 @@ def submit_name_form_app(environ, start_response, qs_token, token):
 def bsides2023_app(environ, start_response):
     key = get_key()
     key2 = get_key_2()
-    qs_token_unsafe = get_query_string(environ, 't')
+    qs_token_unsafe = get_query_string(environ, 'o')
     qs_save_unsafe = get_query_string(environ, 's')
     qs_name_unsafe = get_query_string(environ, 'n')
     if environ['PATH_INFO'].endswith('reset.html'):

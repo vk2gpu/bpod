@@ -109,27 +109,27 @@ char fb64_char(unsigned char prev, unsigned char value) {
     if (0 != (prev & 0x1)) {
         if (0 == (prev & 0x2)) {
             if (value < 10) {
-                return '0' + value;
+                return '9' - value;
             } else if (value == 10) {
-                return '_';
-            } else if (value == 11) {
                 return '-';
+            } else if (value == 11) {
+                return '_';
             } else if (value > 11) {
-                return 'N' + (value - 11);
+                return 'v' + (value - 11);
             }
         } else {
             if (0 == (prev & 0x4)) {
-                return 'K' + value;
+                return 'a' + value;
             } else {
-                return 'k' + value;
+                return 'A' + value;
             }
         }
     }
     else {
         if (0 == (prev & 0x4)) {
-            return 'A' + value;
+            return 'j' + value;
         } else {
-            return 'a' + value;
+            return 'K' + value;
         }
     }
 }
@@ -200,10 +200,7 @@ const char *get_surl(char *buf, unsigned int size, const char *url, unsigned cha
     {
         return url;
     }
-    buf[0] = '?';
-    buf[1] = 't';
-    buf[2] = '=';
-    buf[3] = '\0';
+    *((unsigned int *)&buf[0]) = 0x3d6f3f; // "?o="
     buf += 3;
     size -= 3;
     if ( !g_rm )
@@ -212,15 +209,15 @@ const char *get_surl(char *buf, unsigned int size, const char *url, unsigned cha
     }
     unsigned int devid = get_id();
     unsigned char token[16];
-    g_copy(token + 0, &devid, 4);
-    g_copy(token + 4, &score, 4);
-    g_copy(token + 8, &game, 1);
+    g_copy(token + 0, &game, 1);
+    g_copy(token + 4, &devid, 4);
+    g_copy(token + 8, &score, 4);
     if ( !g_rng )
     {
         return url;
     }
-    g_rng(&(token[9]), 3);
-    g_copy(token + 12, &devid, 4);
+    g_rng(&(token[1]), 3);
+    g_copy(token + 12, &token[0], 4);
     unsigned int crc32val = 0;
     if ( !g_crc )
     {
