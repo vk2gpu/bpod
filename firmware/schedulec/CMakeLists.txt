@@ -8,7 +8,7 @@ add_library(schedulec STATIC
 )
 add_custom_command(
     OUTPUT ${SCHEDULE_H}
-    DEPENDS ${RawImage}
+    DEPENDS ${SCHEDULE_MD}
         ${CMAKE_CURRENT_SOURCE_DIR}/schedule_encoder.py 
     COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/schedule_encoder.py
         --in-schedule-md ${SCHEDULE_MD}
