@@ -315,6 +315,11 @@
         "data": "TX1"
     },
     {
+        "macro": "STRING_GIT",
+        "encoding": "ascii",
+        "data": "GIT"
+    },
+    {
         "macro": "FMT_TITLE",
         "encoding": "ascii",
         "data": "==== %s ====\n"
@@ -333,6 +338,11 @@
         "macro": "FMT_HEX_BYTE_UPPER",
         "encoding": "ascii",
         "data": "%02X"
+    },
+    {
+        "macro": "FMT_HEX_BYTE_LOWER",
+        "encoding": "ascii",
+        "data": "%02x"
     },
     {
         "macro": "FMT_I2C_ADDR",

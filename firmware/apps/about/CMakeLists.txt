@@ -9,4 +9,5 @@ target_link_libraries(AppAbout
     App
     Images
     stringdb
+    githash
 )

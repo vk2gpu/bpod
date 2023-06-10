@@ -5,6 +5,7 @@
 #include <Images/BpodTitleBar.hpp>
 
 #include <stringdb.h>
+#include <githash.h>
 
 void About::begin(void)
 {
@@ -80,6 +81,8 @@ void About::draw(Adafruit_GFX &gfx)
         STRING_CACHE();
         printf(STRING(FMT_TITLE), STRING(STRING_ABOUT));
         STRING_CLEAR();
+
+        // Model
         gfx.setTextColor(0x0000);
         gfx.setTextSize(1);
         gfx.setCursor((gfx.width() / 2) - ((STRING_STRLEN(STRING_BPOD) * 6) / 2), 32);
@@ -87,6 +90,8 @@ void About::draw(Adafruit_GFX &gfx)
         STRING_CACHE();
         printf(STRING(FMT_ABOUT_STRING), STRING(STRING_MODEL), STRING(STRING_BPOD));
         STRING_CLEAR();
+
+        // Flash
         gfx.setTextSize(1);
         gfx.setTextColor(0xffff);
         gfx.setCursor(44, 64);
@@ -95,6 +100,8 @@ void About::draw(Adafruit_GFX &gfx)
         STRING_CACHE();
         printf(STRING(FMT_ABOUT_SIZE), STRING(STRING_FLASH), spi_flash_get_chip_size() / (1024 * 1024));
         STRING_CLEAR();
+
+        // Chip
         int16_t w = 50;
         int16_t h = 30;
         gfx.drawRoundRect((gfx.width() / 2) - (w / 2), 49, w, h, 5, 0xffff);
@@ -106,20 +113,37 @@ void About::draw(Adafruit_GFX &gfx)
         STRING_CACHE();
         printf(STRING(FMT_ABOUT_STRING), STRING(STRING_CHIP), chip);
         STRING_CLEAR();
+
+        // Clock
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
-        gfx.setCursor(44, gfx.height() - 48);
+        gfx.setCursor(44, gfx.height() - 60);
         gfx.printf(STRING(FMT_FREQ_IN_MHZ), clockCyclesPerMicrosecond());
         STRING_CACHE();
         printf(STRING(FMT_ABOUT_FREQ), STRING(STRING_CLOCK), clockCyclesPerMicrosecond());
         STRING_CLEAR();
+
+        // Cores
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
-        gfx.setCursor(44, gfx.height() - 36);
+        gfx.setCursor(44, gfx.height() - 48);
         gfx.printf(STRING(FMT_CORE_S), chip_info.cores, chip_info.cores > 1 ? "s" : "");
         STRING_CACHE();
         printf(STRING(FMT_ABOUT_NUMBER), STRING(STRING_CORES), chip_info.cores);
         STRING_CLEAR();
+
+        // GitHash
+        gfx.setTextColor(0x2945);
+        gfx.setTextSize(1);
+        gfx.setCursor(6, gfx.height() - 36);
+        STRING_CACHE();
+        gfx.printf(STRING(FMT_ABOUT_STRING), STRING(STRING_GIT), githash());
+        STRING_CLEAR();
+        STRING_CACHE();
+        printf(STRING(FMT_ABOUT_STRING), STRING(STRING_GIT), githash());
+        STRING_CLEAR();
+
+        // Mac
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
         gfx.setCursor(14, gfx.height() - 24);
@@ -131,6 +155,8 @@ void About::draw(Adafruit_GFX &gfx)
         printf(STRING(FMT_ABOUT_MAC), STRING(STRING_MAC),
             sta_mac[0], sta_mac[1], sta_mac[2], sta_mac[3], sta_mac[4], sta_mac[5]);
         STRING_CLEAR();
+
+        // Serial
         gfx.setTextColor(0x2945);
         gfx.setTextSize(1);
         gfx.setCursor(30, gfx.height() - 12);
