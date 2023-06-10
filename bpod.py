@@ -241,6 +241,57 @@ def package_script(args):
     text += ']\n'
     text += 'assert len(FILE_LIST) == {}\n'.format(len(file_list))
 
+    # embed stripped bpod.elf in updater (to help with CTF)
+    remove_these = [
+        '/firmware/',
+        '/home',
+        '.xt.prop',
+        '.xt.lit',
+    ]
+    remove_these = [v.encode('ascii') for v in remove_these]
+    bpod_elf_path = os.path.join(args.out, 'bpod.elf')
+    assert os.path.exists(bpod_elf_path)
+    bpod_stripped_elf_path = os.path.join(args.out, 'bpod-stripped.elf')
+    if os.path.exists(bpod_stripped_elf_path):
+        os.remove(bpod_stripped_elf_path)
+    assert not os.path.exists(bpod_stripped_elf_path)
+    with open(bpod_elf_path, 'rb') as handle:
+        dont_use_data = handle.read()
+    for remove_this in remove_these:
+        assert dont_use_data.find(remove_this) != -1, remove_this    # found
+    shutil.copyfile(bpod_elf_path, bpod_stripped_elf_path)
+    p = subprocess.Popen(['xtensa-esp32s2-elf-strip', bpod_stripped_elf_path], 
+        env=args.esp_idf_environ)
+    p.communicate()
+    assert p.returncode == 0
+    p = subprocess.Popen(['xtensa-esp32s2-elf-strip', '--remove-section=*.xt*', bpod_stripped_elf_path],
+        env=args.esp_idf_environ)
+    p.communicate()
+    assert p.returncode == 0
+    assert os.path.exists(bpod_stripped_elf_path)
+    with open(bpod_stripped_elf_path, 'rb') as handle:
+        stripped_data = handle.read()
+    for remove_this in remove_these:
+        assert stripped_data.find(remove_this) == -1, remove_this    # not found
+    assert stripped_data.count(b'bpod') == 1
+    assert stripped_data.count(b'BPOD') == 0
+    assert stripped_data.count(b'bPod') == 0
+    data = None
+    data_split = None
+    stripped_data = zlib.compress(stripped_data)
+    stripped_data = base64.b64encode(stripped_data).decode('ascii')
+    stripped_data_split = []
+    count = 0
+    chars_per_line = 160
+    for i in range(0, len(stripped_data), chars_per_line):
+        stripped_data_split.append(stripped_data[i: i + chars_per_line])
+        count += chars_per_line
+    if count < len(stripped_data):
+        stripped_data_split.append(stripped_data[count: ])
+    text += 'BPOD_ELF_DATA = zlib.decompress(base64.b64decode(b"""\\\n'.format(name.upper())
+    text += '\\\n'.join(stripped_data_split) + '\\\n'
+    text += '"""))\n'
+
     # arguments for esptool.py
     FLASHER_ARGS = []
     for name, value in flasher_args['extra_esptool_args'].items():
