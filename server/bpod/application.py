@@ -149,6 +149,15 @@ def bsides2023_app(environ, start_response):
         if debug_mode():
             with ScoreDb(version=get_version()) as score:
                 score.reset_db()
+    if environ['PATH_INFO'].endswith('update.html'):
+        # return update page
+        with open(os.path.join(os.path.dirname(__file__), 'static', 'update.html'), 'rb') as handle:
+            data = handle.read()
+        with open(os.path.join(os.path.dirname(__file__), 'static', 'githash.txt'), 'rb') as handle:
+            githash = handle.read().decode('ascii').strip().encode('ascii')
+        data = data.replace(b'GITHASH', githash)
+        start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
+        return [data]
     if qs_token_unsafe:
         # uploading a token
         token = Token.decode(key, key2, qs_token_unsafe)
