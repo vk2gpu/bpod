@@ -9,5 +9,6 @@ target_link_libraries(AppSettingsMenu
     AppMenu
     AppBrightness
     AppAbout
+    AppQrCodeView
     stringdb
 )

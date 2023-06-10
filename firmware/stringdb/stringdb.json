@@ -60,6 +60,11 @@
         "data": "About"
     },
     {
+        "macro": "STRING_UPDATE",
+        "encoding": "ascii",
+        "data": "Update"
+    },
+    {
         "macro": "STRING_MODEL",
         "encoding": "ascii",
         "data": "Model"
@@ -633,5 +638,10 @@
         "macro": "GAME_SCORE_SUBMIT_URL",
         "encoding": "file_text",
         "data": "../../server/score_submit_url.txt"
+    },
+    {
+        "macro": "UPDATE_URL",
+        "encoding": "file_text",
+        "data": "../../server/update_url.txt"
     }
 ]
