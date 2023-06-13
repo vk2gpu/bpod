@@ -361,13 +361,216 @@ def flash_main():
     sys.argv = args
     print(' '.join(sys.argv))
     _main()
+""".replace('<FILE_NAME_REPLACE>', os.path.basename(out))
+
+    # PCBWAY flash function
+    text += """
+
+def flash_many_main():
+    STATE_NO_DEVICE = 0
+    STATE_DEVICE_NOT_IN_FLASH_MODE = 1
+    STATE_DEVICE_FOUND = 2
+    STATE_DEVICE_FLASHING = 3
+    STATE_DEVICE_RESET_NEEDED = 4
+    STATE_DEVICE_WAIT_FOR_BOOT = 5
+    STATE_DEVICE_FLASHED_OK = 6
+    STATE_DEVICE_FLASHED_ERROR = 7
+    STATE_DEVICE_RESET_TIMEOUT = 8
+    STATE_DEVICE_BOOT_TIMEOUT = 9
+    ESPRESSIF_VID = 0x303a
+
+    device = None
+    reset_retry = None
+    boot_retry = None
+    state = STATE_NO_DEVICE
+    new_state = -1
+    while True:
+        if state in [STATE_NO_DEVICE,  STATE_DEVICE_NOT_IN_FLASH_MODE]:
+            device = None
+            tmp_state = STATE_NO_DEVICE
+            for p in list_ports.comports():
+                if p.vid != ESPRESSIF_VID:
+                    continue
+                tmp_state = STATE_DEVICE_NOT_IN_FLASH_MODE
+                if p.serial_number.strip() != '0':
+                    continue
+                device = p.device[:]
+                tmp_state = STATE_DEVICE_FOUND
+                break
+            if tmp_state != state:
+                new_state = tmp_state
+        elif state == STATE_DEVICE_FOUND:
+            new_state = STATE_DEVICE_FLASHING
+        elif state == STATE_DEVICE_FLASHING:
+            print('')
+            print('GIT: {}'.format(GITHASH))
+            extract_files()
+            args = sys.argv[:1]
+            args.extend(['-p', device])
+            args.extend(['-b', '460800'])
+            args.extend(['no_reset' if arg == 'hard_reset' else arg for arg in FLASHER_ARGS])
+            sys.argv = args
+            error = False
+            try:
+                main()
+            except:
+                import traceback
+                print(traceback.format_exc())
+                error = True
+            print('')
+            reset_retry = 10
+            if error:
+                new_state = STATE_DEVICE_FLASHED_ERROR
+            else:
+                new_state = STATE_DEVICE_RESET_NEEDED
+                time.sleep(1)
+        elif state == STATE_DEVICE_RESET_NEEDED:
+            tmp_state = STATE_NO_DEVICE
+            for p in list_ports.comports():
+                if p.vid != ESPRESSIF_VID:
+                    continue
+                tmp_state = STATE_DEVICE_NOT_IN_FLASH_MODE
+                if p.serial_number.strip() != '0':
+                    continue
+                device = p.device[:]
+                tmp_state = STATE_DEVICE_FOUND
+                break
+            if tmp_state == STATE_DEVICE_FOUND:
+                if reset_retry > 0:
+                    print('(waiting for reset {}...)'.format(reset_retry))
+                    reset_retry -= 1
+                    time.sleep(1)
+                else:
+                    new_state = STATE_DEVICE_RESET_TIMEOUT
+            else:
+                new_state = STATE_DEVICE_WAIT_FOR_BOOT
+            boot_retry = 10
+        elif state == STATE_DEVICE_WAIT_FOR_BOOT:
+            tmp_state = STATE_NO_DEVICE
+            for p in list_ports.comports():
+                if p.vid != ESPRESSIF_VID:
+                    continue
+                tmp_state = STATE_DEVICE_NOT_IN_FLASH_MODE
+                if p.serial_number.strip() != '0':
+                    continue
+                device = p.device[:]
+                tmp_state = STATE_DEVICE_FOUND
+                break
+            if tmp_state == STATE_NO_DEVICE:
+                if boot_retry > 0:
+                    print('(waiting for boot {}...)'.format(boot_retry))
+                    boot_retry -= 1
+                    time.sleep(1)
+                else:
+                    new_state = STATE_DEVICE_BOOT_TIMEOUT
+            elif tmp_state == STATE_DEVICE_FOUND:
+                new_state = STATE_DEVICE_FLASHED_ERROR
+            elif tmp_state == STATE_DEVICE_NOT_IN_FLASH_MODE:
+                new_state = STATE_DEVICE_FLASHED_OK
+            else:
+                raise Exception('UNHANDLED POST BOOT STATE: {}'.format(tmp_state))
+        elif state in [STATE_DEVICE_FLASHED_ERROR, STATE_DEVICE_FLASHED_OK, STATE_DEVICE_RESET_TIMEOUT, STATE_DEVICE_BOOT_TIMEOUT]:
+            # wait for unplug
+            tmp_state = STATE_NO_DEVICE
+            for p in list_ports.comports():
+                if p.vid != ESPRESSIF_VID:
+                    continue
+                tmp_state = STATE_DEVICE_NOT_IN_FLASH_MODE
+                if p.serial_number.strip() != '0':
+                    continue
+                device = p.device[:]
+                tmp_state = STATE_DEVICE_FOUND
+                break
+            if tmp_state != STATE_NO_DEVICE:
+                pass
+            else:
+                # go back to start and do the next one
+                new_state = STATE_NO_DEVICE
+        else:
+            raise Exception('UNHANDLED STATE: {}'.format(state))
+        if state == new_state:
+            continue
+        if new_state == -1:
+            new_state = STATE_NO_DEVICE
+        state = new_state
+        if state == STATE_NO_DEVICE:
+            print('=' * 20)
+            print("PLEASE CONNECT DEVICE VIA USB, THEN PRESS 'FLASH' BUTTON")
+        elif state == STATE_DEVICE_NOT_IN_FLASH_MODE:
+            print('=' * 20)
+            print("PLEASE PRESS 'FLASH' BUTTON")
+        elif state == STATE_DEVICE_FOUND:
+            print('=' * 20)
+            print("FOUND DEVICE {}".format(device))
+        elif state == STATE_DEVICE_FLASHING:
+            print('=' * 20)
+            print("FLASHING DEVICE {}".format(device))
+        elif state == STATE_DEVICE_RESET_NEEDED:
+            print('=' * 20)
+            print("FLASHING COMPLETED, PLEASE PRESS 'RESET' BUTTON")
+        elif state == STATE_DEVICE_WAIT_FOR_BOOT:
+            print('=' * 20)
+            print("WAITING FOR DEVICE TO BOOT")
+        elif state == STATE_DEVICE_FLASHED_ERROR:
+            print('=' * 20)
+            print('  -- ERROR FLASHING --')
+            print('  -- ERROR FLASHING --')
+            print('  -- ERROR FLASHING --')
+            print("FLASHING DIDN'T SEEM TO WORK, PLEASE FLASH AGAIN")
+            print('(please unplug and replug USB)')
+        elif state == STATE_DEVICE_FLASHED_OK:
+            print('=' * 20)
+            print("DEVICE FLASHED:")
+            print("  -- PLEASE CHECK IF GREEN LIGHT IS ON --")
+            print("  -- PLEASE CHECK IF GREEN LIGHT IS ON --")
+            print("  -- PLEASE CHECK IF GREEN LIGHT IS ON --")
+            print("IF GREEN LIGHT IS ON, DEVICE FLASHED SUCCESS")
+            print('(please unplug)')
+        elif state == STATE_DEVICE_RESET_TIMEOUT:
+            print('=' * 20)
+            print('  -- ERROR FLASHING RESET TIMEOUT --')
+            print('  -- ERROR FLASHING RESET TIMEOUT --')
+            print('  -- ERROR FLASHING RESET TIMEOUT --')
+            print("TOO LONG FOR RESET, PLEASE FLASH AGAIN")
+            print('(please unplug and replug USB)')
+        elif state == STATE_DEVICE_BOOT_TIMEOUT:
+            print('=' * 20)
+            print('  -- ERROR FLASHING BOOT TIMEOUT --')
+            print('  -- ERROR FLASHING BOOT TIMEOUT --')
+            print('  -- ERROR FLASHING BOOT TIMEOUT --')
+            print("TOO LONG FOR BOOT, PLEASE FLASH AGAIN")
+            print('(please unplug and replug USB)')
+        else:
+            raise Exception('UNHANDLED NEW STATE: {}'.format(state))
+"""
+
+    # call main function
+    text += """
 
 if __name__ == '__main__':
-    flash_main()
-""".replace('<FILE_NAME_REPLACE>', os.path.basename(out))
+    <FLASH_FUNCTION>()
+""".replace('<FLASH_FUNCTION>', 'flash_main')
 
     with open(out, 'wt') as handle:
         handle.write(text)
+
+
+def package_pcbway_script(args):
+    src = os.path.join(os.path.dirname(args.out), 'bPodUpdater.py')
+    assert os.path.exists(src)
+    out = os.path.join(os.path.dirname(args.out), 'pcbway_flash_bpod.py')
+    with open(src, 'rt') as handle:
+        text = handle.read()
+    find_str = '    flash_main()'
+    replace_str = '    flash_many_main()'
+    assert text.count(find_str) == 1
+    assert text.count(replace_str) == 0
+    text = text.replace(find_str, replace_str)
+    assert text.count(find_str) == 0
+    assert text.count(replace_str) == 1
+    with open(out, 'wt') as handle:
+        handle.write(text)
+    assert os.path.exists(out)
 
 
 def ctf_verify(args):
@@ -462,6 +665,7 @@ def build(args):
     esp_idf_build(args)
     ctf_verify(args)
     package_script(args)
+    package_pcbway_script(args)
     package_server(args)
 
 
