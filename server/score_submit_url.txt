@@ -1,1 +1,1 @@
-http://bpod.us-east-1.elasticbeanstalk.com/index.html
+https://bpod.bsidescbr.com.au/index.html
