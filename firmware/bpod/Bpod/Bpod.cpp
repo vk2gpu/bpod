@@ -62,6 +62,12 @@ void Bpod::begin()
 
     Brightness::setup(BKL_PIN);
 
+    // GPIO5 and GPIO6 are used by flashing jig to detect/show its been flashed
+    pinMode(5, OUTPUT);
+    digitalWrite(5, HIGH);
+    pinMode(6, OUTPUT);
+    digitalWrite(6, HIGH);
+
     set_copy((copy_t)(void*)memcpy);
 
     // LEDs
