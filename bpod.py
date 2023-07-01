@@ -179,6 +179,52 @@ def menuconfig(args):
     esp_idf_menuconfig(args)
 
 
+def package_flash_image(args):
+    out = os.path.join(os.path.dirname(args.out), 'pcbway_flash_bpod_2mb.bin')
+
+    # read flasher args json file
+    flasher_args_path = os.path.join(args.out, 'flasher_args.json')
+    with open(flasher_args_path, 'rt') as handle:
+        flasher_args = json.loads(handle.read())
+
+    # create blank 2MB image
+    image = b'\xff' * 2 * 1024 * 1024
+    image_size = len(image)
+    count = 0
+    for offset_string, relpath_bin in flasher_args['flash_files'].items():
+        count += 1
+        path_bin = os.path.join(args.out, relpath_bin)
+        name = os.path.splitext(os.path.basename(path_bin))[0].replace('-', '_')
+        with open(path_bin, 'rb') as handle:
+            data = handle.read()
+        offset = int(offset_string, 0)
+        size = len(data)
+        assert size > 0
+        assert (size & 0xf) == 0
+        image = image[:offset] + data + image[offset + size:]
+        assert len(image) == image_size
+    assert count == 3
+    with open(out, 'wb') as handle:
+        handle.write(image)
+
+    # verify
+    image = None
+    with open(out, 'rb') as handle:
+        image = handle.read()
+    assert len(image) == image_size
+    assert len(image) == 2 * 1024 * 1024
+    count = 0
+    for offset_string, relpath_bin in flasher_args['flash_files'].items():
+        count += 1
+        path_bin = os.path.join(args.out, relpath_bin)
+        name = os.path.splitext(os.path.basename(path_bin))[0].replace('-', '_')
+        with open(path_bin, 'rb') as handle:
+            data = handle.read()
+        offset = int(offset_string, 0)
+        assert image.find(data) == offset
+    assert count == 3
+
+
 def package_script(args):
     out = os.path.join(os.path.dirname(args.out), 'bPodUpdater.py')
 
@@ -664,6 +710,7 @@ def build(args):
         args.esp_idf_environ = esp_idf_environ(args)
     esp_idf_build(args)
     ctf_verify(args)
+    package_flash_image(args)
     package_script(args)
     package_pcbway_script(args)
     package_server(args)
@@ -704,6 +751,10 @@ def flash(args):
     esp_idf_flash(args)
 
 
+def mount_serial(args):
+    prep_serial_device(args)
+
+
 def monitor(args):
     prep_serial_device(args)
     s = serial.Serial(port=args.device, baudrate=115600)
@@ -728,6 +779,7 @@ def main():
     parser.add_argument('--menuconfig', default=False, action='store_true', help='ESP-IDF menuconfig')
     parser.add_argument('--build', default=False, action='store_true', help='Build firmware')
     parser.add_argument('--flash', default=False, action='store_true', help='Flash firmware')
+    parser.add_argument('--mount', default=False, action='store_true', help='Mount serial device and set permissions')
     parser.add_argument('--monitor', default=False, action='store_true', help='Monitor serial output of device')
     parser.add_argument('--minicom', default=False, action='store_true', help='Connect minicom to device')
     parser.add_argument('--target', default='esp32s2', choices=['esp32', 'esp32s2'], help='Target CPU')
@@ -752,6 +804,8 @@ def main():
         menuconfig(args)
     if args.build:
         build(args)
+    if args.mount:
+        mount_serial(args)
     if args.flash:
         flash(args)
     if args.monitor:
