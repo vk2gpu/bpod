@@ -40,6 +40,46 @@
         "data": "bPod"
     },
     {
+        "macro": "STRING_MUSIC",
+        "encoding": "ascii",
+        "data": "Music"
+    },
+    {
+        "macro": "STRING_ARTISTS",
+        "encoding": "ascii",
+        "data": "Artists"
+    },
+    {
+        "macro": "STRING_ALBUMS",
+        "encoding": "ascii",
+        "data": "Albums"
+    },
+    {
+        "macro": "STRING_SONGS",
+        "encoding": "ascii",
+        "data": "Songs"
+    },
+    {
+        "macro": "STRING_U2",
+        "encoding": "ascii",
+        "data": "U2"
+    },
+    {
+        "macro": "STRING_SONGS_OF_INNOCENCE",
+        "encoding": "ascii",
+        "data": "Songs of Innocence"
+    },
+    {
+        "macro": "STRING_THE_MIRACLE",
+        "encoding": "ascii",
+        "data": "The Miracle"
+    },
+    {
+        "macro": "STRING_NOW_PLAYING",
+        "encoding": "ascii",
+        "data": "Now Playing"
+    },
+    {
         "macro": "STRING_SCHEDULE",
         "encoding": "ascii",
         "data": "Schedule"
@@ -338,6 +378,11 @@
         "macro": "FMT_LINE",
         "encoding": "ascii",
         "data": "%s\n"
+    },
+    {
+        "macro": "FMT_TIME",
+        "encoding": "ascii",
+        "data": "%c0:%02d\n"
     },
     {
         "macro": "FMT_HEX_BYTE_UPPER",

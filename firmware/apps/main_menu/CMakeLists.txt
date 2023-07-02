@@ -9,6 +9,7 @@ target_link_libraries(AppMainMenu
     AppMenu
     AppTextView
     AppQrCodeView
+    AppMusicMenu
     AppSchedule
     AppGameMenu
     AppToolMenu

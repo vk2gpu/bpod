@@ -11,6 +11,7 @@ list(APPEND RawImages
     ${RAW_IMAGE_DIR}/bpod-scroll-empty.bmp
     ${RAW_IMAGE_DIR}/bpod-scroll-fill.bmp
     ${RAW_IMAGE_DIR}/snake_apple_6x6.bmp
+    ${RAW_IMAGE_DIR}/u2_snippet.bmp
 )
 list(APPEND HppImages
     ${IMAGES_DIR}/BpodLogo.hpp
@@ -22,6 +23,7 @@ list(APPEND HppImages
     ${IMAGES_DIR}/BpodScrollEmpty.hpp
     ${IMAGES_DIR}/BpodScrollFill.hpp
     ${IMAGES_DIR}/SnakeApple6x6.hpp
+    ${IMAGES_DIR}/U2AlbumArt.hpp
 )
 
 foreach(RawImage HppImage IN ZIP_LISTS RawImages HppImages)
