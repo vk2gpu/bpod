@@ -42,8 +42,8 @@ def encoding_none(args):
     
         out('public:')
         tab()
-        out('const static int16_t data_size = {};'.format(len(music_data)))
-        out('inline static uint16_t data(size_t offset) {')
+        out('const static size_t data_size = {};'.format(len(music_data)))
+        out('inline static const char *data() {')
         tab()
         out('const static char data[{}] = {}'.format(len(music_data), '{'))
         tab()
@@ -56,7 +56,7 @@ def encoding_none(args):
             i += 16
         shift_tab()
         out('};')
-        out('return *reinterpret_cast<const uint16_t*>(&data[offset]);')
+        out('return reinterpret_cast<const char*>(&data[0]);')
         shift_tab()
         out('};')
         shift_tab()

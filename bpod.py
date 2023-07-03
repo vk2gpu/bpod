@@ -660,6 +660,11 @@ def ctf_verify(args):
     size = end - start
     if size != len('cybears{h0w_g0uda_1s_th1s_flag_can_y0u_camemb3rt_1t}'):
         raise Exception("Cheesey Strings II CTF flag size doesn't look right")
+    with open(os.path.join(args.music, 'u2_snippet.wav'), 'rb') as handle:
+        u2_song_data = handle.read()
+    md5 = hashlib.md5(u2_song_data).hexdigest()
+    assert md5.lower() == '196b901fbb5bd93923727addec8ad4ce'.lower()
+    assert data.find(u2_song_data) != -1
 
 
 def package_server(args):
@@ -795,6 +800,7 @@ def main():
     args.server = os.path.join(ROOT, 'server')
     args.esp_idf = os.path.join(ROOT, 'firmware', 'esp-idf')
     args.adafruit = os.path.join(ROOT, 'firmware', 'adafruit')
+    args.music = os.path.join(ROOT, 'music')
     args.esp_idf_environ = None  # lazy init when needed
     if args.build:
         args.download = True

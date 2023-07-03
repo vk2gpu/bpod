@@ -9,8 +9,6 @@
 
 #define SONG_DURATION_MS (9500)
 
-U2Snippet u2_snippet;
-
 void SongTheMiracle::begin(void)
 {
     redraw_ = true;
@@ -19,6 +17,7 @@ void SongTheMiracle::begin(void)
     position_ms_ = 0;
     prev_position_ms_ = 0;
     prev_time_sec_ = 0;
+    memcpy(&timestamp_ms_, U2Snippet::data(), sizeof(timestamp_ms_)); // so data gets compiled in
     timestamp_ms_ = (uint32_t)millis();
 }
 

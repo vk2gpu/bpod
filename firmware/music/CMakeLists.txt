@@ -2,7 +2,7 @@ set(RAW_MUSIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../music")
 set(MUSIC_DIR "${CMAKE_CURRENT_BINARY_DIR}/Music")
 
 list(APPEND RawMusic
-    ${RAW_MUSIC_DIR}/u2_snippet.mp3
+    ${RAW_MUSIC_DIR}/u2_snippet.wav
 )
 list(APPEND HppMusic
     ${MUSIC_DIR}/u2_snippet.hpp
