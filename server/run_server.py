@@ -7,21 +7,31 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'bpod'))
 from application import application
 
 def simple_app(environ, start_response):
-    if environ['PATH_INFO'].startswith('/static/'):
-        relpath = environ['PATH_INFO'][len('/static/'):].replace('/', '').replace('\\', '')
-        text = ''
-        path = os.path.join(os.path.dirname(__file__), 'bpod', 'static', relpath)
-        try:
-            with open(path, 'rt') as handle:
-                text = handle.read()
-        except:
-            pass
-        data = text.encode('ascii')
-        status = '200 OK'
-        headers = [('Content-type', 'text/plain; charset=utf-8'), ('Content-Length',str(len(data)))]
-        start_response(status, headers)
-        return [data]
-    return application(environ, start_response)
+    if environ['PATH_INFO'] in ['', '/'] or environ['PATH_INFO'].endswith('.html'):
+        return application(environ, start_response)
+    relpath = environ['PATH_INFO'][len('/static/'):].replace('/', '').replace('\\', '')
+    while relpath.startswith('/'):
+        relpath = relpath[1:]
+    data = b''
+    path = os.path.realpath(os.path.join(os.path.dirname(__file__), 'bpod', 'static', relpath))
+    assert path.startswith(os.path.dirname(__file__))
+    try:
+        with open(path, 'rb') as handle:
+            data = handle.read()
+    except:
+        pass
+    if path.endswith('.png'):
+        content_type = 'image/png'
+    elif path.endswith('.svg'):
+        content_type = 'image/svg+xml'
+    elif path.endswith('.css'):
+        content_type = 'text/css'
+    else:
+        content_type = 'text/plain; charset=utf-8'
+    status = '200 OK'
+    headers = [('Content-type', content_type), ('Content-Length',str(len(data)))]
+    start_response(status, headers)
+    return [data]
 
 
 def ip_addr():

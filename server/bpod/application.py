@@ -8,6 +8,18 @@ from bsides2023.token import Token
 from bsides2023.scoredb import ScoreDb
 from bsides2023.html import HtmlTable
 
+with open(os.path.join(os.path.dirname(__file__), 'static', 'update.html'), 'rb') as handle:
+    UPDATE_HTML_DATA = handle.read()
+TEMPLATE_HTML_DATA = b''
+TEMPLATE_HTML_DATA += UPDATE_HTML_DATA[:UPDATE_HTML_DATA.find(b'</header>')] + b'</header>'
+TEMPLATE_HTML_DATA += b'HTML_CONTENT'
+TEMPLATE_HTML_DATA += b'<br /><br/>' + UPDATE_HTML_DATA[UPDATE_HTML_DATA.find(b'<footer>'):]
+with open(os.path.join(os.path.dirname(__file__), 'static', 'githash.txt'), 'rb') as handle:
+    GITHASH_DATA = handle.read().decode('ascii').strip().encode('ascii')
+with open(os.path.join(os.path.dirname(__file__), 'static', 'md5hash.txt'), 'rb') as handle:
+    MD5HASH_DATA = handle.read().decode('ascii').strip().encode('ascii')
+
+
 def debug_mode():
     try:
         if not 'BPOD_DEBUG' in os.environ:
@@ -89,46 +101,23 @@ def error_app(environ, start_response, err='bpod'):
     start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
     return [data]
 
-def success_app(environ, start_response, html):
-    form = None
-    if html.count('<form') == 1 and html.endswith('</form>'):
-        html, form = html.split('<form')
-        form = '<form' + form
-    text = ''
-    text += '<html><head>'
-    text += '<link rel="stylesheet" type="text/css" href="/static/screen.css" />'
-    text += '</head><body class="noisy">'
-    text += '<div class="frame">'
-    if form:
-        # adding the effects makes it un-clickable on phones :(
-        text += html
-        text += form
-    else:
-        text += '<div class="piece output">'
-        text += html
-        text += '<div class="piece scanlines">'
-        text += '</div>'
-        text += '<div class="piece glow">'
-        text += '</div>'
-        text += '</div>'
-    text += '</div>'
-    text += '</body></html>'
-    data = text.encode('ascii')
-    start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
-    return [data]
-
 def score_board_app(environ, start_response):
     text = ''
+    text += '<div class="bpod score-table">'
     with ScoreDb(version=get_version()) as score:
         g1 = '<h1>{}</h1>'.format('Snake')
         g1 += HtmlTable(format_score_board(score.score_board('snake', count=get_score_row_count(environ)))).html()
         g2 = '<h1>{}</h1>'.format('Tetris')
         g2 += HtmlTable(format_score_board(score.score_board('tetris', count=get_score_row_count(environ)))).html()
-        text = HtmlTable([[g1, g2]]).html()
-    return success_app(environ, start_response, text)
+        text += HtmlTable([[g1, g2]]).html().replace('</h1><table><tbody>', '</h1><table class="score-box"><tbody>')
+    text += '</div>'
+    data = TEMPLATE_HTML_DATA[:].replace(b'HTML_CONTENT', text.encode('ascii'))
+    start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
+    return [data]
 
 def submit_name_form_app(environ, start_response, qs_token, token):
     text = ''
+    text += '<div class="bpod">'
     text += '<h1>{}</h1><p>{} {} pts</p>'.format(token.ipsn, token.game, token.score)
     text += '<form id="name_form" "/index.html" method="get">'
     text += '<input type="hidden" name="s" value="{}" />'.format(qs_token)
@@ -136,7 +125,10 @@ def submit_name_form_app(environ, start_response, qs_token, token):
     text += '<input id="name" type="text" name="n" value="" />'
     text += '<button type="submit" form="name_form" value="Submit">Submit</button>'
     text += '</form>'
-    return success_app(environ, start_response, text)
+    text += '</div>'
+    data = TEMPLATE_HTML_DATA[:].replace(b'HTML_CONTENT', text.encode('ascii'))
+    start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
+    return [data]
 
 def bsides2023_app(environ, start_response):
     key = get_key()
@@ -151,11 +143,11 @@ def bsides2023_app(environ, start_response):
                 score.reset_db()
     if environ['PATH_INFO'].endswith('update.html'):
         # return update page
-        with open(os.path.join(os.path.dirname(__file__), 'static', 'update.html'), 'rb') as handle:
-            data = handle.read()
-        with open(os.path.join(os.path.dirname(__file__), 'static', 'githash.txt'), 'rb') as handle:
-            githash = handle.read().decode('ascii').strip().encode('ascii')
+        data = UPDATE_HTML_DATA[:]
+        githash = GITHASH_DATA[:]
+        md5hash = MD5HASH_DATA[:]
         data = data.replace(b'GITHASH', githash)
+        data = data.replace(b'MD5HASH', githash)
         start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
         return [data]
     if qs_token_unsafe:

@@ -693,6 +693,9 @@ def package_server(args):
     except:
         pass
     out = os.path.dirname(args.out)
+    with open(os.path.join(out, 'bPodUpdater.py'), 'rb') as handle:
+        data = handle.read()
+    md5hash_hex = hashlib.md5(data).hexdigest().lower()
     static_path = os.path.join(out, 'static')
     os.makedirs(static_path)
     assert os.path.exists(static_path)
@@ -700,7 +703,13 @@ def package_server(args):
         shutil.copyfile(os.path.join(out, 'bPodUpdater.py'), os.path.join(static_path, 'bPodUpdater.py'))
         with open(os.path.join(static_path, 'githash.txt'), 'wb') as handle:
             handle.write(githash_hex.encode('ascii'))
-        p = subprocess.Popen(['zip', '-u', path, 'static/githash.txt', 'static/bPodUpdater.py'], cwd=out)
+        with open(os.path.join(static_path, 'md5hash.txt'), 'wb') as handle:
+            handle.write(md5hash_hex.encode('ascii'))
+        p = subprocess.Popen(['zip', '-u', path,
+            'static/githash.txt',
+            'static/md5hash.txt',
+            'static/bPodUpdater.py',
+        ], cwd=out)
         p.communicate()
     finally:
         shutil.rmtree(static_path)
