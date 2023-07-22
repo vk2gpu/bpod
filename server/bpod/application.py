@@ -147,7 +147,7 @@ def bsides2023_app(environ, start_response):
         githash = GITHASH_DATA[:]
         md5hash = MD5HASH_DATA[:]
         data = data.replace(b'GITHASH', githash)
-        data = data.replace(b'MD5HASH', githash)
+        data = data.replace(b'MD5HASH', md5hash)
         start_response('200 OK', [('Content-Type','text/html'), ('Content-Length',str(len(data)))])
         return [data]
     if qs_token_unsafe:
