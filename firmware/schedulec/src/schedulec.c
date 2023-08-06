@@ -125,11 +125,11 @@ size_t schedule_get_talk_text_size(size_t talk_index)
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_DAY_VALUE_ID);
     size += STRING_STRLEN(SCHEDULE_DAY_TIME_SEP);
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_TIME_VALUE_ID);
-    size += STRING_STRLEN(SCHEDULE_NL_SEP);;
+    size += STRING_STRLEN(SCHEDULE_NL_SEP);
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_TITLE_VALUE_ID);
-    size += STRING_STRLEN(SCHEDULE_NL_SEP);;
+    size += STRING_STRLEN(SCHEDULE_NLNL_SEP);
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_PRESENTER_VALUE_ID);
-    size += STRING_STRLEN(SCHEDULE_NLNL_SEP);;
+    size += STRING_STRLEN(SCHEDULE_NLNL_SEP);
     size += schedule_get_talk_value_size(talk_index, SCHEDULE_ABSTRACT_VALUE_ID);
     if ( schedule_get_talk_value_size(talk_index, SCHEDULE_BIO_VALUE_ID) )
     {
@@ -163,8 +163,8 @@ size_t schedule_get_talk_text(size_t talk_index, size_t offset, char *text, size
     STRING_MEMCPY(text + recd, SCHEDULE_NL_SEP);
     recd += STRING_STRLEN(SCHEDULE_NL_SEP);
     recd += schedule_get_talk_value(talk_index, SCHEDULE_TITLE_VALUE_ID, 0, text + recd, size - recd);
-    STRING_MEMCPY(text + recd, SCHEDULE_NL_SEP);
-    recd += STRING_STRLEN(SCHEDULE_NL_SEP);
+    STRING_MEMCPY(text + recd, SCHEDULE_NLNL_SEP);
+    recd += STRING_STRLEN(SCHEDULE_NLNL_SEP);
     recd += schedule_get_talk_value(talk_index, SCHEDULE_PRESENTER_VALUE_ID, 0, text + recd, size - recd);
     STRING_MEMCPY(text + recd, SCHEDULE_NLNL_SEP);
     recd += STRING_STRLEN(SCHEDULE_NLNL_SEP);

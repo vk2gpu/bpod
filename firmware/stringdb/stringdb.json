@@ -672,7 +672,7 @@
     {
         "macro": "SCHEDULE_NLNL_SEP",
         "encoding": "ascii",
-        "data": "\n"
+        "data": "\n\n"
     },
     {
         "macro": "SCHEDULE_TALK_BIO_SEP",

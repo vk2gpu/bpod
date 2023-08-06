@@ -176,6 +176,8 @@ class ScheduleItem(object):
 
     @property
     def abstract_data(self):
+        if self.abstract and len(self.abstract.strip()) > 0:
+            return self.abstract.encode('ascii')
         if not self.presenter:
             return b''
         if not self.abstract:
@@ -325,6 +327,10 @@ class Schedule(object):
         schedule = list()
         for line in text.split('\n'):
             if line.startswith('# '):
+                if title:
+                    abstract = cls.cleanup_text(abstract)
+                    bio = cls.cleanup_text(bio)
+                    schedule.append((day, time, title, presenter, abstract, bio))
                 line = line[2:]
                 day = line.strip()
                 time = None
