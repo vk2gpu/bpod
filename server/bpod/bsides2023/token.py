@@ -205,7 +205,7 @@ class Token(object):
         assert expected == result, "{} == {}".format(hex(expected), hex(result))
         assert obj.score % 100 == 0  # scores are a multiple of 100
         if obj.game == 'snake':
-            assert obj.score <= 364 * 100  # 14 x 26 = 364 squares, this is the max
+            assert obj.score <= 39500 # thanks to Alex for finding this bug
         elif obj.game == 'tetris':
             assert obj.score <= 57600 * 100 # (60 * 60 * 24 * 2) / 3 seconds per 100 points == 57600
         elif obj.game == 'debug':
