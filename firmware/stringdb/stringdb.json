@@ -250,6 +250,11 @@
         "data": "gpio"
     },
     {
+        "macro": "STRING_SHOCK_COLLAR",
+        "encoding": "ascii",
+        "data": "Shock Collar"
+    },
+    {
         "macro": "STRING_WIFISCAN",
         "encoding": "ascii",
         "data": "wifiscan"

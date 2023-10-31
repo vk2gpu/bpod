@@ -1,5 +1,6 @@
 #include "ToolMenu.hpp"
 
+#include <App/ShockCollar.hpp>
 #include <App/I2CDetect.hpp>
 #include <App/I2CSniff.hpp>
 #include <App/SPISniff.hpp>
@@ -8,10 +9,12 @@
 #include <App/Leds.hpp>
 #include <App/MCP23017.hpp>
 #include <App/MCP23S17.hpp>
+
 // #include <App/WifiScan.hpp>
 #include <ctf.h>
 #include <stringdb.h>
 
+ShockCollar shockCollar;
 I2CDetect i2cdetect;
 I2CSniff i2csniff;
 SPISniff spisniff;
@@ -25,6 +28,7 @@ MCP23S17 mcp23S17;
 void ToolMenu::begin(BpodMenu &menu)
 {
     menu.set_title(STRING(STRING_TOOLS));
+    menu.add(STRING(STRING_SHOCK_COLLAR), [](){ App::manager_begin(shockCollar); });
     menu.add(STRING(STRING_I2CDETECT), [](){ App::manager_begin(i2cdetect); });
     menu.add(STRING(STRING_I2CSNIFF), [](){ App::manager_begin(i2csniff); });
     menu.add(STRING(STRING_SPISNIFF), [](){ App::manager_begin(spisniff); });
