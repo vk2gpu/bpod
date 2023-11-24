@@ -4,12 +4,7 @@
 
 const int PinTX = 5;
 
-const int PreambleHighTime = 1370;
-const int PreambleTotalTime = 2160;
-
-const int BitOneHighTime = 725;
-const int BitZeroHighTime = 225;
-const int BitTotalTime = 1020;
+static ShockCollarTiming s_timing = {};
 
 ShockCollarMsg BuildShockCollarMsg( uint32_t secret, uint32_t channel, uint32_t type, uint32_t power )
 {
@@ -39,22 +34,25 @@ static void TransmitByte( uint8_t byte )
   for(int i = 7; i >= 0; --i )
   {
     if( byte & (1 << i) )
-      TransmitSymbol( BitOneHighTime, BitTotalTime );
+      TransmitSymbol( s_timing.BitOneHighTime, s_timing.BitTotalTime );
     else
-      TransmitSymbol( BitZeroHighTime, BitTotalTime );
+      TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
   }
 }
 
 void TransmitShockCollarMsg( ShockCollarMsg msg )
 {
   // Hacky switch it off and on again as there was some weird timing issues...
-  delayMicroseconds( 50000 );
-  digitalWrite(PinTX, HIGH);
-  digitalWrite(PinTX, LOW);
-  delayMicroseconds( 50000 );
-
+  if( s_timing.UseHackyRFSwitch )
+  {
+    delayMicroseconds( s_timing.PreSleepTime );
+    digitalWrite(PinTX, HIGH);
+    digitalWrite(PinTX, LOW);
+    delayMicroseconds( s_timing.PostSleepTime );
+  }
+  
   // Preamble.
-  TransmitSymbol( PreambleHighTime, PreambleTotalTime );
+  TransmitSymbol( s_timing.PreambleHighTime, s_timing.PreambleTotalTime );
 
   // Payload.
   for(int i = 0; i < 5; ++i )
@@ -63,14 +61,30 @@ void TransmitShockCollarMsg( ShockCollarMsg msg )
   }
 
   // End of message.
-  TransmitSymbol( BitZeroHighTime, BitTotalTime );
-  TransmitSymbol( BitZeroHighTime, BitTotalTime );
-  TransmitSymbol( BitZeroHighTime, BitTotalTime );
+  TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
+  TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
+  TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
 
   digitalWrite(PinTX, LOW);
 }
 
-void ShockCollarSetup()
+void ShockCollarSetup( ShockCollarTiming timing )
 {
+  s_timing = timing;
+
+  // Validate timing.
+  if( s_timing.BitOneHighTime == 0 )
+  {
+    s_timing.BitOneHighTime = s_timing.BitTotalTime - s_timing.BitZeroHighTime;
+  }
+  else if( s_timing.BitZeroHighTime == 0 )
+  {
+    s_timing.BitZeroHighTime = s_timing.BitTotalTime - s_timing.BitOneHighTime;
+  }
+  else if( s_timing.BitTotalTime == 0 )
+  {
+    s_timing.BitTotalTime = s_timing.BitOneHighTime + s_timing.BitZeroHighTime;
+  }
+
   pinMode(PinTX, OUTPUT);
 }
