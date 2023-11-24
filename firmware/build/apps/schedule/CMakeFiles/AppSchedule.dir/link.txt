@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppSchedule.a CMakeFiles/AppSchedule.dir/App/Schedule.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppSchedule.a

@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libgithash.a CMakeFiles/githash.dir/githash.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libgithash.a

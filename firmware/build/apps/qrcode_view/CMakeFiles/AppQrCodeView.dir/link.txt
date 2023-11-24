@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppQrCodeView.a CMakeFiles/AppQrCodeView.dir/App/QrCodeView.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppQrCodeView.a

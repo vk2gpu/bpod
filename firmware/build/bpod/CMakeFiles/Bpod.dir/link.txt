@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libBpod.a CMakeFiles/Bpod.dir/Bpod/Bpod.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libBpod.a

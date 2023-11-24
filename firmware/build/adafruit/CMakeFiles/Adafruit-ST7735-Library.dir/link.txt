@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAdafruit-ST7735-Library.a "CMakeFiles/Adafruit-ST7735-Library.dir/Adafruit-ST7735-Library/Adafruit_ST77xx.cpp.o" "CMakeFiles/Adafruit-ST7735-Library.dir/Adafruit-ST7735-Library/Adafruit_ST7735.cpp.o" "CMakeFiles/Adafruit-ST7735-Library.dir/Adafruit-ST7735-Library/Adafruit_ST7789.cpp.o"
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAdafruit-ST7735-Library.a

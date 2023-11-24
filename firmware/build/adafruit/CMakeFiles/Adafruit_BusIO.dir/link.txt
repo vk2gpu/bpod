@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAdafruit_BusIO.a CMakeFiles/Adafruit_BusIO.dir/Adafruit_BusIO/Adafruit_BusIO_Register.cpp.o CMakeFiles/Adafruit_BusIO.dir/Adafruit_BusIO/Adafruit_I2CDevice.cpp.o CMakeFiles/Adafruit_BusIO.dir/Adafruit_BusIO/Adafruit_SPIDevice.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAdafruit_BusIO.a

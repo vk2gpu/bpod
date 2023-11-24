@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAdafruit-GFX-Library.a "CMakeFiles/Adafruit-GFX-Library.dir/Adafruit-GFX-Library/Adafruit_GFX.cpp.o" "CMakeFiles/Adafruit-GFX-Library.dir/Adafruit-GFX-Library/Adafruit_GrayOLED.cpp.o" "CMakeFiles/Adafruit-GFX-Library.dir/Adafruit-GFX-Library/Adafruit_SPITFT.cpp.o"
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAdafruit-GFX-Library.a

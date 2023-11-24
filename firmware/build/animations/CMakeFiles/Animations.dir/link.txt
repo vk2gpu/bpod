@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAnimations.a CMakeFiles/Animations.dir/Animations/BpodLoadAnimation.cpp.o CMakeFiles/Animations.dir/Animations/BSidesLogoAnimation.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAnimations.a

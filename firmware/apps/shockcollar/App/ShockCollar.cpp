@@ -37,22 +37,22 @@ namespace
             {
                 switch(val)
                 {
-                    case 0x0: out[i] = '.';
-                    case 0x1: out[i] = '1';
-                    case 0x2: out[i] = '2';
-                    case 0x3: out[i] = '3';
-                    case 0x4: out[i] = '4';
-                    case 0x5: out[i] = '5';
-                    case 0x6: out[i] = '6';
-                    case 0x7: out[i] = '7';
-                    case 0x8: out[i] = '8';
-                    case 0x9: out[i] = '9';
-                    case 0xa: out[i] = 'A';
-                    case 0xb: out[i] = 'B';
-                    case 0xc: out[i] = 'C';
-                    case 0xd: out[i] = 'D';
-                    case 0xe: out[i] = 'E';
-                    case 0xf: out[i] = 'F';
+                    case 0x0: out[i] = '.'; break;
+                    case 0x1: out[i] = '1'; break;
+                    case 0x2: out[i] = '2'; break;
+                    case 0x3: out[i] = '3'; break;
+                    case 0x4: out[i] = '4'; break;
+                    case 0x5: out[i] = '5'; break;
+                    case 0x6: out[i] = '6'; break;
+                    case 0x7: out[i] = '7'; break;
+                    case 0x8: out[i] = '8'; break;
+                    case 0x9: out[i] = '9'; break;
+                    case 0xa: out[i] = 'A'; break;
+                    case 0xb: out[i] = 'B'; break;
+                    case 0xc: out[i] = 'C'; break;
+                    case 0xd: out[i] = 'D'; break;
+                    case 0xe: out[i] = 'E'; break;
+                    case 0xf: out[i] = 'F'; break;
                 }
             }
         }
@@ -147,8 +147,9 @@ void ShockCollar::draw(Adafruit_GFX &gfx)
 {
     char buf[100];
 
-    const uint8_t patternTime = runPattern_ ? ( frameIdx_ / 8 ) % PATTERN_SIZE : PATTERN_SIZE;
-    const bool sendCommand = frameIdx_ % 8 == 0;
+    const uint framesPerTick = 16;
+    const uint8_t patternTime = runPattern_ ? ( frameIdx_ / framesPerTick ) % PATTERN_SIZE : PATTERN_SIZE;
+    const bool sendCommand = frameIdx_ % framesPerTick == 0;
 
     // redraw on when required.
     if(redraw_ || sendCommand)
@@ -174,12 +175,14 @@ void ShockCollar::draw(Adafruit_GFX &gfx)
         gfx.printf("Max Power: %u\n", maxPower_);
 
         y += 16;
-        sprintf(buf, "Pattern: " );
+        memset(buf, 0, sizeof(buf));
+        sprintf(buf, "Pattern:\n" );
         patternString(buf+9, patternIdx_, patternTime);
         gfx.setCursor(x, y);
         gfx.print(buf);
 
-        y += 16;
+        y += 32;
+        memset(buf, 0, sizeof(buf));
         sprintf(buf, "Mode: %s\n", modes[mode_]);
         gfx.setCursor(x, y);
         gfx.printf("Mode: %s\n", modes[mode_]); 

@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libtetrisc.a CMakeFiles/tetrisc.dir/src/tetrisc.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libtetrisc.a

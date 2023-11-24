@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libstringdb.a CMakeFiles/stringdb.dir/stringdb.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libstringdb.a

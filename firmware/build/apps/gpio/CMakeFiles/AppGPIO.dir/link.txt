@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppGPIO.a CMakeFiles/AppGPIO.dir/App/GPIO.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppGPIO.a

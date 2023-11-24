@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppMCP23017.a CMakeFiles/AppMCP23017.dir/App/MCP23017.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppMCP23017.a

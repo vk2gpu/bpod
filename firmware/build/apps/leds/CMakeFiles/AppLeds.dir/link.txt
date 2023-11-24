@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppLeds.a CMakeFiles/AppLeds.dir/App/Leds.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppLeds.a

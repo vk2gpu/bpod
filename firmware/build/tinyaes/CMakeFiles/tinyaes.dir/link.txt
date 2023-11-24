@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libtinyaes.a CMakeFiles/tinyaes.dir/src/tinyaes.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libtinyaes.a

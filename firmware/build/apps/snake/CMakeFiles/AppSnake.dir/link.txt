@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppSnake.a CMakeFiles/AppSnake.dir/App/Snake.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppSnake.a

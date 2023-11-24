@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libMenu.a CMakeFiles/Menu.dir/Menu/BpodMenu.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libMenu.a

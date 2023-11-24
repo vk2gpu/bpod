@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppMainMenu.a CMakeFiles/AppMainMenu.dir/App/MainMenu.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppMainMenu.a

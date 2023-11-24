@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libImages.a CMakeFiles/Images.dir/Images.cpp.o CMakeFiles/Images.dir/Images/BpodTitleBar.cpp.o CMakeFiles/Images.dir/Images/BpodMenuItem.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libImages.a

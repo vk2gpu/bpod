@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppWifiScan.a CMakeFiles/AppWifiScan.dir/App/WifiScan.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppWifiScan.a

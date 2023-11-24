@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libTouchWheel.a CMakeFiles/TouchWheel.dir/TouchWheel/TouchWheel.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libTouchWheel.a

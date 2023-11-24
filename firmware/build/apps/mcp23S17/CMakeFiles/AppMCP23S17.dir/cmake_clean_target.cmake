@@ -1,0 +1,3 @@
+file(REMOVE_RECURSE
+  "libAppMCP23S17.a"
+)

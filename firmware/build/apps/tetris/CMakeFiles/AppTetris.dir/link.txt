@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libAppTetris.a CMakeFiles/AppTetris.dir/App/Tetris.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libAppTetris.a
