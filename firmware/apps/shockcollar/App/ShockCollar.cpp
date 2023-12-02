@@ -3,8 +3,15 @@
 
 #include <stringdb.h>
 
+#include <freertos/task.h>
+#include <freertos/queue.h>
+
+#define USE_CORE_FOR_RF         1
+
+
+
 #define PATTERN_SIZE 16
-#define PATTERN_COUNT 13
+#define PATTERN_COUNT 12
 
 namespace 
 {
@@ -14,14 +21,13 @@ namespace
         { 15,  0,  0,  0, 15,  0,  0,  0, 15,  0,  0,  0, 15,  0,  0,  0 },
         { 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0 },
         { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 },
-        {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 },
-        {  1,  3,  5,  7,  9, 11, 13, 15,  1,  3,  5,  7,  9, 11, 13, 15 },
-        {  3,  7, 11, 15,  3,  7, 11, 15,  3,  7, 11, 15,  3,  7, 11, 15 },
-        {  0,  1,  2,  3,  4,  5,  6,  7,  0,  0,  0,  0,  0,  0,  0,  0 },
-        {  1,  3,  5,  7,  9, 11, 13, 15,  0,  0,  0,  0,  0,  0,  0,  0 },
-        {  3,  7, 11, 15,  3,  7, 11, 15,  0,  0,  0,  0,  0,  0,  0,  0 },
-        {  0,  1,  2,  3,  4,  5,  6,  7,  1,  3,  5,  7,  9, 11, 13, 15 },
-        {  1,  3,  5,  7,  9, 11, 13, 15,  3,  7, 11, 15,  3,  7, 11, 15 },
+        {  0,  1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15 },
+        {  0,  3,  0,  7,  0, 11,  0, 15,  0,  3,  0,  7,  0, 11,  0, 15 },
+        {  0,  7,  0, 15,  0,  7,  0, 15,  0,  7,  0, 15,  0,  7,  0, 15 },
+        {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11,  0,  0,  0,  0 },
+        {  0,  3,  5,  7,  9, 11, 13, 15, 12, 13, 14, 15,  0,  0,  0,  0 },
+        {  0,  7, 11, 15,  3,  7, 11, 15, 12, 13, 14, 15,  0,  0,  0,  0 },
+        {  0,  3,  0,  7,  0, 11,  0, 15,  0,  7,  0, 15,  0,  7,  0, 15 },
     };
 
     void patternString(char* out, int patternIdx, int patternTime)
@@ -57,6 +63,39 @@ namespace
             }
         }
     }
+    
+#if USE_CORE_FOR_RF
+    static const constexpr int MAX_MSGS = 16;
+    static const constexpr int TOTAL_TX_TIME_MS = 100;
+    static const constexpr int TIME_BETWEEN_MESSAGES_MS = 25;
+
+    TaskHandle_t s_rfTaskHandle = 0;
+    QueueHandle_t s_rfMsgQueue = 0;
+
+    void RFTaskEntry(void*)
+    {
+        printf("Entering RF\n");
+        ShockCollarMsg msg = {};
+        ShockCollarMsg txMsg = {};
+        int stopTxTime = 0;
+        bool transmit = false;
+        for(;;)
+        {
+            bool receivedMsg = xQueueReceive( s_rfMsgQueue, &msg, 10 );
+            if ( receivedMsg )
+            {
+                stopTxTime = millis() + TOTAL_TX_TIME_MS;
+                txMsg = msg;
+            }
+            
+            if( millis() < stopTxTime )
+            {
+                TransmitShockCollarMsg( txMsg );
+                delay( TIME_BETWEEN_MESSAGES_MS );
+            }
+        }
+    }
+#endif // #if USE_CORE_FOR_RF
 }
 
 
@@ -64,9 +103,48 @@ void ShockCollar::begin()
 {    
     ShockCollarSetup();
 
+#if USE_CORE_FOR_RF
+    s_rfMsgQueue = xQueueCreate( MAX_MSGS, sizeof( ShockCollarMsg ) );
+    if(s_rfTaskHandle == 0)
+    {
+        xTaskCreate(
+        RFTaskEntry, /* Function to implement the task */
+        "RFTask", /* Name of the task */
+        10000,  /* Stack size in words */
+        NULL,  /* Task input parameter */
+        tskIDLE_PRIORITY,  /* Priority of the task */
+        &s_rfTaskHandle);  /* Task handle. */
+    }
+#endif // #if USE_CORE_FOR_RF
+    redraw_ = true;
+    maxPower_ = 0;
+    patternIdx_ = 0;
+    runPattern_ = false;
     mode_ = TYPE_VIBRATE;
+    frameIdx_ = 0;
+
+    lastCommandTime_ = millis();
+
+    resetKeepAwake();
+#if USE_CORE_FOR_RF
+    ShockCollarMsg msg = BuildShockCollarMsg( RemoteSecret, 0, TYPE_BEEP, 0 );
+    xQueueSendToBack( s_rfMsgQueue, &msg, 1000 );
+#else // #if USE_CORE_FOR_RF
+    TransmitShockCollarMsg( msg );
+#endif // #else // #if USE_CORE_FOR_RF
 
     App::begin();
+}
+
+void ShockCollar::end()
+{
+#if USE_CORE_FOR_RF
+    vTaskDelete(s_rfTaskHandle);
+    vQueueDelete(s_rfMsgQueue);
+    s_rfTaskHandle = 0;
+#endif // #if USE_CORE_FOR_RF
+
+    App::end();
 }
 
 
@@ -74,44 +152,85 @@ void ShockCollar::key_event(uint8_t key)
 {
     ShockCollarMsg msg = {};
 
+    const int debounceMs = 250;
+    const int timeSinceLastInput = micros() - lastInputTime_;
+    lastInputTime_ = micros();
+
     switch( key )
     {
         case APP_KEY_SCROLL_CLOCKWISE:
-            if( maxPower_ < 99 )
-                ++maxPower_;
-            redraw_ = true;
+            {
+                if( timeSinceLastInput < debounceMs )
+                {
+                    if(powerAdjustRate_ < 10)
+                        powerAdjustRate_++;
+                }
+                else
+                {
+                    powerAdjustRate_ = 1;
+                }
+
+                const uint8_t nextPower = (uint8_t)std::min((int)maxPower_ + (int)powerAdjustRate_, 99);
+                if( maxPower_ != nextPower )
+                {
+                    maxPower_ = nextPower;
+                    redraw_ = true;
+                }
+            }
             break;
 
         case APP_KEY_SCROLL_ANTICLOCKWISE:
-            if( maxPower_ > 0 )
-                --maxPower_;
-            redraw_ = true;
+            {
+                if( timeSinceLastInput < debounceMs )
+                {
+                    if(powerAdjustRate_ < 10)
+                        powerAdjustRate_++;
+                }
+                else
+                {
+                    powerAdjustRate_ = 1;
+                }
+
+                const int nextPower = (uint8_t)std::max((int)maxPower_ - (int)powerAdjustRate_, 0);
+                if( maxPower_ != nextPower )
+                {
+                    maxPower_ = nextPower;
+                    redraw_ = true;
+                }
+            }
             break;
 
         case APP_KEY_OK:
-            if( mode_ == TYPE_VIBRATE )
+            if( timeSinceLastInput > debounceMs )
             {
-                mode_ = TYPE_SHOCK;
-                maxPower_ = 0; // Reset power to zero when switching to shock.
+                if( mode_ == TYPE_VIBRATE )
+                {
+                    mode_ = TYPE_SHOCK;
+                    maxPower_ = 0; // Reset power to zero when switching to shock.
+                    powerAdjustRate_ = 1;
 
-                // Send a couple of beeps.
-                msg = BuildShockCollarMsg( RemoteSecret, 0, TYPE_BEEP, 0 );
-                TransmitShockCollarMsg( msg );
-                TransmitShockCollarMsg( msg );
+                    // Send a beep.
+                    msg = BuildShockCollarMsg( RemoteSecret, 0, TYPE_BEEP, 0 );
+#if USE_CORE_FOR_RF
+                    xQueueSendToBack( s_rfMsgQueue, &msg, 1000 );
+#else // #if USE_CORE_FOR_RF
+                    TransmitShockCollarMsg( msg );
+#endif // #else // #if USE_CORE_FOR_RF
+                }
+                else if( mode_ == TYPE_SHOCK )
+                {
+                    mode_ = TYPE_VIBRATE;
+                }
+                else if( mode_ == TYPE_BEEP )
+                {
+                    mode_ = TYPE_VIBRATE;
+                }
+                redraw_ = true;
             }
-            else if( mode_ == TYPE_SHOCK )
-            {
-                mode_ = TYPE_VIBRATE;
-            }
-            else if( mode_ == TYPE_BEEP )
-            {
-                mode_ = TYPE_VIBRATE;
-            }
-            redraw_ = true;
             break;
 
         case APP_KEY_FORWARD:
-            if( patternIdx_ < PATTERN_COUNT )
+            if( patternIdx_ < PATTERN_COUNT - 1 )
                 ++patternIdx_;
             else
                 patternIdx_ = 0;
@@ -127,29 +246,47 @@ void ShockCollar::key_event(uint8_t key)
             break;
 
         case APP_KEY_PLAY:
-            runPattern_ = !runPattern_;
-            frameIdx_ = 0;
-            redraw_ = true;
+            if( timeSinceLastInput > debounceMs || runPattern_ )
+            {
+                runPattern_ = !runPattern_;
+                frameIdx_ = 0;
+                redraw_ = true;
 
-            // Send a couple of beeps.
-            msg = BuildShockCollarMsg( RemoteSecret, 0, TYPE_BEEP, 0 );
-            TransmitShockCollarMsg( msg );
-            TransmitShockCollarMsg( msg );
+                // Send a beep.
+                msg = BuildShockCollarMsg( RemoteSecret, 0, TYPE_BEEP, 0 );
+#if USE_CORE_FOR_RF
+                xQueueSendToBack( s_rfMsgQueue, &msg, 1000 );
+#else // #if USE_CORE_FOR_RF
+                TransmitShockCollarMsg( msg );
+#endif // #else // #if USE_CORE_FOR_RF
+            }
             break;
 
         case APP_KEY_MENU:
-            App::manager_end();
+            if( timeSinceLastInput > debounceMs )
+            {
+                App::manager_end();
+            }
             break;
     }
+
+    lastInputTime_ = micros();
 }
 
 void ShockCollar::draw(Adafruit_GFX &gfx)
 {
+    const uint8_t patternTime = runPattern_ ? ( frameIdx_ ) % PATTERN_SIZE : PATTERN_SIZE;
+    bool sendCommand = false;
+
     char buf[100];
 
-    const uint framesPerTick = 16;
-    const uint8_t patternTime = runPattern_ ? ( frameIdx_ / framesPerTick ) % PATTERN_SIZE : PATTERN_SIZE;
-    const bool sendCommand = frameIdx_ % framesPerTick == 0;
+    int now = millis();
+    int timeSinceLastCommand = now - lastCommandTime_;
+    if( timeSinceLastCommand > commandRateMs_ )
+    {
+        lastCommandTime_ += commandRateMs_;
+        sendCommand = runPattern_;
+    }
 
     // redraw on when required.
     if(redraw_ || sendCommand)
@@ -167,27 +304,30 @@ void ShockCollar::draw(Adafruit_GFX &gfx)
             "Beep",
         };
 
-        int16_t x = gfx.getCursorX();
-        int16_t y = gfx.getCursorY();
+        int16_t x = 8;
+        int16_t y = 8;
 
         y += 16;
         gfx.setCursor(x, y);
-        gfx.printf("Max Power: %u\n", maxPower_);
+        gfx.printf("Max Power: %u", maxPower_);
+
+        y += 16;
+        gfx.setCursor(x, y);
+        gfx.print("Pattern:");
 
         y += 16;
         memset(buf, 0, sizeof(buf));
-        sprintf(buf, "Pattern:\n" );
-        patternString(buf+9, patternIdx_, patternTime);
+        patternString(buf, patternIdx_, patternTime);
         gfx.setCursor(x, y);
         gfx.print(buf);
 
         y += 32;
         memset(buf, 0, sizeof(buf));
-        sprintf(buf, "Mode: %s\n", modes[mode_]);
         gfx.setCursor(x, y);
-        gfx.printf("Mode: %s\n", modes[mode_]); 
+        gfx.printf("Mode: %s", modes[mode_]); 
 
         y += 16;
+        gfx.setCursor(x, y);
         gfx.print(runPattern_ ? "ON\n" : "OFF");
 
         redraw_ = false;
@@ -204,11 +344,27 @@ void ShockCollar::draw(Adafruit_GFX &gfx)
             if( power > 0 )
             {
                 ShockCollarMsg msg = BuildShockCollarMsg( RemoteSecret, 0, mode_, power );
+#if USE_CORE_FOR_RF
+                xQueueSendToBack( s_rfMsgQueue, &msg, 0 );
+#else // #if USE_CORE_FOR_RF
                 TransmitShockCollarMsg( msg );
+#endif // #else // #if USE_CORE_FOR_RF
+                
+                resetKeepAwake();
             }
+            frameIdx_++;
         }
+    }
 
-        frameIdx_++;
+    if( now > nextKeepAwakeMsgMs_ )
+    {
+        resetKeepAwake();
+#if USE_CORE_FOR_RF
+        ShockCollarMsg msg = BuildShockCollarMsg( RemoteSecret, 0, TYPE_VIBRATE, 1 );
+        xQueueSendToBack( s_rfMsgQueue, &msg, 1000 );
+#else // #if USE_CORE_FOR_RF
+        TransmitShockCollarMsg( msg );
+#endif // #else // #if USE_CORE_FOR_RF
     }
 }
 

@@ -42,6 +42,8 @@ static void TransmitByte( uint8_t byte )
 
 void TransmitShockCollarMsg( ShockCollarMsg msg )
 {
+  int time = micros();
+
   // Hacky switch it off and on again as there was some weird timing issues...
   if( s_timing.UseHackyRFSwitch )
   {
@@ -51,21 +53,33 @@ void TransmitShockCollarMsg( ShockCollarMsg msg )
     delayMicroseconds( s_timing.PostSleepTime );
   }
   
-  // Preamble.
-  TransmitSymbol( s_timing.PreambleHighTime, s_timing.PreambleTotalTime );
-
-  // Payload.
-  for(int i = 0; i < 5; ++i )
+  for( int i = 0; i < s_timing.MessageTxCount; ++i )
   {
-    TransmitByte( msg.bytes[i] );
+    portDISABLE_INTERRUPTS();
+
+    // Preamble.
+    TransmitSymbol( s_timing.PreambleHighTime, s_timing.PreambleTotalTime );
+
+    // Payload.
+    for(int i = 0; i < 5; ++i )
+    {
+      TransmitByte( msg.bytes[i] );
+    }
+
+    // End of message.
+    TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
+    TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
+    TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
+
+    digitalWrite(PinTX, LOW);
+
+    portENABLE_INTERRUPTS();
+
+    if ( s_timing.MessageTxCount > 1 )
+    {
+      delay( s_timing.MessageTxDelayMs );
+    }
   }
-
-  // End of message.
-  TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
-  TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
-  TransmitSymbol( s_timing.BitZeroHighTime, s_timing.BitTotalTime );
-
-  digitalWrite(PinTX, LOW);
 }
 
 void ShockCollarSetup( ShockCollarTiming timing )
