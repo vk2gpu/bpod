@@ -16,11 +16,6 @@
 namespace 
 {
     static const uint8_t s_patterns[PATTERN_COUNT][PATTERN_SIZE] = {
-        { 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-        { 15,  0,  0,  0,  0,  0,  0,  0, 15,  0,  0,  0,  0,  0,  0,  0 },
-        { 15,  0,  0,  0, 15,  0,  0,  0, 15,  0,  0,  0, 15,  0,  0,  0 },
-        { 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0 },
-        { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 },
         {  0,  1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15 },
         {  0,  3,  0,  7,  0, 11,  0, 15,  0,  3,  0,  7,  0, 11,  0, 15 },
         {  0,  7,  0, 15,  0,  7,  0, 15,  0,  7,  0, 15,  0,  7,  0, 15 },
@@ -28,6 +23,11 @@ namespace
         {  0,  3,  5,  7,  9, 11, 13, 15, 12, 13, 14, 15,  0,  0,  0,  0 },
         {  0,  7, 11, 15,  3,  7, 11, 15, 12, 13, 14, 15,  0,  0,  0,  0 },
         {  0,  3,  0,  7,  0, 11,  0, 15,  0,  7,  0, 15,  0,  7,  0, 15 },
+        { 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+        { 15,  0,  0,  0,  0,  0,  0,  0, 15,  0,  0,  0,  0,  0,  0,  0 },
+        { 15,  0,  0,  0, 15,  0,  0,  0, 15,  0,  0,  0, 15,  0,  0,  0 },
+        { 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0, 15,  0,  0,  0 },
+        { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,  0,  0,  0,  0 },
     };
 
     void patternString(char* out, int patternIdx, int patternTime)
@@ -275,6 +275,8 @@ void ShockCollar::key_event(uint8_t key)
 
 void ShockCollar::draw(Adafruit_GFX &gfx)
 {
+    int16_t viewWidth = gfx.width();
+    int16_t emptyHeight = 0;
     const uint8_t patternTime = runPattern_ ? ( frameIdx_ ) % PATTERN_SIZE : PATTERN_SIZE;
     bool sendCommand = false;
 
@@ -292,6 +294,7 @@ void ShockCollar::draw(Adafruit_GFX &gfx)
     if(redraw_ || sendCommand)
     {
         BpodTitleBar::draw(gfx, STRING(STRING_SHOCK_COLLAR));
+
         gfx.fillRect(0, BpodTitleBar::view_y(gfx), gfx.width(), BpodTitleBar::view_height(gfx), 0xffff);
 
         gfx.setTextColor(0x0000);
@@ -328,7 +331,17 @@ void ShockCollar::draw(Adafruit_GFX &gfx)
 
         y += 16;
         gfx.setCursor(x, y);
-        gfx.print(runPattern_ ? "ON\n" : "OFF");
+        gfx.print(runPattern_ ? "ON\n" : "OFF\n");
+
+#if 0
+        // Fill white at bottom.
+        // May not need to do...
+        emptyHeight = BpodTitleBar::view_height(gfx) - gfx.getCursorY();
+        if ( emptyHeight )
+        {
+            gfx.fillRect(0, gfx.height() - emptyHeight, viewWidth, emptyHeight, 0xffff);
+        }
+#endif
 
         redraw_ = false;
     }
